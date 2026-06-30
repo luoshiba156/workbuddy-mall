@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>项目经理数据看板</title>
+    <style>
+        html {
+            font-size: 16px !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --font-size-base: 0.875rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.125rem;
+            --border-color: #E5E7EB;
+            --border: #E5E7EB;
+            --primary-color: #0051D9;
+            --primary-light: #E8F0FE;
+            --success-color: #52C41A;
+            --warning-color: #FAAD14;
+            --danger-color: #FF4D4F;
+            --text-color: #1D2129;
+            --text-secondary: #666;
+            --bg-light: #F2F3F5;
+            --bg-white: #FFFFFF;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-light);
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: var(--spacing-lg);
+            gap: var(--spacing-lg);
+        }
+
+        .gantt-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-white);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 1rem;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-shrink: 0;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 0.375rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: var(--bg-white);
+            font-size: 0.875rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background-color: var(--bg-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: #0040B8;
+            border-color: #0040B8;
+            color: #FFFFFF;
+        }
+
+        .gantt-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow: hidden;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            position: relative;
+        }
+
+        .stats-cards {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            flex-shrink: 0;
+            flex-grow: 0;
+            contain: layout style;
+        }
+
+        .legend-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-sm) 0;
+            flex-shrink: 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-card {
+            flex: 0 0 auto;
+            min-width: 110px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 0.5rem;
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card.delayed {
+            border-left: 3px solid #DC2626;
+            background: linear-gradient(135deg, #FEF2F2 0%, #FECACA 100%);
+        }
+
+        .stat-card.warning {
+            border-left: 3px solid #F59E0B;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FDE68A 100%);
+        }
+
+        .stat-card.not-started {
+            border-left: 3px solid #64748B;
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+        }
+
+        .stat-card.normal {
+            border-left: 3px solid #0EA5E9;
+            background: linear-gradient(135deg, #F0F9FF 0%, #BAE6FD 100%);
+        }
+
+        .stat-card.delayed-done {
+            border-left: 3px solid #14B8A6;
+            background: linear-gradient(135deg, #F0FDFA 0%, #99F6E4 100%);
+        }
+
+        .stat-card.completed {
+            border-left: 3px solid #10B981;
+            background: linear-gradient(135deg, #ECFDF5 0%, #A7F3D0 100%);
+        }
+
+        .stat-card.cancelled {
+            border-left: 3px solid #9CA3AF;
+            background: linear-gradient(135deg, #F9FAFB 0%, #E5E7EB 100%);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .gantt-search {
+            display: flex;
+            gap: var(--spacing-lg);
+            padding: 0.75rem;
+            align-items: center;
+        }
+
+        .search-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .search-divider {
+            width: 1px;
+            height: 32px;
+            background-color: var(--border-color);
+        }
+
+        .date-picker {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .date-input {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background-color: var(--bg-white);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+        }
+
+        .date-separator {
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .btn-secondary {
+            background-color: #F5F5F5;
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #E8E8E8;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .search-group label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .status-select {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 0.8125rem;
+            background-color: var(--bg-white);
+            color: var(--text-secondary);
+            cursor: pointer;
+            outline: none;
+            min-width: 90px;
+        }
+
+        .status-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background-color: var(--bg-white);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+        }
+
+        .gantt-table-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            flex: 0 1 auto;
+            max-height: 50%;
+        }
+
+        .gantt-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        .gantt-table th,
+        .gantt-table td {
+            padding: 0;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid var(--border);
+            font-size: 0.8125rem;
+            white-space: nowrap;
+            height: 1.375rem;
+            line-height: 1.375rem;
+            box-sizing: border-box;
+        }
+
+        .gantt-table th {
+            background-color: #FAFAFA;
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 -1px 0 0 var(--border), 0 1px 0 0 var(--border);
+            height: 1.375rem;
+        }
+
+        .gantt-table th.date-header.weekend,
+        .gantt-table td.date-cell.weekend {
+            background-color: #FFF5F5;
+            color: #FF4D4F;
+        }
+
+        .gantt-table td.date-cell.project {
+            background-color: #909399;
+            color: #FFFFFF;
+        }
+
+        .gantt-table td.date-cell.active {
+            background-color: #52C41A;
+            color: #FFFFFF;
+        }
+
+        .gantt-table td.date-cell.delayed {
+            background-color: #FF4D4F;
+            color: #FFFFFF;
+        }
+
+        .gantt-table td.date-cell.delayed-completed {
+            background-color: rgba(255, 77, 79, 0.5);
+            color: #FFFFFF;
+        }
+
+        .gantt-table td.date-cell.warning {
+            background-color: #FAAD14;
+            color: #FFFFFF;
+        }
+
+        .gantt-table td.date-cell.completed-gantt {
+            background-color: rgba(24, 144, 255, 0.5);
+            color: #FFFFFF;
+        }
+
+        .today-column-overlay {
+            position: fixed;
+            pointer-events: none;
+            border: 3px dashed #1890FF;
+            border-radius: 3px;
+            z-index: 99999;
+        }
+
+        #gantt-table-body tr {
+            transition: background-color 0.15s ease;
+        }
+        #gantt-table-body tr:hover {
+            background: var(--primary-light);
+        }
+        #gantt-table-body tr:hover td.date-cell:not(.project):not(.active):not(.delayed):not(.warning):not(.completed-gantt):not(.delayed-completed):not(.weekend) {
+            background: var(--primary-light);
+        }
+
+        .gantt-table th.project-col {
+            min-width: 12.5rem;
+            width: 12.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .gantt-table th.date-header {
+            text-align: center;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .gantt-table td.project-col {
+            font-weight: 500;
+            padding: 0.2rem 0.5rem;
+            color: var(--text-color);
+            text-align: left;
+            background-color: #FAFAFA;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gantt-tooltip {
+            position: absolute;
+            z-index: 10000;
+            background: #FFFFFF;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 0.8125rem;
+            color: var(--text-color);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            pointer-events: none;
+            white-space: nowrap;
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        .gantt-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gantt-tooltip .tt-label {
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+
+        .gantt-tooltip .tt-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .gantt-tooltip .tt-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .gantt-tooltip .tt-dot.active { background-color: #52C41A; }
+        .gantt-tooltip .tt-dot.delayed { background-color: #FF4D4F; }
+        .gantt-tooltip .tt-dot.warning { background-color: #FAAD14; }
+
+        .gantt-table td.date-cell {
+            background-color: #FAFAFA;
+        }
+
+        .gantt-table .nav-col {
+            width: 2.5rem;
+            min-width: 2.5rem;
+            padding: 0;
+            background-color: #F5F7FA;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .gantt-table .nav-left-col {
+            border-left: none;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-btn:hover {
+            color: #0051D9;
+        }
+
+        .project-list-section {
+            flex: 0 1 auto;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--border-color);
+            background-color: #fafafa;
+            max-height: 50%;
+            overflow: hidden;
+        }
+
+        .list-table-wrapper {
+            display: grid;
+            grid-template-columns: auto auto auto auto minmax(130px, 2fr) minmax(60px, 1fr) auto;
+            column-gap: var(--spacing-md);
+            flex: 1 1 auto;
+            overflow-y: auto;
+            align-content: start;
+        }
+
+        .list-header {
+            display: contents;
+        }
+
+        .list-header > div {
+            background-color: #FAFAFA;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+
+        .project-list-section .list-content {
+            display: contents;
+        }
+
+        .list-item {
+            display: contents;
+        }
+
+        .list-item > div {
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            background-color: #FAFAFA;
+        }
+
+        .list-item:hover > div {
+            background-color: #F9FAFB;
+        }
+
+        .list-item:last-child > div {
+            border-bottom: none;
+        }
+
+        .list-item > .project-name {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .list-item > .project-name::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .list-item > .project-owner {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .list-item > .project-members {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            gap: 4px;
+        }
+
+        .list-item > .project-status {
+            display: flex;
+            align-items: center;
+        }
+
+        .list-item > .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .list-item > .project-time {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .list-item > .project-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .view-btn:hover {
+            color: #fff;
+            background-color: var(--primary-color);
+        }
+
+        .project-name {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .project-name::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .project-owner {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .project-members {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            gap: 4px;
+        }
+
+        .member-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.5rem;
+            height: 1.5rem;
+            padding: 0 0.375rem;
+            border-radius: 0.75rem;
+            background-color: #EFF6FF;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .member-count:hover {
+            background-color: #DBEAFE;
+            transform: scale(1.08);
+        }
+
+        .member-unit {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        /* 组织架构弹窗 */
+        .org-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .org-modal {
+            background: #fff;
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+            min-width: 420px;
+            max-width: min(95vw, 1200px);
+            max-height: 85vh;
+            overflow-y: auto;
+            overflow-x: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+        }
+
+        .org-modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .org-modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+            padding: 0;
+        }
+
+        .org-modal-close:hover {
+            color: var(--text-color);
+        }
+
+        /* 组织架构树 */
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        /* 头像图片 */
+        .org-avatar-img {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #e5e7eb;
+        }
+
+        /* 节点卡片 */
+        .org-card {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .org-card.owner-card {
+            background: #EFF6FF;
+            border: 1.5px solid #93C5FD;
+        }
+
+        .org-card.lead-card {
+            background: #F5F3FF;
+            border: 1.5px solid #C4B5FD;
+        }
+
+        .org-card.member-card {
+            background: #ECFDF5;
+            border: 1.5px solid #6EE7B7;
+        }
+
+        .org-card.sub-card {
+            background: #FFF7ED;
+            border: 1.5px solid #FDBA74;
+        }
+
+        .org-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .org-card-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .org-card-role {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* 垂直连接线 */
+        .org-vline {
+            width: 2px;
+            height: 14px;
+            background: #cbd5e1;
+            margin: 0 auto;
+        }
+        .org-vline.drop {
+            height: 8px;
+        }
+
+        /* 分支结构: vline → 子级行(含水平横线) */
+        .org-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 子级行：水平横线(::before) + 子列 */
+        .org-children-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            position: relative;
+        }
+        .org-children-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #cbd5e1;
+        }
+
+        /* 子列：垂直落线 + 节点(可能带子树) */
+        .org-child-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .project-status {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .status-tag.delayed-tag {
+            background-color: #fde8e8;
+            color: #e74c3c;
+        }
+
+        .status-tag.warning-tag {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-tag.not-started-tag {
+            background-color: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .status-tag.normal-tag {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .status-tag.completed-tag {
+            background-color: #ecfdf5;
+            color: #059669;
+        }
+
+        .status-tag.delayed-done-tag {
+            background-color: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        .status-tag.cancelled-tag {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-desc {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .project-time {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #dad5d5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.delayed-progress {
+            background-color: #e74c3c;
+        }
+
+        .progress-fill.warning-progress {
+            background-color: #f59e0b;
+        }
+
+        .progress-fill.not-started-progress {
+            background-color: #b0bec5;
+        }
+
+        .progress-fill.normal-progress {
+            background-color: #3b82f6;
+        }
+
+        .progress-fill.completed-progress {
+            background-color: #10b981;
+        }
+
+        .progress-fill.delayed-done-progress {
+            background-color: #8b5cf6;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 3rem;
+            text-align: right;
+        }
+
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 8px var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            background: #fff;
+            flex-shrink: 0;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            flex-wrap: nowrap;
+        }
+
+        .pagination-bar > * {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .pagination-total {
+            margin-right: 12px;
+        }
+
+        .pagination-total b {
+            color: var(--text-primary);
+        }
+
+        .pagination-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn:disabled {
+            color: #d9d9d9;
+            border-color: #d9d9d9;
+            cursor: not-allowed;
+        }
+
+        .pagination-pages {
+            display: flex;
+            gap: 4px;
+        }
+
+        .pagination-page {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8125rem;
+            transition: all 0.2s;
+        }
+
+        .pagination-page:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .pagination-page.active {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+
+        .pagination-ellipsis {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .pagination-size-label {
+            margin-left: 8px;
+        }
+
+        .pagination-size-select {
+            height: 28px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0 6px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            background: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .pagination-size-select:focus {
+            border-color: #1890ff;
+        }
+
+        .pagination-jump-label {
+            margin-left: 8px;
+        }
+
+        .pagination-jump-input {
+            width: 40px;
+            height: 28px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .pagination-jump-input:focus {
+            border-color: #1890ff;
+        }
+
+        .btn-sm {
+            height: 28px;
+            padding: 0 12px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 4rem;
+            height: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.4;
+        }
+
+        .empty-state span {
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 14px !important; }
+            
+            .list-table-wrapper {
+                column-gap: var(--spacing-sm);
+            }
+
+            .list-header > div {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .list-item > div {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .dashboard-container {
+                padding: var(--spacing-md);
+                gap: var(--spacing-md);
+            }
+
+            .section-header {
+                padding: var(--spacing-md);
+            }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 13px !important; }
+
+            .dashboard-container {
+                padding: var(--spacing-sm);
+                gap: var(--spacing-sm);
+            }
+
+            .section-header {
+                padding: var(--spacing-sm) var(--spacing-md);
+                gap: var(--spacing-md);
+            }
+
+            .section-actions {
+                gap: var(--spacing-xs);
+            }
+
+            .gantt-content {
+                padding: var(--spacing-md);
+            }
+
+            .list-table-wrapper {
+                column-gap: var(--spacing-xs);
+            }
+
+            .list-header > div {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: 0.75rem;
+            }
+
+            .list-item > div {
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .project-name {
+                font-size: 0.8125rem;
+            }
+
+            .status-tag {
+                padding: 0.1875rem 0.5rem;
+                font-size: 0.6875rem;
+            }
+
+            .progress-text {
+                min-width: 2.5rem;
+                font-size: 0.6875rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d0d3d8;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #e5e7eb #F0F0F0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 甘特图 hover 提示 -->
+        <div class="gantt-tooltip" id="gantt-tooltip"></div>
+
+        <div class="gantt-section">
+            <div class="section-header">
+                <div class="section-title">项目概况</div>
+                <div class="section-actions">
+                    <button class="btn" onclick="location.reload()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        刷新
+                    </button>
+                </div>
+            </div>
+            <div class="gantt-content">
+                <div class="stats-cards">
+                    <div class="stat-card delayed" data-stat="delayed">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">已延期</div>
+                    </div>
+                    <div class="stat-card warning" data-stat="warning">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">可能延期</div>
+                    </div>
+                    <div class="stat-card not-started" data-stat="not-started">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">未开始</div>
+                    </div>
+                    <div class="stat-card normal" data-stat="normal">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">正常</div>
+                    </div>
+                    <div class="stat-card delayed-done" data-stat="delayed-done">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">延期完成</div>
+                    </div>
+                    <div class="stat-card completed" data-stat="completed">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">按时完成</div>
+                    </div>
+                    <div class="stat-card cancelled" data-stat="cancelled">
+                        <div class="stat-value">-</div>
+                        <div class="stat-label">已取消</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top: 1px solid var(--border-color);">
+                <div class="gantt-search">
+                    <div class="search-group">
+                        <label>项目：</label>
+                        <input type="text" class="search-input" placeholder="请输入项目名称">
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-group">
+                        <label>状态：</label>
+                        <select class="status-select" id="search-status">
+                            <option value="">全部</option>
+                            <option value="delayed">已延期</option>
+                            <option value="warning">可能延期</option>
+                            <option value="not-started">未开始</option>
+                            <option value="normal">正常</option>
+                            <option value="in-progress">进行中</option>
+                            <option value="delayed-done">延期完成</option>
+                            <option value="completed">按时完成</option>
+                            <option value="cancelled">已取消</option>
+                        </select>
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-group">
+                        <label>日期：</label>
+                        <div class="date-picker">
+                            <input type="date" class="date-input" placeholder="请选择日期">
+                        </div>
+                    </div>
+                    <div class="search-divider"></div>
+                    <div class="search-actions">
+                        <button class="btn btn-primary" onclick="doSearch()">搜索</button>
+                        <button class="btn btn-secondary" onclick="resetSearch()">重置</button>
+                    </div>
+                </div>
+
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #909399;"></span>
+                        <span class="legend-text">项目日期</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #52C41A;"></span>
+                        <span class="legend-text">开始日期</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FF4D4F;"></span>
+                        <span class="legend-text">已延期天数</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FAAD14;"></span>
+                        <span class="legend-text">可能延期天数</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgba(24, 144, 255, 0.5);"></span>
+                        <span class="legend-text">已完成</span>
+                    </div>
+                </div>
+                </div>
+
+                <div class="gantt-table-container">
+                    <table id="gantt-table" class="gantt-table">
+                        <thead>
+                            <tr>
+                                <th class="project-col" style="font-weight: 700;">项目名称</th>
+                                <th class="nav-col nav-left-col">
+                                    <button class="nav-btn nav-left-btn" onclick="scrollDates(-1)">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </button>
+                                </th>
+                                <th class="nav-col nav-right-col">
+                                    <button class="nav-btn nav-right-btn" onclick="scrollDates(1)">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="gantt-table-body">
+                            <tr>
+                                <td class="project-col">工业机器人装配线项目</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">自动化数据分析引擎</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">机器人远程控制系统</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">AGV调度系统部署</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">智能客服机器人平台</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">自动化立体仓库项目</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">机器视觉检测系统</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">PLC自动化控制平台</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">智能工厂全栈解决方案</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">机器人视觉检测平台</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                            <tr>
+                                <td class="project-col">AGV集群调度系统（已取消）</td>
+                                <td class="nav-col"></td>
+                                <td class="nav-col"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="project-list-section">
+                    <div class="list-table-wrapper">
+                    <div class="list-header">
+                        <div>项目名称</div>
+                        <div>负责人</div>
+                        <div>项目成员</div>
+                        <div>状态</div>
+                        <div>进度</div>
+                        <div>项目日期</div>
+                        <div>操作</div>
+                    </div>
+                    <div class="list-content" id="project-list-content"></div>
+                    </div>
+                    <div class="pagination-bar">
+                        <span class="pagination-total">共 <b id="pagination-total">0</b> 条</span>
+                        <button class="pagination-btn" onclick="goToPage(currentPage - 1)" title="上一页">&lt;</button>
+                        <div class="pagination-pages" id="pagination-pages"></div>
+                        <button class="pagination-btn" onclick="goToPage(currentPage + 1)" title="下一页">&gt;</button>
+                        <span class="pagination-size-label">每页</span>
+                        <select class="pagination-size-select" id="pagination-size" onchange="changePageSize(this.value)">
+                            <option value="5">5 条</option>
+                            <option value="10" selected>10 条</option>
+                            <option value="20">20 条</option>
+                            <option value="50">50 条</option>
+                        </select>
+                        <span class="pagination-jump-label">跳转</span>
+                        <input type="text" class="pagination-jump-input" id="pagination-jump" onkeydown="if(event.key==='Enter')jumpToPage()">
+                        <span class="pagination-jump-label">页</span>
+                        <button class="btn btn-sm" onclick="jumpToPage()">GO</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dateOffset = 0;
+        (function() {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var base = new Date(2026, 4, 20);
+            dateOffset = Math.round((today.getTime() - base.getTime()) / 86400000);
+        })();
+        let startDate = new Date(2026, 4, 1 + dateOffset);
+
+        function offsetDay(m, d) {
+            var dt = new Date(2026, m - 1, d + dateOffset);
+            return { month: dt.getMonth() + 1, day: dt.getDate() };
+        }
+
+        const projectData = [
+            {
+                name: '工业机器人装配线项目',
+                owner: '张工',
+                team: [
+                    { name: '李明', role: '机械组组长', members: [
+                        { name: '王芳', role: '机械工程师' },
+                        { name: '赵强', role: '装配技师' },
+                        { name: '绘图助手', role: '制图员（AI）' },
+                        { name: '质检专家', role: '质检员（AI）' }
+                    ]},
+                    { name: '周杰', role: '电气组组长', members: [
+                        { name: '吴强', role: '电气工程师' },
+                        { name: '郑娜', role: 'PLC编程' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 5 },
+                projectEnd: { month: 5, day: 30 },
+                actualStart: { month: 5, day: 7 },
+                delayDays: 2
+            },
+            {
+                name: '自动化数据分析引擎',
+                owner: '陈博士',
+                team: [
+                    { name: '赵云', role: '算法组组长', members: [
+                        { name: '数据处理', role: '数据工程师（AI）' },
+                        { name: '模型训练', role: 'ML工程师（AI）' },
+                        { name: '标注助手', role: '数据标注（AI）' }
+                    ]},
+                    { name: '钱进', role: '平台组组长', members: [
+                        { name: '韩雪', role: '后端开发' },
+                        { name: '沈磊', role: '前端开发' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 5 },
+                projectEnd: { month: 5, day: 10 },
+                actualStart: { month: 5, day: 5 },
+                isDelayed: true
+            },
+            {
+                name: '机器人远程控制系统',
+                owner: '王总工',
+                team: [
+                    { name: '孙涛', role: '控制系统组长', members: [
+                        { name: '周敏', role: '嵌入式开发' },
+                        { name: '协议助手', role: '通信协议（AI）' },
+                        { name: 'UI生成', role: 'UI界面（AI）' },
+                        { name: '测试专家', role: '测试工程师（AI）' }
+                    ]},
+                    { name: '施雨', role: '硬件组组长', members: [
+                        { name: '许婷', role: '电路设计' },
+                        { name: '郑娜', role: '传感器' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 3 },
+                projectEnd: { month: 5, day: 30 },
+                actualStart: null,
+                delayDays: 0
+            },
+            {
+                name: 'AGV调度系统部署',
+                owner: '李经理',
+                team: [
+                    { name: '吴强', role: '调度算法组组长', members: [
+                        { name: '郑娜', role: '路径规划' },
+                        { name: '沈磊', role: '交通管制' },
+                        { name: '韩雪', role: '仿真测试' }
+                    ]},
+                    { name: '吕峰', role: '集成部署组组长', members: [
+                        { name: '施雨', role: '现场实施' },
+                        { name: '许婷', role: '系统联调' },
+                        { name: '马超', role: '运维工程师' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 2 },
+                projectEnd: { month: 5, day: 16 },
+                actualStart: { month: 5, day: 7 },
+                isDelayed: true
+            },
+            {
+                name: '智能客服机器人平台',
+                owner: '赵总监',
+                team: [
+                    { name: '钱进', role: 'NLP组组长', members: [
+                        { name: '韩雪', role: '意图识别' },
+                        { name: '杨帆', role: '知识图谱' },
+                        { name: '黄蕾', role: '语料标注' }
+                    ]},
+                    { name: '冯刚', role: '对话组组长', members: [
+                        { name: '蒋丽', role: '对话管理' },
+                        { name: '周敏', role: '多轮对话' },
+                        { name: '王芳', role: '语音合成' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 10 },
+                projectEnd: { month: 6, day: 4 },
+                actualStart: { month: 5, day: 10 },
+                delayDays: 0
+            },
+            {
+                name: '自动化立体仓库项目',
+                owner: '周工',
+                team: [
+                    { name: '冯刚', role: '堆垛机组组长', members: [
+                        { name: '蒋丽', role: '机械设计' },
+                        { name: '孙丽', role: '伺服控制' }
+                    ]},
+                    { name: '马超', role: 'WMS组组长', members: [
+                        { name: '赵强', role: '仓储软件' },
+                        { name: '吴强', role: '接口开发' },
+                        { name: '刘静', role: '库存算法' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 4 },
+                projectEnd: { month: 5, day: 25 },
+                actualStart: { month: 5, day: 5 },
+                completed: 'early',
+                completedDate: { month: 5, day: 18 }
+            },
+            {
+                name: '机器视觉检测系统',
+                owner: '吴博士',
+                team: [
+                    { name: '沈磊', role: '图像算法组组长', members: [
+                        { name: '许婷', role: '缺陷检测' },
+                        { name: '杨帆', role: '分类模型' },
+                        { name: '黄蕾', role: '数据标注' }
+                    ]},
+                    { name: '赵云', role: '系统集成组组长', members: [
+                        { name: '王芳', role: '光源设计' },
+                        { name: '孙丽', role: '相机标定' },
+                        { name: '冯刚', role: '工控对接' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 1 },
+                projectEnd: { month: 5, day: 20 },
+                actualStart: { month: 5, day: 3 },
+                completed: 'onTime',
+                completedDate: { month: 5, day: 20 }
+            },
+            {
+                name: 'PLC自动化控制平台',
+                owner: '郑专家',
+                team: [
+                    { name: '吕峰', role: '控制逻辑组组长', members: [
+                        { name: '施雨', role: '梯形图编程' },
+                        { name: '许婷', role: 'ST编程' },
+                        { name: '马超', role: '调试工程师' }
+                    ]},
+                    { name: '周杰', role: 'SCADA组组长', members: [
+                        { name: '王芳', role: 'HMI开发' },
+                        { name: '赵强', role: '数据采集' }
+                    ]}
+                ],
+                projectStart: { month: 5, day: 2 },
+                projectEnd: { month: 5, day: 10 },
+                actualStart: { month: 5, day: 4 },
+                completed: 'delayed',
+                completedDate: { month: 5, day: 15 },
+                isDelayed: true
+            },
+            {
+                name: '智能工厂全栈解决方案',
+                owner: '张总工',
+                team: [
+                    {
+                        name: '李博士', role: '技术总监', members: [
+                            {
+                                name: '王工', role: '研发经理', members: [
+                                    {
+                                        name: '赵明', role: '高级工程师', members: [
+                                            { name: '小刘', role: '研发组长', members: [
+                                                { name: '小王', role: '助理工程师' },
+                                                { name: '小吴', role: '助理工程师' }
+                                            ]}
+                                        ]
+                                    },
+                                    {
+                                        name: '钱伟', role: '高级工程师', members: [
+                                            { name: '小李', role: '研发组长', members: [
+                                                { name: '小周', role: '助理工程师' }
+                                            ]}
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: '韩工', role: '测试经理', members: [
+                                    {
+                                        name: '沈刚', role: '测试工程师', members: [
+                                            { name: '小冯', role: '汇总协调', members: [
+                                                { name: '小朱', role: '实习生' },
+                                                { name: '小邓', role: '实习生' }
+                                            ]}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: '陈总', role: '集成总监', members: [
+                            {
+                                name: '吕工', role: '集成经理', members: [
+                                    {
+                                        name: '小曾', role: '系统集成', members: [
+                                            { name: '程工', role: '汇总组长', members: [
+                                                { name: '小宋', role: '集成工程师' }
+                                            ]}
+                                        ]
+                                    },
+                                    { name: '小崔', role: '联调测试' }
+                                ]
+                            }
+                        ]
+                    },
+                    { name: '余工', role: '运维总监' }
+                ],
+                projectStart: { month: 5, day: 2 },
+                projectEnd: { month: 6, day: 5 },
+                actualStart: { month: 5, day: 3 },
+                delayDays: 0
+            },
+            {
+                name: '机器人视觉检测平台',
+                owner: '周总',
+                team: [
+                    {
+                        name: '郑专家', role: '技术顾问'
+                    },
+                    {
+                        name: '吴博士', role: '研发总监', members: [
+                            {
+                                name: '赵云', role: '算法组长', members: [
+                                    { name: '小黄', role: '算法工程师' },
+                                    { name: '小杨', role: '数据工程师' }
+                                ]
+                            },
+                            {
+                                name: '孙工', role: '工程组长', members: [
+                                    { name: '小马', role: '机械工程师' },
+                                    {
+                                        name: '小胡', role: '电气工程师', members: [
+                                            { name: '小林', role: '实习生' },
+                                            { name: '小罗', role: '实习生' }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                projectStart: { month: 5, day: 10 },
+                projectEnd: { month: 5, day: 28 },
+                actualStart: { month: 5, day: 10 },
+                delayDays: 0
+            },
+            {
+                name: 'AGV集群调度系统（已取消）',
+                owner: '黄总',
+                team: [],
+                projectStart: { month: 5, day: 1 },
+                projectEnd: { month: 5, day: 1 },
+                actualStart: null,
+                delayDays: 0,
+                cancelled: true
+            }
+        ];
+
+        var searchFilter = null;
+        var pageSize = 10;
+        var currentPage = 1;
+
+        function updateStatsCards() {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var todayTime = today.getTime();
+
+            var delayed = 0;
+            var warning = 0;
+            var completed = 0;
+            var delayedDone = 0;
+            var normal = 0;
+            var notStarted = 0;
+            var cancelled = 0;
+
+            projectData.forEach(function(project) {
+                if (project.cancelled) {
+                    cancelled++;
+                    return;
+                }
+                var ps = offsetDay(project.projectStart.month, project.projectStart.day);
+                var pe = offsetDay(project.projectEnd.month, project.projectEnd.day);
+                var startTime = new Date(2026, ps.month - 1, ps.day).getTime();
+                var endTime = new Date(2026, pe.month - 1, pe.day).getTime();
+
+                if (project.completed) {
+                    if (project.completed === 'delayed') {
+                        delayedDone++;
+                    } else {
+                        completed++;
+                    }
+                    return;
+                }
+                if (!project.actualStart) {
+                    notStarted++;
+                    return;
+                }
+                var actualStartData = offsetDay(project.actualStart.month, project.actualStart.day);
+                var actualStartTime = new Date(2026, actualStartData.month - 1, actualStartData.day).getTime();
+                var overdueDays = Math.max(0, Math.ceil((todayTime - endTime) / (24 * 60 * 60 * 1000)));
+                var possibleDelay = Math.max(0, Math.round((actualStartTime - startTime) / (24 * 60 * 60 * 1000)) - overdueDays);
+
+                if (overdueDays > 0) {
+                    delayed++;
+                } else if (possibleDelay > 0) {
+                    warning++;
+                } else {
+                    normal++;
+                }
+            });
+
+            var statValues = document.querySelectorAll('.stat-card');
+            statValues.forEach(function(card) {
+                var stat = card.getAttribute('data-stat');
+                var valEl = card.querySelector('.stat-value');
+                if (stat === 'delayed') valEl.textContent = delayed;
+                if (stat === 'warning') valEl.textContent = warning;
+                if (stat === 'completed') valEl.textContent = completed;
+                if (stat === 'delayed-done') valEl.textContent = delayedDone;
+                if (stat === 'normal') valEl.textContent = normal;
+                if (stat === 'not-started') valEl.textContent = notStarted;
+                if (stat === 'cancelled') valEl.textContent = cancelled;
+
+                // 点击筛选
+                card.onclick = function() {
+                    var isActive = card.style.borderLeftColor === 'rgb(59, 130, 246)';
+                    // 清除所有选中态
+                    document.querySelectorAll('.stat-card').forEach(function(c) { c.style.borderLeftColor = ''; });
+                    if (isActive) {
+                        // 再次点击取消筛选
+                        resetSearch();
+                        return;
+                    }
+                    // 激活当前卡片
+                    card.style.borderLeftColor = '#3B82F6';
+                    // 同步下拉
+                    var dropdown = document.getElementById('search-status');
+                    if (dropdown) dropdown.value = stat;
+                    // 设置筛选
+                    searchFilter = { name: '', date: '', status: stat };
+                    currentPage = 1;
+                    applySearchFilter();
+                    renderProjectList();
+                };
+            });
+        }
+
+        function getFilteredProjects() {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var todayTime = today.getTime();
+            var result = [];
+            projectData.forEach(function(project) {
+                // ps/pe 始终计算，status 筛选也需要用到
+                var ps = offsetDay(project.projectStart.month, project.projectStart.day);
+                var pe = offsetDay(project.projectEnd.month, project.projectEnd.day);
+                var startTime = new Date(2026, ps.month - 1, ps.day).getTime();
+                var endTime = new Date(2026, pe.month - 1, pe.day).getTime();
+                var overdueDays = Math.max(0, Math.ceil((todayTime - endTime) / (24 * 60 * 60 * 1000)));
+                var possibleDelay = 0;
+                if (project.actualStart) {
+                    var actualStartData = offsetDay(project.actualStart.month, project.actualStart.day);
+                    var actualStartTime = new Date(2026, actualStartData.month - 1, actualStartData.day).getTime();
+                    possibleDelay = Math.max(0, Math.round((actualStartTime - startTime) / (24 * 60 * 60 * 1000)) - overdueDays);
+                }
+                if (searchFilter) {
+                    if (searchFilter.name) {
+                        if (project.name.toLowerCase().indexOf(searchFilter.name.toLowerCase()) === -1) return;
+                    }
+                    if (searchFilter.date) {
+                        var parts = searchFilter.date.split('-');
+                        var sDate = new Date(2026, parseInt(parts[1]) - 1, parseInt(parts[2]));
+                        if (sDate.getTime() < startTime || sDate.getTime() > endTime) return;
+                    }
+                    if (searchFilter.status) {
+                        if (searchFilter.status === 'cancelled') {
+                            if (!project.cancelled) return;
+                        } else if (searchFilter.status === 'delayed') {
+                            if (project.cancelled || project.completed) return;
+                            if (!project.actualStart) return;
+                            if (overdueDays <= 0) return;
+                        } else if (searchFilter.status === 'warning') {
+                            if (project.cancelled || project.completed) return;
+                            if (!project.actualStart) return;
+                            if (overdueDays > 0) return;
+                            if (possibleDelay <= 0) return;
+                        } else if (searchFilter.status === 'normal') {
+                            if (project.cancelled || project.completed) return;
+                            if (!project.actualStart) return;
+                            if (overdueDays > 0) return;
+                            if (possibleDelay > 0) return;
+                        } else if (searchFilter.status === 'delayed-done') {
+                            if (project.completed !== 'delayed') return;
+                        } else {
+                            var tip = getProjectTooltip(project);
+                            if (searchFilter.status === 'completed') {
+                                if (!project.completed || project.completed === 'delayed') return;
+                            } else if (searchFilter.status === 'not-started') {
+                                if (tip.statusText.indexOf('未开始') !== 0) return;
+                            } else if (searchFilter.status === 'in-progress') {
+                                if (tip.statusText.indexOf('进行中') !== 0) return;
+                            }
+                        }
+                    }
+                }
+                result.push(project);
+            });
+            return result;
+        }
+
+        function renderProjectList() {
+            var container = document.getElementById('project-list-content');
+            if (!container) return;
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var todayTime = today.getTime();
+
+            // 过滤
+            var filteredData = getFilteredProjects();
+
+            // 分页
+            var total = filteredData.length;
+            var totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            var startIdx = (currentPage - 1) * pageSize;
+            var endIdx = Math.min(startIdx + pageSize, total);
+            var pageData = filteredData.slice(startIdx, endIdx);
+
+            container.innerHTML = '';
+
+            if (pageData.length === 0) {
+                container.innerHTML = '<div class="empty-state"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>暂无数据</span></div>';
+            }
+
+            pageData.forEach(function(project, pageIdx) {
+                var ps = offsetDay(project.projectStart.month, project.projectStart.day);
+                var pe = offsetDay(project.projectEnd.month, project.projectEnd.day);
+                var projectStart = new Date(2026, ps.month - 1, ps.day);
+                var projectEnd = new Date(2026, pe.month - 1, pe.day);
+
+                // 使用 tooltip 函数获取状态信息
+                var tip = getProjectTooltip(project);
+                var statusLabel = '';
+                var statusDesc = '';
+                var tagClass = '';
+                var progressClass = '';
+
+                if (project.cancelled) {
+                    statusLabel = '已取消';
+                    tagClass = 'cancelled-tag';
+                    statusDesc = '';
+                } else if (tip.statusText.indexOf('已完成') === 0) {
+                    statusLabel = '已完成';
+                    statusDesc = tip.statusText.replace(/^已完成，?/, '');
+                    if (tip.statusClass === 'delayed') {
+                        tagClass = 'delayed-done-tag';
+                        progressClass = 'delayed-done-progress';
+                    } else {
+                        tagClass = 'completed-tag';
+                        progressClass = 'completed-progress';
+                    }
+                } else if (tip.statusText.indexOf('未开始') === 0) {
+                    statusLabel = '未开始';
+                    tagClass = 'not-started-tag';
+                    progressClass = 'not-started-progress';
+                    statusDesc = '';
+                } else if (tip.statusText.indexOf('进行中') === 0) {
+                    statusLabel = '进行中';
+                    statusDesc = tip.statusText.replace(/^进行中，?/, '');
+                    if (tip.statusClass === 'delayed') {
+                        tagClass = 'delayed-tag';
+                        progressClass = 'delayed-progress';
+                    } else if (tip.statusClass === 'warning') {
+                        tagClass = 'warning-tag';
+                        progressClass = 'warning-progress';
+                    } else {
+                        tagClass = 'normal-tag';
+                        progressClass = 'normal-progress';
+                    }
+                } else {
+                    statusLabel = tip.statusText;
+                    tagClass = 'normal-tag';
+                    progressClass = 'normal-progress';
+                }
+
+                // 进度百分比
+                // 公式：实际天数 ≤ 预计天数 → 实际/预计；实际天数 > 预计天数 → 预计/实际
+                var progressPercent = 0;
+                if (project.cancelled) {
+                    progressPercent = 0;
+                } else if (project.completed) {
+                    progressPercent = 100;
+                } else if (project.actualStart) {
+                    var as = offsetDay(project.actualStart.month, project.actualStart.day);
+                    var actualStart = new Date(2026, as.month - 1, as.day);
+                    var totalDays = (projectEnd.getTime() - projectStart.getTime()) / (24 * 60 * 60 * 1000);
+                    var elapsedDays = (todayTime - actualStart.getTime()) / (24 * 60 * 60 * 1000);
+                    if (totalDays > 0 && elapsedDays > 0) {
+                        if (elapsedDays <= totalDays) {
+                            progressPercent = Math.round((elapsedDays / totalDays) * 100);
+                        } else {
+                            progressPercent = Math.round((totalDays / elapsedDays) * 100);
+                        }
+                        progressPercent = Math.max(0, Math.min(100, progressPercent));
+                    }
+                }
+
+                var timeStr = project.cancelled ? '-' : (formatDate(ps.month, ps.day) + ' ~ ' + formatDate(pe.month, pe.day));
+                // 递归统计团队总人数（已取消项目只有负责人1人）
+                function countTeam(team) {
+                    if (!team || !team.length) return 0;
+                    var total = 0;
+                    team.forEach(function(t) {
+                        total += 1;
+                        if (t.members && t.members.length) total += countTeam(t.members);
+                    });
+                    return total;
+                }
+                var memberCount = project.cancelled ? 1 : (project.team ? countTeam(project.team) : 0);
+
+                var item = document.createElement('div');
+                item.className = 'list-item';
+                var globalIdx = projectData.indexOf(project);
+                item.setAttribute('data-project-index', globalIdx);
+                var progressHtml = project.cancelled
+                    ? '<div class="progress-bar-container"><span class="progress-text">-</span></div>'
+                    : ('<div class="progress-bar-container">' +
+                        '<div class="progress-bar">' +
+                            '<div class="progress-fill ' + progressClass + '" style="width:' + progressPercent + '%"></div>' +
+                        '</div>' +
+                        '<span class="progress-text">' + progressPercent + '%</span>' +
+                    '</div>');
+                item.innerHTML =
+                    '<div class="project-name">' + project.name + '</div>' +
+                    '<div class="project-owner">' + (project.owner || '-') + '</div>' +
+                    '<div class="project-members"><span class="member-count" onclick="event.stopPropagation(); showOrgChart(projectData[' + globalIdx + '])">' + memberCount + '</span> <span class="member-unit">人</span></div>' +
+                    '<div class="project-status">' +
+                        '<div>' +
+                            '<span class="status-tag ' + tagClass + '">' + statusLabel + '</span>' +
+                            (statusDesc ? '<div class="status-desc">' + statusDesc + '</div>' : '') +
+                        '</div>' +
+                    '</div>' +
+                    progressHtml +
+                    '<div class="project-time">' + timeStr + '</div>' +
+                    '<div class="project-action"><button class="view-btn" onclick="event.stopPropagation(); showOrgChart(projectData[' + globalIdx + '])">查看</button></div>';
+
+                container.appendChild(item);
+            });
+
+            renderPagination(total);
+        }
+
+        function renderPagination(total) {
+            var totalPages = Math.ceil(total / pageSize) || 1;
+            document.getElementById('pagination-total').textContent = total;
+
+            // 左箭头
+            var leftBtn = document.querySelector('.pagination-bar .pagination-btn:first-of-type');
+            if (leftBtn) leftBtn.disabled = currentPage <= 1;
+
+            // 页码
+            var pagesContainer = document.getElementById('pagination-pages');
+            var html = '';
+            var maxShow = 5;
+            var start = Math.max(1, currentPage - Math.floor(maxShow / 2));
+            var end = Math.min(totalPages, start + maxShow - 1);
+            if (end - start < maxShow - 1) start = Math.max(1, end - maxShow + 1);
+
+            if (start > 1) {
+                html += '<button class="pagination-page" onclick="goToPage(1)">1</button>';
+                if (start > 2) html += '<span class="pagination-ellipsis">...</span>';
+            }
+            for (var i = start; i <= end; i++) {
+                html += '<button class="pagination-page' + (i === currentPage ? ' active' : '') + '" onclick="goToPage(' + i + ')">' + i + '</button>';
+            }
+            if (end < totalPages) {
+                if (end < totalPages - 1) html += '<span class="pagination-ellipsis">...</span>';
+                html += '<button class="pagination-page" onclick="goToPage(' + totalPages + ')">' + totalPages + '</button>';
+            }
+            pagesContainer.innerHTML = html;
+
+            // 右箭头
+            var rightBtn = document.querySelector('.pagination-bar .pagination-btn:last-of-type');
+            // Actually the right arrow is the second btn. Let me use more specific selectors.
+            var btns = document.querySelectorAll('.pagination-bar .pagination-btn');
+            btns.forEach(function(btn) {
+                if (btn.title === '上一页') btn.disabled = currentPage <= 1;
+                if (btn.title === '下一页') btn.disabled = currentPage >= totalPages;
+            });
+
+            // 跳转input
+            document.getElementById('pagination-jump').value = '';
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            applySearchFilter();
+            renderProjectList();
+        }
+
+        function changePageSize(val) {
+            pageSize = parseInt(val);
+            currentPage = 1;
+            applySearchFilter();
+            renderProjectList();
+        }
+
+        function jumpToPage() {
+            var input = document.getElementById('pagination-jump');
+            var page = parseInt(input.value);
+            if (isNaN(page) || page < 1) { input.value = ''; return; }
+            goToPage(page);
+        }
+
+        function applySearchFilter() {
+            var rows = document.querySelectorAll('#gantt-table-body tr');
+            var filtered = getFilteredProjects();
+            var total = filtered.length;
+            var totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            var startIdx = (currentPage - 1) * pageSize;
+            var endIdx = Math.min(startIdx + pageSize, total);
+            var pageData = filtered.slice(startIdx, endIdx);
+
+            var visibleSet = {};
+            pageData.forEach(function(p) {
+                visibleSet[projectData.indexOf(p)] = true;
+            });
+
+            rows.forEach(function(row, index) {
+                row.style.display = visibleSet[index] ? '' : 'none';
+            });
+
+            if (window._ganttOverlayResize) window._ganttOverlayResize();
+        }
+
+        function getDateStatus(projectIndex, date) {
+            var project = projectData[projectIndex];
+            if (!project) return '';
+            if (project.cancelled) return '';
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var ps = offsetDay(project.projectStart.month, project.projectStart.day);
+            var pe = offsetDay(project.projectEnd.month, project.projectEnd.day);
+            var projectStart = new Date(2026, ps.month - 1, ps.day);
+            var projectEnd = new Date(2026, pe.month - 1, pe.day);
+            var isInGray = date >= projectStart && date <= projectEnd;
+
+            // 已完成项目
+            if (project.completed) {
+                var cd = offsetDay(project.completedDate.month, project.completedDate.day);
+                var completedDate = new Date(2026, cd.month - 1, cd.day);
+                var as = offsetDay(project.actualStart.month, project.actualStart.day);
+                var actualStart = new Date(2026, as.month - 1, as.day);
+
+                // 暗红色：结束日期+1 ～ 完成日期
+                var redStart = new Date(projectEnd.getTime() + 24 * 60 * 60 * 1000);
+                if (date >= redStart && date <= completedDate) {
+                    return 'delayed-completed';
+                }
+
+                // 暗蓝色：开始日期 ～ min(完成日期, 结束日期)
+                var blueEnd = completedDate < projectEnd ? completedDate : projectEnd;
+                if (date >= actualStart && date <= blueEnd) {
+                    return 'completed-gantt';
+                }
+
+                if (isInGray) return 'project';
+                return '';
+            }
+
+            // 非完成项目
+            // 红色：结束日期+1 ～ 今日
+            var redStart = new Date(projectEnd.getTime() + 24 * 60 * 60 * 1000);
+            if (date >= redStart && date <= today) {
+                return 'delayed';
+            }
+
+            if (project.actualStart) {
+                var as2 = offsetDay(project.actualStart.month, project.actualStart.day);
+                var actualStart = new Date(2026, as2.month - 1, as2.day);
+
+                // 绿色：开始日期 ～ min(今日, 结束日期)
+                var greenEnd = today < projectEnd ? today : projectEnd;
+                if (date >= actualStart && date <= greenEnd) {
+                    return 'active';
+                }
+
+                // 黄色：结束日期+1 开始，展示天数 = 实际开始 - 项目开始
+                var delayStartDays = Math.round((actualStart.getTime() - projectStart.getTime()) / (24 * 60 * 60 * 1000));
+                if (delayStartDays > 0) {
+                    var yellowStart = new Date(projectEnd.getTime() + 24 * 60 * 60 * 1000);
+                    var yellowEnd = new Date(yellowStart.getTime() + (delayStartDays - 1) * 24 * 60 * 60 * 1000);
+                    if (date >= yellowStart && date <= yellowEnd) {
+                        return 'warning';
+                    }
+                }
+            }
+
+            // 灰色：项目开始 ～ 结束日期
+            if (isInGray) return 'project';
+            return '';
+        }
+
+        function renderGanttTable() {
+            const container = document.querySelector('.gantt-table-container');
+            const navRightCol = document.querySelector('.nav-right-col');
+            const navLeftCol = document.querySelector('.nav-left-col');
+            
+            if (!container || !navRightCol) return;
+
+            const ROOT_FS = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const SCALE = ROOT_FS / 16;
+            const PROJECT_COL_WIDTH = Math.round(200 * SCALE);
+            const NAV_COL_WIDTH = Math.round(40 * SCALE);
+            const DATE_CELL_WIDTH = 50 * SCALE;
+            const DATE_CELL_WIDTH_REM = (50 / 16);
+
+            const containerWidth = container.offsetWidth;
+            const availableWidth = containerWidth - PROJECT_COL_WIDTH - NAV_COL_WIDTH - NAV_COL_WIDTH;
+            const dateCount = Math.max(1, Math.floor(availableWidth / DATE_CELL_WIDTH));
+
+            while (navLeftCol.nextElementSibling !== navRightCol) {
+                navLeftCol.parentElement.removeChild(navLeftCol.nextElementSibling);
+            }
+
+            const rows = document.querySelectorAll('#gantt-table-body tr');
+            rows.forEach(row => {
+                const navCols = row.querySelectorAll('.nav-col');
+                const rightNavCol = navCols[navCols.length - 1];
+                const leftNavCol = navCols[0];
+                while (leftNavCol.nextElementSibling !== rightNavCol) {
+                    leftNavCol.parentElement.removeChild(leftNavCol.nextElementSibling);
+                }
+            });
+
+            let todayTh = null;
+
+            for (let i = 0; i < dateCount; i++) {
+                const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${month}-${day}`;
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const today = new Date();
+                const isToday = date.getDate() === today.getDate() && 
+                               date.getMonth() === today.getMonth() && 
+                               date.getFullYear() === today.getFullYear();
+
+                const th = document.createElement('th');
+                th.className = 'date-header' + (isWeekend ? ' weekend' : '');
+                th.textContent = dateStr;
+                th.style.width = DATE_CELL_WIDTH_REM + 'rem';
+                navRightCol.parentElement.insertBefore(th, navRightCol);
+
+                if (isToday) todayTh = th;
+
+                rows.forEach((row, rowIndex) => {
+                    const navCols = row.querySelectorAll('.nav-col');
+                    const rightNavCol = navCols[navCols.length - 1];
+                    const td = document.createElement('td');
+                    const status = getDateStatus(rowIndex, date);
+                    td.className = 'date-cell' + (isWeekend ? ' weekend' : '') + (status ? ' ' + status : '');
+                    td.style.width = DATE_CELL_WIDTH_REM + 'rem';
+                    rightNavCol.parentElement.insertBefore(td, rightNavCol);
+                });
+            }
+
+            // 移除旧的今日列 overlay 并取消待执行的 RAF
+            let oldOverlay = document.querySelector('.today-column-overlay');
+            if (oldOverlay) oldOverlay.remove();
+            if (window._ganttOverlayRAF) { cancelAnimationFrame(window._ganttOverlayRAF); window._ganttOverlayRAF = null; }
+
+            // 绘制今日列整列 overlay — position:fixed，直接用视口坐标
+            if (todayTh) {
+                function updateOverlay() {
+                    // todayTh 可能已被后续 render 移出 DOM，防御检查
+                    if (!todayTh.isConnected) return;
+                    const thRect = todayTh.getBoundingClientRect();
+                    if (thRect.width === 0) return;
+                    const tbody = document.getElementById('gantt-table-body');
+                    const tbodyRect = tbody.getBoundingClientRect();
+                    const containerRect = document.querySelector('.gantt-table-container').getBoundingClientRect();
+                    const pad = Math.round(6 * SCALE);
+                    // 从表头单元格顶部开始，底部不超出容器可见区域
+                    const overlayTop = thRect.top;
+                    const overlayBottom = Math.min(tbodyRect.bottom, containerRect.bottom);
+                    const overlayHeight = overlayBottom - overlayTop + pad * 2;
+
+                    let overlay = document.querySelector('.today-column-overlay');
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.className = 'today-column-overlay';
+                        document.body.appendChild(overlay);
+                    }
+                    overlay.style.left = (thRect.left - pad) + 'px';
+                    overlay.style.width = (thRect.width + pad * 2) + 'px';
+                    overlay.style.top = (overlayTop - pad) + 'px';
+                    overlay.style.height = overlayHeight + 'px';
+                }
+
+                if (window._ganttOverlayRAF) cancelAnimationFrame(window._ganttOverlayRAF);
+                window._ganttOverlayRAF = requestAnimationFrame(updateOverlay);
+                // 滚动或缩放时更新位置
+                window.removeEventListener('scroll', window._ganttOverlayScroll);
+                window.removeEventListener('resize', window._ganttOverlayResize);
+                window._ganttOverlayScroll = updateOverlay;
+                window._ganttOverlayResize = updateOverlay;
+                window.addEventListener('scroll', window._ganttOverlayScroll, true);
+                window.addEventListener('resize', window._ganttOverlayResize);
+            }
+
+            bindProjectHover();
+        }
+
+        function scrollDates(direction) {
+            const daysToAdd = direction * 7;
+            startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + daysToAdd);
+            renderGanttTable();
+        }
+
+        function resetSearch() {
+            document.querySelector('.search-input').value = '';
+            var dateInputs = document.querySelectorAll('.date-input');
+            dateInputs.forEach(function(input) { input.value = ''; });
+            document.getElementById('search-status').value = '';
+            searchFilter = null;
+            currentPage = 1;
+            document.querySelectorAll('.stat-card').forEach(function(c) { c.style.borderLeftColor = ''; });
+            applySearchFilter();
+            renderProjectList();
+        }
+
+        function doSearch() {
+            var name = document.querySelector('.search-input').value.trim();
+            var date = document.querySelector('.date-input').value;
+            var status = document.getElementById('search-status').value;
+
+            if (!name && !date && !status) {
+                searchFilter = null;
+            } else {
+                searchFilter = { name: name, date: date, status: status };
+            }
+            // 同步卡片选中态
+            document.querySelectorAll('.stat-card').forEach(function(c) { c.style.borderLeftColor = ''; });
+            if (status) {
+                var card = document.querySelector('.stat-card[data-stat="' + status + '"]');
+                if (card) card.style.borderLeftColor = '#3B82F6';
+            }
+            currentPage = 1;
+            applySearchFilter();
+            renderProjectList();
+        }
+
+        // ===== 甘特图 hover 提示 =====
+        function formatDate(m, d) {
+            return `2026-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        }
+
+        function getProjectTooltip(project) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTime = today.getTime();
+            var ps = offsetDay(project.projectStart.month, project.projectStart.day);
+            var pe = offsetDay(project.projectEnd.month, project.projectEnd.day);
+            var startDate = new Date(2026, ps.month - 1, ps.day);
+            var endDate = new Date(2026, pe.month - 1, pe.day);
+            var actualStartData = project.actualStart ? offsetDay(project.actualStart.month, project.actualStart.day) : null;
+            var actualStart = actualStartData ? new Date(2026, actualStartData.month - 1, actualStartData.day) : null;
+
+            const projectRange = `${formatDate(ps.month, ps.day)} ～ ${formatDate(pe.month, pe.day)}`;
+            const actualStartStr = actualStartData ? formatDate(actualStartData.month, actualStartData.day) : '未开始';
+
+            let statusText = '';
+            let statusClass = '';
+
+            if (project.cancelled) {
+                return { projectName: project.name, projectRange: '-', actualStartStr: '-', statusText: '已取消', statusClass: '' };
+            }
+
+            if (project.completed) {
+                // 已完成项目：用实际完成日期计算
+                var cd = offsetDay(project.completedDate.month, project.completedDate.day);
+                var completedDate = new Date(2026, cd.month - 1, cd.day);
+                const delayFinishDays = Math.ceil((completedDate.getTime() - endDate.getTime()) / (24 * 60 * 60 * 1000));
+
+                if (delayFinishDays > 0) {
+                    statusText = '已完成，延期 ' + delayFinishDays + ' 天完成';
+                    statusClass = 'delayed';
+                } else if (delayFinishDays === 0) {
+                    statusText = '已完成，按时完成';
+                    statusClass = 'active';
+                } else {
+                    const earlyFinishDays = Math.ceil((endDate.getTime() - completedDate.getTime()) / (24 * 60 * 60 * 1000));
+                    statusText = '已完成，提前 ' + earlyFinishDays + ' 天完成';
+                    statusClass = 'active';
+                }
+                return { projectName: project.name, projectRange, actualStartStr, statusText, statusClass, completed: project.completed, completedDate: cd };
+            } else if (todayTime < startDate.getTime()) {
+                statusText = '未开始';
+                statusClass = '';
+            } else {
+                // 进行中
+                // 已延期天数 = 今日日期 - 项目结束日期
+                var overdueDays = Math.max(0, Math.ceil((todayTime - endDate.getTime()) / (24 * 60 * 60 * 1000)));
+                // 可能延期天数 = 实际开始日期 - 项目开始日期 - 已延期天数
+                var possibleDelay = actualStart
+                    ? Math.max(0, Math.round((actualStart.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)) - overdueDays)
+                    : 0;
+
+                if (possibleDelay > 0 && overdueDays > 0) {
+                    statusText = '进行中，已延期 ' + overdueDays + ' 天，还可能延期 ' + possibleDelay + ' 天';
+                    statusClass = 'delayed';
+                } else if (possibleDelay > 0 && overdueDays <= 0) {
+                    statusText = '进行中，可能延期 ' + possibleDelay + ' 天';
+                    statusClass = 'warning';
+                } else if (overdueDays > 0) {
+                    statusText = '进行中，已延期 ' + overdueDays + ' 天';
+                    statusClass = 'delayed';
+                } else if (actualStart) {
+                    statusText = '进行中';
+                    statusClass = 'active';
+                } else {
+                    statusText = '未开始';
+                    statusClass = '';
+                }
+            }
+
+            return { projectName: project.name, projectRange, actualStartStr, statusText, statusClass, completed: project.completed, completedDate: project.completedDate ? offsetDay(project.completedDate.month, project.completedDate.day) : null };
+        }
+
+        let tooltipTimer = null;
+
+        function showTooltip(e, project) {
+            const tooltip = document.getElementById('gantt-tooltip');
+            if (!tooltip) return;
+
+            const info = getProjectTooltip(project);
+            const dotColor = info.statusClass === 'delayed' ? '#FF4D4F'
+                : info.statusClass === 'warning' ? '#FAAD14'
+                : info.statusClass === 'active' ? '#52C41A'
+                : '#909399';
+
+            var completedDateStr = '';
+            if (info.completed && info.completedDate) {
+                completedDateStr = '<div><span class="tt-label">完成日期：</span>' + formatDate(info.completedDate.month, info.completedDate.day) + '</div>';
+            }
+
+            tooltip.innerHTML = [
+                '<div style="font-weight:600;margin-bottom:4px;color:#1D2129;">' + info.projectName + '</div>',
+                '<div><span class="tt-label">项目日期：</span>' + info.projectRange + '</div>',
+                '<div><span class="tt-label">开始日期：</span>' + info.actualStartStr + '</div>',
+                completedDateStr,
+                '<div class="tt-status"><span class="tt-label">项目状态：</span><span class="tt-dot" style="background-color:' + dotColor + '"></span>' + info.statusText + '</div>'
+            ].join('');
+
+            const ganttContent = document.querySelector('.gantt-content');
+            const contentRect = ganttContent.getBoundingClientRect();
+            tooltip.style.left = (e.clientX - contentRect.left + 16) + 'px';
+            tooltip.style.top = (e.clientY - contentRect.top + 12) + 'px';
+            tooltip.classList.add('show');
+        }
+
+        function moveTooltip(e) {
+            const tooltip = document.getElementById('gantt-tooltip');
+            if (!tooltip || !tooltip.classList.contains('show')) return;
+            const contentRect = document.querySelector('.gantt-content').getBoundingClientRect();
+            tooltip.style.left = (e.clientX - contentRect.left + 16) + 'px';
+            tooltip.style.top = (e.clientY - contentRect.top + 12) + 'px';
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('gantt-tooltip');
+            if (!tooltip) return;
+            if (tooltipTimer) clearTimeout(tooltipTimer);
+            tooltipTimer = setTimeout(function() {
+                tooltip.classList.remove('show');
+            }, 150);
+        }
+
+        function bindProjectHover() {
+            var rows = document.querySelectorAll('#gantt-table-body tr');
+            rows.forEach(function(row, index) {
+                if (!projectData[index]) return;
+
+                // 先解绑旧事件（以防重复绑定）
+                row.removeEventListener('mouseenter', row._hoverEnter);
+                row.removeEventListener('mouseleave', row._hoverLeave);
+                row.removeEventListener('mousemove', row._hoverMove);
+
+                // 只绑定日期单元格 td.date-cell 的 hover 事件
+                var dateCells = row.querySelectorAll('td.date-cell');
+                dateCells.forEach(function(td) {
+                    td.removeEventListener('mouseenter', td._hoverEnter);
+                    td.removeEventListener('mouseleave', td._hoverLeave);
+                    td.removeEventListener('mousemove', td._hoverMove);
+
+                    td._hoverEnter = function(e) {
+                        if (tooltipTimer) clearTimeout(tooltipTimer);
+                        showTooltip(e, projectData[index]);
+                    };
+                    td._hoverLeave = function() { hideTooltip(); };
+                    td._hoverMove = function(e) { moveTooltip(e); };
+
+                    td.addEventListener('mouseenter', td._hoverEnter);
+                    td.addEventListener('mouseleave', td._hoverLeave);
+                    td.addEventListener('mousemove', td._hoverMove);
+                });
+            });
+        }
+
+        // 组织架构弹窗
+        function showOrgChart(project) {
+            var overlay = document.createElement('div');
+            overlay.className = 'org-modal-overlay';
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+            // 头像图片池（从 A/images 随机取）
+            var avatarPool = [
+                '../A/images/AI-1.png',
+                '../A/images/AI-2.png',
+                '../A/images/AI-3.png',
+                '../A/images/AI-4.png',
+                '../A/images/tx-1.png',
+                '../A/images/tx-2.png',
+                '../A/images/tx-3.png'
+            ];
+            function randomAvatar() {
+                return avatarPool[Math.floor(Math.random() * avatarPool.length)];
+            }
+
+            // 节点卡片
+            function card(name, role, cardStyle) {
+                return '<div class="org-card ' + cardStyle + '">' +
+                    '<img class="org-avatar-img" src="' + randomAvatar() + '" alt="" />' +
+                    '<div class="org-card-info">' +
+                        '<div class="org-card-name">' + name + '</div>' +
+                        '<div class="org-card-role">' + role + '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            // 分支: vline + 子级行（含水平横线）
+            function branch(childrenHtml) {
+                return '<div class="org-branch">' +
+                    '<div class="org-vline"></div>' +
+                    '<div class="org-children-row">' + childrenHtml + '</div>' +
+                '</div>';
+            }
+
+            // 子列: 垂直落线 + 节点 HTML（落线从上层横线连到本节点）
+            function leaf(innerHtml) {
+                return '<div class="org-child-col">' +
+                    '<div class="org-vline drop"></div>' +
+                    innerHtml +
+                '</div>';
+            }
+
+            // 递归渲染节点（depth: 0=Owner, 1=L2, ...）
+            function renderNode(node, depth) {
+                var cardClass;
+                if (depth === 0) {
+                    cardClass = 'owner-card';
+                } else if (node.members && node.members.length) {
+                    cardClass = depth <= 2 ? 'lead-card' : 'sub-card';
+                } else {
+                    cardClass = 'member-card';
+                }
+
+                var html = card(node.name, node.role, cardClass);
+                if (node.members && node.members.length) {
+                    html += branch(node.members.map(function(m) {
+                        return renderNode(m, depth + 1);
+                    }).join(''));
+                }
+
+                // Owner 不加 leaf 包裹（不需要落线），其他节点需要
+                return depth === 0 ? html : leaf(html);
+            }
+
+            // 构建完整树
+            var html = renderNode({ name: project.owner || '负责人', role: '项目负责人', members: project.team }, 0);
+
+            overlay.innerHTML =
+                '<div class="org-modal">' +
+                    '<div class="org-modal-title">' +
+                        project.name + ' - 组织架构' +
+                        '<button class="org-modal-close" onclick="this.closest(\'.org-modal-overlay\').remove()">&times;</button>' +
+                    '</div>' +
+                    '<div class="org-chart">' + html + '</div>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderGanttTable();
+            updateStatsCards();
+            applySearchFilter();
+            renderProjectList();
+        });
+        window.addEventListener('resize', renderGanttTable);
+    </script>
+</body>
+</html>

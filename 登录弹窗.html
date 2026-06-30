@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>登录弹窗组件</title>
+    <style>
+        html {
+            font-size: 16px !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-gray: #F2F3F5;
+            --classic-gray: #86909C;
+            --white: #FFFFFF;
+            --border-gray: #E5E7EB;
+            --hover-gray: #F7F8FA;
+            --error-red: #F53F3F;
+        }
+
+        body {
+            background-color: transparent;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .login-modal {
+            position: relative;
+            z-index: 99999;
+            background-color: transparent;
+            width: 100%;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: var(--white);
+            border-radius: 12px;
+            width: 100%;
+            min-width: 100%;
+            min-height: 450px;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            line-height: 1.5;
+            border: 1px solid var(--border-gray);
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-gray);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--deep-gray);
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--classic-gray);
+            transition: all 0.3s;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-btn:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-gray);
+        }
+        
+        .login-tabs {
+            display: flex;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-gray);
+        }
+        
+        .login-tab {
+            padding: 8px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--classic-gray);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .login-tab.active {
+            color: var(--klein-blue);
+            border-bottom-color: var(--klein-blue);
+            font-weight: 500;
+        }
+        
+        .login-tab:hover:not(.active) {
+            color: var(--klein-blue);
+            opacity: 0.8;
+        }
+        
+        .login-form {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            line-height: 1.4;
+            color: var(--deep-gray);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--klein-blue);
+            box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: var(--classic-gray);
+        }
+
+        .form-input.error {
+            border-color: var(--error-red);
+        }
+        
+        .error-message {
+            color: var(--error-red);
+            font-size: 12px;
+            margin-top: 6px;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+        
+        .password-input {
+            position: relative;
+        }
+        
+        .password-input .form-input {
+            padding-right: 40px;
+        }
+        
+        .eye-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--classic-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .eye-btn:hover {
+            color: var(--klein-blue);
+        }
+
+        .eye-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .code-input {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .code-input .form-input {
+            flex: 1;
+        }
+        
+        .code-btn {
+            padding: 0 20px;
+            background-color: var(--light-gray);
+            color: var(--deep-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .code-btn:hover {
+            border-color: var(--klein-blue);
+            color: var(--klein-blue);
+            background-color: var(--white);
+        }
+
+        .code-btn:active {
+            background-color: var(--light-gray);
+        }
+
+        .code-btn.disabled {
+            background-color: var(--light-gray);
+            color: var(--classic-gray);
+            cursor: not-allowed;
+            border-color: var(--border-gray);
+        }
+
+        .code-btn.disabled:hover {
+            border-color: var(--border-gray);
+            color: var(--classic-gray);
+            background-color: var(--light-gray);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--klein-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: all 0.3s;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-button:hover {
+            background-color: #0047c9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.2);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 81, 217, 0.2);
+        }
+        
+        .login-links {
+            text-align: center;
+            font-size: 13px;
+            color: var(--classic-gray);
+            padding: 0 20px 20px;
+        }
+        
+        .login-links a {
+            color: var(--klein-blue);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .login-links a:hover {
+            color: #0047c9;
+            text-decoration: underline;
+        }
+        
+        .login-links span {
+            margin: 0 8px;
+        }
+        
+        .other-login-line {
+            position: relative;
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 16px;
+        }
+        
+        .other-login-line::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background-color: var(--border-gray);
+            z-index: 1;
+        }
+        
+        .other-login-line span {
+            position: relative;
+            background-color: var(--white);
+            padding: 0 16px;
+            z-index: 2;
+            font-size: 13px;
+            color: var(--classic-gray);
+        }
+        
+        .other-login-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding-bottom: 20px;
+        }
+        
+        .other-login-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid var(--border-gray);
+            background-color: var(--white);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .other-login-btn:hover {
+            border-color: var(--klein-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.15);
+        }
+        
+        .other-login-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 81, 217, 0.15);
+        }
+        
+        .other-login-btn:nth-child(1)::before {
+            content: "";
+            width: 70%;
+            height: 70%;
+            background-image: url('images/wx.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: inline-block;
+        }
+        
+        .other-login-btn:nth-child(2)::before {
+            content: "";
+            width: 80%;
+            height: 80%;
+            background-image: url('images/zfb.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+                height: auto;
+                min-height: 450px;
+                padding-bottom: 20px;
+            }
+
+            .login-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>账号登录</h2>
+                <button class="close-btn" id="closeBtn">×</button>
+            </div>
+            <div class="login-tabs">
+                <div class="login-tab active">密码登录</div>
+                <div class="login-tab">验证码登录</div>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="usernameInput" placeholder="请输入手机号/账号">
+                    <div class="error-message" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <div class="password-input">
+                        <input type="password" class="form-input" id="passwordInput" placeholder="请输入密码">
+                        <button class="eye-btn">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                <div class="form-group code-input" style="display: none;">
+                    <input type="text" class="form-input" id="codeInput" placeholder="请输入验证码">
+                    <button class="code-btn">获取验证码</button>
+                </div>
+                <div class="error-message" id="codeError"></div>
+                <button class="login-button">登录</button>
+            </div>
+            <div class="login-links">
+                <a href="#">忘记密码</a>
+                <span>|</span>
+                <a href="用户注册页.html" id="registerLink">注册账号</a>
+            </div>
+            <div class="other-login">
+                <div class="other-login-line">
+                    <span>其他登录方式</span>
+                </div>
+                <div class="other-login-buttons">
+                    <div class="other-login-btn"></div>
+                    <div class="other-login-btn"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginTabs = document.querySelectorAll('.login-tab');
+        const passwordInput = document.querySelector('.password-input').parentElement;
+        const codeInput = document.querySelector('.code-input');
+        const eyeBtn = document.querySelector('.eye-btn');
+        const passwordField = document.querySelector('.password-input .form-input');
+        const phoneField = document.querySelector('.login-form .form-input');
+        const closeBtn = document.getElementById('closeBtn');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInputEl = document.getElementById('passwordInput');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+
+        const phoneRegex = /^1[3-9]\d{9}$/;
+        const usernameRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}|;:,.<>?]{1,20}$/;
+        const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}|;:,.<>?]{1,20}$/;
+        const codeRegex = /^[a-zA-Z0-9]+$/;
+
+        const codeInputEl = document.getElementById('codeInput');
+        const codeError = document.getElementById('codeError');
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function hideError(element) {
+            element.classList.remove('show');
+        }
+
+        function validateUsername(value) {
+            hideError(usernameError);
+            usernameInput.classList.remove('error');
+
+            if (!value.trim()) {
+                return true;
+            }
+
+            if (phoneRegex.test(value)) {
+                return true;
+            }
+
+            if (value.length < 4) {
+                showError(usernameError, '账号长度不能少于4个字符');
+                usernameInput.classList.add('error');
+                return false;
+            }
+
+            if (value.length > 20) {
+                showError(usernameError, '账号长度不能超过20个字符');
+                usernameInput.classList.add('error');
+                return false;
+            }
+
+            if (!usernameRegex.test(value)) {
+                showError(usernameError, '账号只能输入数字、字母或符号');
+                usernameInput.classList.add('error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function validatePassword(value) {
+            hideError(passwordError);
+            passwordInputEl.classList.remove('error');
+
+            if (!value.trim()) {
+                return true;
+            }
+
+            if (value.length < 4) {
+                showError(passwordError, '密码长度不能少于4个字符');
+                passwordInputEl.classList.add('error');
+                return false;
+            }
+
+            if (value.length > 20) {
+                showError(passwordError, '密码长度不能超过20个字符');
+                passwordInputEl.classList.add('error');
+                return false;
+            }
+
+            if (!passwordRegex.test(value)) {
+                showError(passwordError, '密码只能输入数字、字母或符号');
+                passwordInputEl.classList.add('error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function validateCode(value) {
+            hideError(codeError);
+            codeInputEl.classList.remove('error');
+
+            if (!value.trim()) {
+                return true;
+            }
+
+            if (!codeRegex.test(value)) {
+                showError(codeError, '验证码只能输入数字和字母');
+                codeInputEl.classList.add('error');
+                return false;
+            }
+
+            return true;
+        }
+
+        usernameInput.addEventListener('blur', function() {
+            const activeTab = document.querySelector('.login-tab.active');
+            const isPasswordLogin = activeTab.textContent === '密码登录';
+            
+            if (isPasswordLogin) {
+                validateUsername(this.value);
+            } else {
+                hideError(usernameError);
+                usernameInput.classList.remove('error');
+                
+                const value = this.value.trim();
+                if (value && !phoneRegex.test(value)) {
+                    showError(usernameError, '请输入正确的手机号');
+                    usernameInput.classList.add('error');
+                }
+            }
+        });
+
+        usernameInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[\u4e00-\u9fa5]/g, '');
+        });
+
+        passwordInputEl.addEventListener('blur', function() {
+            validatePassword(this.value);
+        });
+
+        passwordInputEl.addEventListener('input', function() {
+            this.value = this.value.replace(/[\u4e00-\u9fa5]/g, '');
+        });
+
+        codeInputEl.addEventListener('blur', function() {
+            validateCode(this.value);
+        });
+
+        codeInputEl.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            console.log('登录弹窗已关闭');
+        });
+
+        loginTabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                loginTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                usernameInput.value = '';
+                passwordInputEl.value = '';
+                codeInputEl.value = '';
+                hideError(usernameError);
+                hideError(passwordError);
+                hideError(codeError);
+                usernameInput.classList.remove('error');
+                passwordInputEl.classList.remove('error');
+                codeInputEl.classList.remove('error');
+                
+                if (index === 0) {
+                    passwordInput.style.display = 'block';
+                    codeInput.style.display = 'none';
+                    phoneField.placeholder = '请输入手机号/账号';
+                } else {
+                    passwordInput.style.display = 'none';
+                    codeInput.style.display = 'flex';
+                    phoneField.placeholder = '请输入手机号';
+                }
+            });
+        });
+
+        eyeBtn.addEventListener('click', function() {
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+
+        const codeBtn = document.querySelector('.code-btn');
+        let countdownInterval = null;
+
+        codeBtn.addEventListener('click', function() {
+            if (this.classList.contains('disabled')) return;
+
+            let countdown = 60;
+            this.classList.add('disabled');
+            this.textContent = countdown + '秒后重试';
+
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    this.classList.remove('disabled');
+                    this.textContent = '获取验证码';
+                    countdownInterval = null;
+                } else {
+                    this.textContent = countdown + '秒后重试';
+                }
+            }, 1000);
+        });
+
+        document.querySelector('.login-button').addEventListener('click', function() {
+            const activeTab = document.querySelector('.login-tab.active');
+            const isPasswordLogin = activeTab.textContent === '密码登录';
+
+            if (isPasswordLogin) {
+                const username = usernameInput.value.trim();
+                const password = passwordInputEl.value.trim();
+
+                if (!username) {
+                    showError(usernameError, '请输入账号');
+                    usernameInput.classList.add('error');
+                    return;
+                }
+
+                if (!password) {
+                    showError(passwordError, '请输入密码');
+                    passwordInputEl.classList.add('error');
+                    return;
+                }
+
+                const isUsernameValid = validateUsername(username);
+                const isPasswordValid = validatePassword(password);
+
+                if (!isUsernameValid || !isPasswordValid) {
+                    return;
+                }
+
+                if (username === 'liu1234' && password === '1234') {
+                    window.localStorage.setItem('userStatus', '未加入组织');
+                    window.parent.postMessage({ type: 'LOGIN_SUCCESS', userStatus: '未加入组织' }, '*');
+                    return;
+                }
+            } else {
+                const phone = phoneField.value.trim();
+                const code = codeInputEl.value.trim();
+
+                if (!phone) {
+                    showError(usernameError, '请输入手机号');
+                    phoneField.classList.add('error');
+                    return;
+                }
+
+                if (!phoneRegex.test(phone)) {
+                    showError(usernameError, '请输入正确的手机号');
+                    phoneField.classList.add('error');
+                    return;
+                }
+
+                if (!code) {
+                    showError(codeError, '请输入验证码');
+                    codeInputEl.classList.add('error');
+                    return;
+                }
+
+                if (!validateCode(code)) {
+                    return;
+                }
+            }
+
+            window.parent.postMessage({ type: 'LOGIN_SUCCESS' }, '*');
+        });
+        
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.parent.postMessage({ type: 'CLOSE_MODAL' }, '*');
+        });
+
+        const registerLink = document.getElementById('registerLink');
+        if (registerLink) {
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.parent.location.href = '用户注册页.html';
+            });
+        }
+        
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'MODAL_LOADED') {
+                console.log('登录弹窗已加载');
+            }
+        });
+    </script>
+</body>
+</html>

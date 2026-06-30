@@ -1,0 +1,3624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RaaS商城列表页</title>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        /* 基础重置与全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 登录弹窗容器样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(3px);
+            overflow: hidden;
+        }
+
+        /* 确保iframe背景透明 */
+        .modal-iframe {
+            background-color: transparent !important;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-iframe {
+            width: 420px;
+            min-height: 500px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .modal-iframe {
+                width: 90%;
+                height: 500px;
+            }
+        }
+
+        /* 退出确认弹窗样式 */
+        .logout-modal-content {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 30px 36px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            text-align: center;
+            z-index: 100000;
+        }
+
+        .logout-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D2129;
+            margin-bottom: 16px;
+        }
+
+        .logout-modal-message {
+            font-size: 14px;
+            color: #86909C;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .logout-modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .logout-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .logout-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .logout-modal-btn.confirm {
+            background-color: #FF6600;
+            color: #FFFFFF;
+            border-color: #FF6600;
+        }
+
+        .logout-modal-btn.confirm:hover {
+            background-color: #e0631d;
+            border-color: #e0631d;
+        }
+
+        :root {
+            /* 主色调 */
+            --klein-blue: #0051D9;
+            --hermes-orange: #FF6600;
+            --deep-gray: #1D2129;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+
+            /* AI对话框配色 */
+            --ai-chat-bg: #FFFFFF;
+            --ai-input-bg: #FFFFFF;
+            --ai-text: #1D2129;
+            --ai-desc: #86909C;
+            --ai-border: #E5E7EB;
+            --ai-send: var(--hermes-orange);
+            --ai-tag-bg: #F2F3F5;
+            --ai-tag-hover: #E5E7EB;
+
+            /* 响应式断点 */
+            --breakpoint-md: 992px;
+            --breakpoint-sm: 768px;
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.125rem;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            color: #333;
+            line-height: var(--line-height-base);
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 2.25rem;
+        }
+
+        /* 通用容器 */
+        .container {
+            width: 90rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .welcome {
+            background: var(--white);
+            color: var(--deep-gray);
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .login {
+            background: var(--white);
+            color: var(--klein-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .login:hover {
+            background: var(--hermes-orange);
+            color: var(--white);
+        }
+
+        /* 头部区域 */
+        header {
+            /* background: var(--klein-blue); */
+            /* padding: 14px 0; */
+            color: var(--white);
+        }
+
+        /* AI智能体对话框 */
+        .ai-chat-container {
+            width: 100%;
+            max-width: 50rem;
+            margin: 0 auto 2.5rem;
+            background: var(--ai-chat-bg);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--ai-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* 搜索容器 */
+        .blank-container {
+            width: 100%;
+            max-width: 95rem;
+            padding: 10px 10px;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .search-logo {
+            font-size: 2.75rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-slogan {
+            font-size: 1rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--klein-blue), var(--hermes-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: left;
+            white-space: nowrap;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .search-main {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 80%;
+        }
+
+        .search-input-row {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 2.75rem;
+        }
+
+        /* 底部输入框 */
+        .input-container {
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-gray);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #9c9fa4;
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-box textarea::placeholder {
+            color: var(--classic-gray);
+            font-size: 1rem;
+        }
+
+        .input-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--border-gray);
+            gap: 0.75rem;
+            min-height: 2.5rem;
+        }
+
+        .input-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .input-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input-tag {
+            background: var(--light-gray);
+            color: var(--deep-gray);
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.75rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .input-tag:hover {
+            background: var(--border-gray);
+        }
+
+
+        .send-btn {
+            background: #06b6d4;
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            padding: 0;
+            line-height: 1;
+            min-width: 2.25rem;
+            min-height: 2.25rem;
+            z-index: 9999;
+        }
+
+        .send-btn:hover {
+            background: #e0631d;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .quote-btn {
+            background: var(--hermes-orange);
+            color: white;
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(243, 112, 33, 0.2);
+        }
+
+        .quote-btn:hover {
+            background: #e66a1a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(243, 112, 33, 0.3);
+        }
+
+        .search-tags {
+            display: flex;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: white;
+            color: var(--deep-gray);
+            padding: 0.25rem 1rem;
+            border-radius: 1.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e7ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tag:hover {
+            background: var(--klein-blue);
+            color: white;
+            border-color: var(--klein-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .ai-input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--ai-text);
+            font-size: 16px;
+            resize: none;
+            height: 24px;
+            max-height: 160px;
+            line-height: 24px;
+            padding: 4px 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .ai-input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ai-input-box textarea::placeholder {
+            color: var(--ai-desc);
+            font-size: 16px;
+        }
+
+        .ai-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid var(--ai-border);
+        }
+
+        .ai-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn {
+            color: var(--ai-desc);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            color: var(--klein-blue);
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        .content-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .section-tab.active {
+            border-bottom: 2px solid #0051d9;
+            color: #0051d9;
+            font-weight: 500;
+        }
+
+        .divider {
+            color: #d1d5db;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        .ai-tags {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .ai-tag {
+            background: var(--ai-tag-bg);
+            color: var(--ai-text);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .ai-tag:hover {
+            background: var(--ai-tag-hover);
+        }
+
+        /* 模型标签样式 */
+        .model-tags {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .model-tag {
+            background: var(--light-bg);
+            color: var(--deep-gray);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .model-tag:hover {
+            background: var(--border);
+            color: var(--klein-blue);
+        }
+
+        .model-tag.active {
+            background: var(--klein-blue);
+            color: white;
+        }
+
+        .send-btn {
+            background: var(--ai-send);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #e0631d;
+        }
+
+        /* 标签导航容器 */
+        .tab-container {
+            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* 导航标签栏 */
+        .tab-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            height: 60px;
+        }
+
+        .tab {
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 24px;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab {
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 24px;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .main-tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab.active {
+            color: var(--klein-blue);
+            border-bottom: 3px solid var(--klein-blue);
+            font-weight: 600;
+        }
+
+        .create-center-btn {
+            padding: 0.75rem 1.875rem;
+            margin: 0 0.75rem;
+            background: #FFFAF7;
+            color: #FF6600;
+            border: 1px solid #FFE5D9;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: center;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(243, 112, 33, 0.1);
+        }
+
+        .create-center-btn:hover {
+            background: #FFF5EE;
+            color: #E0631D;
+            border-color: #FFCCB3;
+            box-shadow: 0 2px 6px rgba(243, 112, 33, 0.15);
+        }
+
+        .create-center-btn:active {
+            box-shadow: 0 1px 3px rgba(243, 112, 33, 0.1);
+        }
+
+        .ai-team-btn {
+            background: var(--hermes-orange);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 36px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-team-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ai-team-btn:hover::before {
+            left: 100%;
+        }
+
+        .ai-team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.4);
+        }
+
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--ai-desc);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1350px) {
+            .container {
+                width: 100%;
+                padding: 0 2.5rem;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .search-logo {
+                font-size: 2.25rem;
+            }
+
+            .blank-container {
+                padding: 10px 10px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .case-know-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .search-main {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .main-tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .create-center-btn {
+                padding: 0.5rem 1rem;
+                margin: 0 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .search-logo {
+                font-size: 1.5rem;
+            }
+
+            .logo-slogan {
+                font-size: 0.75rem;
+            }
+
+            .blank-container {
+                padding: 0.75rem 0.75rem;
+            }
+
+            .content-row {
+                flex-direction: column;
+            }
+
+            .filter {
+                width: 100%;
+                margin-bottom: 0.625rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-container .container {
+                padding: 0;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab, .main-tab {
+                padding: 0 0.625rem;
+                font-size: 0.8125rem;
+            }
+
+            .create-center-btn {
+                padding: 0.375rem 0.75rem;
+                margin: 0 0.25rem;
+                font-size: 0.75rem;
+                height: 2rem;
+            }
+
+            .ai-team-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 分类标签筛选样式 */
+        .category-tag {
+            padding: 6px 16px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .category-tag:hover {
+            border-color: #0051D9;
+            color: #0051D9;
+            background: #f0f7ff;
+        }
+        .category-tag.active {
+            background: #0051D9;
+            color: #ffffff;
+            border-color: #0051D9;
+        }
+        .category-tag.sub-active {
+            background: #FF6600;
+            color: #ffffff;
+            border-color: #FF6600;
+        }
+
+        /* 面包屑导航样式 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 14px;
+            font-size: 14px;
+            color: var(--deep-gray);
+        }
+        
+        .breadcrumb a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--klein-blue);
+            text-decoration: none;
+        }
+        
+        .breadcrumb-separator {
+            color: var(--ai-desc);
+            font-size: 12px;
+        }
+        
+        .breadcrumb-separator::before {
+            content: '›';
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        .breadcrumb-current {
+            color: var(--deep-gray);
+            font-weight: 500;
+            padding: 2px 6px;
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        /* 侧边导航样式 */
+        .content-row {
+            display: flex;
+            gap: 8px;
+            margin: 0 0 14px 0;
+            position: relative;
+            min-height: 630px;
+            align-items: stretch;
+        }
+        
+        .card-grid {
+            flex: 1;
+            min-width: 0;
+            border-radius: 8px;
+            background:#ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sort-stats-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            background-color: #f5f5f5;
+        }
+
+        .card-content-container {
+            min-height: 400px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px 10px;
+            flex: 1;
+            align-items: start;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sort-btn {
+            padding: 2px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-btn:hover {
+            border-color: #0051D9;
+        }
+        
+        .sort-btn.active {
+            background-color: #0051D9;
+            color: white;
+            border-color: #0051D9;
+        }
+        
+        .filter-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+            overflow: visible;
+        }
+
+        .filter-dropdown-content {
+            padding: 8px;
+        }
+
+        .filter-dropdown-item {
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--deep-gray);
+            transition: all 0.2s;
+        }
+
+        .filter-dropdown-item:hover {
+            color: var(--klein-blue);
+            background-color: #f0f7ff;
+            font-weight: 500;
+            transform: translateX(4px);
+        }
+
+        .sub-filter-popup {
+            position: absolute;
+            left: 180px;
+            top: 36px;
+            width: 200px;
+            background: var(--white);
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            border: 1px solid var(--border);
+            /* border-radius: 8px; */
+            overflow: hidden;
+        }
+
+        #sub-filter-items .filter-item {
+            padding: 8px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+            width: 100%;
+            text-align: left;
+        }
+
+        #sub-filter-items .filter-item:hover {
+            color: var(--klein-blue);
+            background-color: #f0f7ff;
+            font-weight: 500;
+            transform: translateX(4px);
+        }
+
+
+        
+        .product-count {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .view-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .view-btn {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn:hover {
+            border-color: #0051D9;
+        }
+        
+        .view-btn.active {
+            background-color: #0051D9;
+            color: white;
+            border-color: #0051D9;
+        }
+        
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-btn {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover {
+            border-color: #0051D9;
+            color: #0051D9;
+        }
+        
+        .page-info {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .card-grid {
+            flex: 1;
+            min-width: 0;
+            border-radius: 8px;
+            background:#ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .content-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .filter-section .filter-items {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-section .filter-items .content-card {
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .content-row {
+                flex-direction: column;
+            }
+
+            .filter {
+                width: 100%;
+                margin-bottom: 10px;
+                position: static;
+                max-height: none;
+            }
+
+            .tab {
+                padding: 0 12px;
+                font-size: 15px;
+            }
+        }
+        /* //热门推荐卡片 */
+        .card-image-container {
+            height: 92px;
+        }
+        
+    </style>
+</head>
+<body>
+    <button id="aiAssistantBtn" onclick="document.getElementById('aiAssistantBtn').style.setProperty('display','none','important');document.getElementById('aiAssistantLabel').style.display='none';var o=document.getElementById('aiChatOverlay'),p=document.getElementById('aiChatPanel');o.classList.add('open');p.classList.add('open');" style="position:fixed !important;right:24px !important;bottom:120px !important;z-index:99999 !important;display:flex !important;align-items:center;justify-content:center;cursor:pointer;background:#FF6600 !important;border:3px solid #fff !important;border-radius:50% !important;width:60px !important;height:60px !important;box-shadow:0 4px 20px rgba(0,0,0,0.35) !important;font-size:28px !important;">🤖</button>
+    <span id="aiAssistantLabel" style="position:fixed !important;right:92px !important;bottom:138px !important;z-index:99999 !important;font-size:12px;color:#0051D9;font-weight:600;background:#fff;padding:3px 10px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);white-space:nowrap;">我的助理</span>
+    <!-- 公共头部引用 -->
+    <iframe src="顶部导航栏.html" style="width: 100%; height: 36px; border: none; position: fixed; top: 0; left: 0; z-index: 99998;"></iframe>
+
+    <!-- 头部区域 -->
+    <header>
+        <div class="container">
+            <!-- 搜索容器 - 紧凑版 -->
+            <div class="blank-container" style="padding: 10px 10px;">
+                <div class="search-container" style="display: flex; align-items: center; gap: 30px;">
+                    <div class="logo-section" onclick="window.location.href='商城首页.html';" style="cursor: pointer; flex-shrink: 0;">
+                        <div class="search-logo" style="color: #0051D9; font-size: 2rem;">RaaS.Dao</div>
+                        <div class="logo-slogan" style="font-size: 0.75rem;">共创・共享</div>
+                    </div>
+                    <div class="search-main" style="flex: 1; max-width: 1300px;">
+                        <!-- 紧凑搜索框 -->
+                        <div class="compact-search-box" style="display: flex; align-items: center; border: 1px solid #E5E6EB; border-radius: 4px; overflow: hidden; background: #fff;">
+                            <!-- 输入框 -->
+                            <input type="text" placeholder="请输入产品名称/品牌/型号" class="search-input" style="flex: 1; border: none; outline: none; font-size: 14px; height: 40px; padding: 0; background: transparent; color: #1D2129;">
+                            <!-- 以图找品图标按钮 -->
+                            <div class="upload-btn-compact" title="以图找品" style="padding: 0 10px; cursor: pointer; color: #86909C; border-left: 1px solid #E5E6EB; display: flex; align-items: center; transition: all 0.2s;">
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </div>
+                        <!-- 语音输入图标按钮 -->
+                        <div class="voice-btn-compact" title="语音输入" style="padding: 0 10px; cursor: pointer; color: #86909C; border-left: 1px solid #E5E6EB; display: flex; align-items: center; transition: all 0.2s;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </div>
+                        <!-- 搜索按钮 - 克莱因蓝 -->
+                            <button class="search-btn-compact" style="background: #0051D9; color: #fff; border: none; padding: 0 28px; height: 40px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;">搜索</button>
+                        </div>
+                        <!-- 快速标签 - 科技灰 -->
+                        <div class="quick-tags-row" style="display: flex; gap: 16px; margin-top: 6px; padding-left: 4px;">
+                            <span style="color: #86909C; font-size: 12px;">热门搜索话题：</span>
+                            <span style="color: #86909C; font-size: 12px; cursor: pointer;" class="quick-tag-link">智能制造</span>
+                            <span style="color: #86909C; font-size: 12px; cursor: pointer;" class="quick-tag-link">工业智能化</span>
+                            <span style="color: #86909C; font-size: 12px; cursor: pointer;" class="quick-tag-link">工业机器人</span>
+                            <span style="color: #86909C; font-size: 12px; cursor: pointer;" class="quick-tag-link">协作机器人</span>
+                            <span style="color: #86909C; font-size: 12px; cursor: pointer;" class="quick-tag-link">数字孪生</span>
+                        </div>
+                        <style>
+                            .upload-btn-compact:hover {
+                                color: #FF6600;
+                                background: #FFF7F0;
+                            }
+                            .voice-btn-compact:hover {
+                            color: #FF6600;
+                            background: #FFF7F0;
+                        }
+                        .search-btn-compact:hover {
+                                background: #0041B8;
+                                transform: translateY(-1px);
+                                box-shadow: 0 4px 12px rgba(0, 81, 217, 0.3);
+                            }
+                            .quick-tag-link:hover {
+                                color: #0051D9 !important;
+                            }
+                            .compact-search-box:focus-within {
+                                border-color: #0051D9;
+                                box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+                            }
+
+        /* ===== 我的助理 - 悬浮按钮 ===== */
+        .ai-assistant-btn {
+            position: fixed;
+            right: 24px;
+            bottom: 120px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #0051D9 0%, #003CB3 100%);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 20px rgba(0,81,217,0.35);
+            transition: transform 0.25s, box-shadow 0.25s;
+            animation: ai-float 3s ease-in-out infinite;
+        }
+        .ai-assistant-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 28px rgba(0,81,217,0.5);
+        }
+        @keyframes ai-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .ai-assistant-btn svg {
+            width: 30px;
+            height: 30px;
+        }
+        .ai-assistant-label {
+            position: fixed;
+            right: 90px;
+            bottom: 138px;
+            z-index: 9998;
+            font-size: 12px;
+            color: #0051D9;
+            font-weight: 600;
+            background: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        .ai-assistant-btn:hover ~ .ai-assistant-label,
+        .ai-assistant-label:hover {
+            opacity: 1;
+        }
+
+        /* ===== 我的助理 - 聊天面板 ===== */
+        .ai-chat-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 10000;
+        }
+        .ai-chat-overlay.open {
+            display: block;
+        }
+        .ai-chat-panel {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -420px;
+            width: 420px;
+            height: 90vh;
+            max-height: 840px;
+            background: #fff;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ai-chat-panel.open {
+            right: 0;
+        }
+        .ai-chat-header {
+            background: linear-gradient(135deg, #0051D9 0%, #003CB3 100%);
+            color: #fff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .ai-chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ai-chat-header-left svg {
+            width: 28px;
+            height: 28px;
+        }
+        .ai-chat-header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .ai-chat-header-subtitle {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .ai-chat-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .ai-chat-close:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            background: #F7F8FA;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .ai-msg {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+        }
+        .ai-msg.user {
+            flex-direction: row-reverse;
+            align-self: flex-end;
+        }
+        .ai-msg.assistant {
+            align-self: flex-start;
+        }
+        .ai-msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-msg.assistant .ai-msg-avatar {
+            background: linear-gradient(135deg, #0051D9, #003CB3);
+        }
+        .ai-msg.user .ai-msg-avatar {
+            background: #E5E6EB;
+            color: #1D2129;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .ai-msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #1D2129;
+        }
+        .ai-msg.assistant .ai-msg-bubble {
+            background: #fff;
+            border: 1px solid #E5E6EB;
+            border-top-left-radius: 4px;
+        }
+        .ai-msg.user .ai-msg-bubble {
+            background: #0051D9;
+            color: #fff;
+            border-top-right-radius: 4px;
+        }
+        .ai-msg-bubble ul {
+            margin: 6px 0 0 0;
+            padding-left: 18px;
+        }
+        .ai-msg-bubble li {
+            margin-bottom: 3px;
+        }
+        .ai-msg-bubble .highlight {
+            color: #FF6600;
+            font-weight: 600;
+        }
+        .ai-msg-bubble .equip-link {
+            color: #0051D9;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .ai-typing {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid #E5E6EB;
+            border-top-left-radius: 4px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+        .ai-typing span {
+            width: 6px;
+            height: 6px;
+            background: #86909C;
+            border-radius: 50%;
+            animation: ai-typing-bounce 1.2s infinite;
+        }
+        .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes ai-typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+        .ai-chat-input-area {
+            padding: 12px 16px;
+            background: #fff;
+            border-top: 1px solid #E5E6EB;
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .ai-chat-input {
+            flex: 1;
+            border: 1px solid #E5E6EB;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .ai-chat-input:focus {
+            border-color: #0051D9;
+        }
+        .ai-chat-send {
+            background: #0051D9;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .ai-chat-send:hover {
+            background: #0041B8;
+        }
+        .ai-chat-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 0 16px 10px;
+            background: #fff;
+            border-top: 1px solid #E5E6EB;
+        }
+        .ai-chat-quick-btn {
+            padding: 5px 12px;
+            background: #F0F5FF;
+            color: #0051D9;
+            border: 1px solid #D4E2FF;
+            border-radius: 14px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .ai-chat-quick-btn:hover {
+            background: #D4E2FF;
+        }
+
+        @media (max-width: 480px) {
+            .ai-chat-panel {
+                top: auto;
+                bottom: 0;
+                transform: none;
+                width: 100%;
+                height: 70vh;
+                right: -100%;
+                border-radius: 12px 12px 0 0;
+            }
+        }
+    </style>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const uploadBtn = document.querySelector('.upload-btn-compact');
+                                const imageUpload = document.getElementById('imageUpload');
+                                if (uploadBtn) {
+                                    uploadBtn.addEventListener('click', function() {
+                                        if (imageUpload) {
+                                            imageUpload.click();
+                                        }
+                                    });
+                                }
+                                if (imageUpload) {
+                                    imageUpload.addEventListener('change', function(e) {
+                                        if (e.target.files && e.target.files[0]) {
+                                            const fileName = e.target.files[0].name;
+                                            alert('已选择文件: ' + fileName);
+                                        }
+                                    });
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 标签导航 -->
+    <div class="tab-container">
+        <div class="container">
+            <div class="tab-row">
+                <div class="tabs">
+                    <button class="create-center-btn" onclick="window.parent.location.href='创造中心.html'">创造中心</button>
+                    <div class="main-tab" data-tab="首页">首页</div>
+                    <div class="main-tab" data-tab="生产力方案共享">生产力方案共享</div>
+                    <div class="main-tab" data-tab="机器人设备共享">机器人设备共享</div>
+                    <div class="main-tab" data-tab="资源共享">资源共享</div>
+                    <div class="main-tab" data-tab="共享消费">共享消费</div>
+                    <div class="main-tab" data-tab="我的社群">我的社群</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <main class="container">
+
+        <!-- 方案卡片区域 -->
+         <div class="content-container">
+            
+            <!-- 面包屑导航 - 已隐藏 -->
+            <div class="breadcrumb" style="display:none;">
+                <a href="商城首页.html">首页</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">全部</span>
+            </div>
+
+            <!-- 筛选容器：标签式二级+三级分类 -->
+            <div id="category-filter-container" style="background-color: #ffffff; border-bottom: 1px solid #e5e7eb;">
+                <!-- 二级分类行 -->
+                <div id="secondary-category-row" style="display: flex; align-items: center; padding: 14px 28px; gap: 0;">
+                    <span style="font-size: 14px; color: #374151; font-weight: 500; margin-right: 16px; white-space: nowrap;">二级分类</span>
+                    <div id="secondary-category-tags" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <!-- JS动态生成 -->
+                    </div>
+                    <button id="resetCategoryTags" style="margin-left: auto; padding: 6px 16px; border: 1px solid #e5e7eb; background-color: white; border-radius: 6px; cursor: pointer; font-size: 14px; color: #6b7280; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.borderColor='#ef4444'; this.style.color='#ef4444';" onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280';">重置</button>
+                </div>
+                <!-- 三级分类行 -->
+                <div id="tertiary-category-row" style="display: none; align-items: center; padding: 0 28px 14px 28px;">
+                    <span style="font-size: 14px; color: #374151; font-weight: 500; margin-right: 16px; white-space: nowrap;">三级分类</span>
+                    <div id="tertiary-category-tags" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <!-- JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-row">
+                <div class="card-grid">
+                    <!-- 排序、统计容器 -->
+                    <div class="sort-stats-container">
+                        <div class="sort-options">
+                            <button class="sort-btn active">默认</button>
+                            <button class="sort-btn">人气</button>
+                            <button class="sort-btn">销量</button>
+                        </div>
+                    </div>
+                    <!-- 内容容器 -->
+                    <div class="card-content-container">
+                        <!-- 第一行 -->
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-1.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">六轴工业机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">高精度工业自动化解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>12.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>10000/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-2.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🦾</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">协作机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">灵活协作型机器人解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>6.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>5440/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-3.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">AGV移动机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能物流搬运解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>8.20<span style="font-size: 12px;">万</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-4.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">服务机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能服务型机器人解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>5.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>4400/天)</span></div>
+                            </div>
+                        </div>
+                        <!-- 第二行 -->
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-5.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">焊接机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">高精度焊接解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>9.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>7840/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-6.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🦾</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">码垛机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">高效码垛解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>7.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>6000/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-7.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">巡检机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能巡检解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>6.20<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>4960/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-8.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">清洁机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能清洁解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>3.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>2800/天)</span></div>
+                            </div>
+                        </div>
+                        <!-- 第三行 -->
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-9.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">工业机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能工业自动化解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>10.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>8400/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-10.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🦾</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">教育机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能教育解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>4.20<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>3360/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/z-17-1.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">医疗机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能医疗解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>15.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>12640/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/z-17-2.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">配送机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能配送解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>5.20<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>4160/天)</span></div>
+                            </div>
+                        </div>
+                        <!-- 第四行 -->
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/z-17-3.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">安防机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能安防解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>8.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>7040/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/zb-17-1.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🦾</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">娱乐机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能娱乐解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>3.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>3040/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/zb-17-2.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">农业机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能农业解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>7.20<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>5760/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/zb-17-3.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">建筑机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能建筑解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>12.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>10240/天)</span></div>
+                            </div>
+                        </div>
+                        <!-- 第五行 -->
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-1.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">矿山机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能矿山解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>18.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>14800/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-2.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🦾</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">水下机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能水下作业解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>15.20<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>12160/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-3.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🚜</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">消防机器人</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能消防解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>13.80<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>11040/天)</span></div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <img src="images/j-4.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">🤖</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">巡检无人机</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">智能巡检解决方案</div>
+                                <div style="font-size: 16px; color: #FF6600; font-weight: 500; margin-bottom: 4px;"><span style="font-size: 14px;">¥</span>9.50<span style="font-size: 12px;">万</span> <span style="color: #999; font-weight: normal; font-size: 14px;">(共享 <span style="font-size: 12px;">¥</span>7600/天)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 页码容器（独立于卡片内容区外，避免被updateContent的innerHTML覆盖） -->
+                    <div class="pagination-container" style="padding: 16px 10px; display: flex; justify-content: right; align-items: center; gap: 10px; border-top: 1px solid #e0e0e0; ">
+                        <span class="pagination-stats" style="font-size: 14px; color: #86909C; margin-right: auto;">共 <b style="color: #1D2129;">10</b> 条</span>
+                        <button class="page-btn" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid #e0e0e0; background: #fff; color: #666; border-radius: 4px; cursor: pointer;">&lt;</button>
+                        <button class="page-btn active" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid #0051D9; background: #0051D9; color: #fff; border-radius: 4px; cursor: pointer;">1</button>
+                        <button class="page-btn" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid #e0e0e0; background: #fff; color: #666; border-radius: 4px; cursor: pointer;">2</button>
+                        <button class="page-btn" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid #e0e0e0; background: #fff; color: #666; border-radius: 4px; cursor: pointer;">&gt;</button>
+                        <span style="font-size: 14px; color: #666;">前往</span>
+                        <input type="text" style="width: 40px; height: 28px; border: 1px solid #e0e0e0; border-radius: 4px; text-align: center; font-size: 14px;" value="1">
+                        <span style="font-size: 14px; color: #666;margin-right: 30px;">页</span>
+                    </div>
+                </div>
+            </div>
+         </div>
+       
+    </main>
+
+    <!-- 登录弹窗容器 -->
+    <div class="modal-overlay" id="loginModal">
+        <iframe class="modal-iframe" src="登录弹窗.html" style="background-color: transparent;"></iframe>
+    </div>
+
+    <!-- 退出确认弹窗 -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="logout-modal-content">
+            <h3 class="logout-modal-title">退出登录</h3>
+            <p class="logout-modal-message">确定要退出登录吗？</p>
+            <div class="logout-modal-buttons">
+                <button class="logout-modal-btn cancel" onclick="hideLogoutModal()">取消</button>
+                <button class="logout-modal-btn confirm" onclick="logout()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.querySelector('.upload-btn');
+            const imageUpload = document.getElementById('imageUpload');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function() {
+                    if (imageUpload) {
+                        imageUpload.click();
+                    }
+                });
+            }
+            if (imageUpload) {
+                imageUpload.addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        const fileName = e.target.files[0].name;
+                        alert('已选择文件: ' + fileName);
+                    }
+                });
+            }
+
+            // 根据URL参数设置选中的Tab
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabName = urlParams.get('tab');
+            if (tabName) {
+                // 移除所有Tab的active类
+                document.querySelectorAll('.main-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                // 找到对应的Tab并添加active类
+                const targetTab = document.querySelector(`.main-tab[data-tab="${tabName}"]`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+                // 加载对应tab的筛选分类
+                populateIndustries(tabName);
+                // 统一使用面板分类筛选，显示筛选区域
+                const industryFilterRow = document.getElementById('industry-filter-row');
+                if (industryFilterRow) {
+                    industryFilterRow.style.display = 'flex';
+                }
+                const otherFiltersContainer = document.querySelector('.other-filters-container');
+                if (otherFiltersContainer) {
+                    otherFiltersContainer.style.display = 'none';
+                }
+            }
+
+            // 处理来自子页面的消息
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'SHOW_LOGIN_MODAL') {
+                    showLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'SHOW_LOGOUT_MODAL') {
+                    showLogoutModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'LOGIN_SUCCESS') {
+                    // 登录成功，隐藏登录弹窗并刷新页面
+                    handleLoginSuccess();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'CLOSE_MODAL') {
+                    // 关闭登录弹窗
+                    hideLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        // 显示登录弹窗
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏登录弹窗
+        function hideLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 点击遮罩层关闭登录弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginModal = document.getElementById('loginModal');
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) {
+                    hideLoginModal();
+                }
+            });
+        });
+
+        // 显示退出确认弹窗
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏退出确认弹窗
+        function hideLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 执行退出登录
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            hideLogoutModal();
+            // 刷新页面以更新导航栏状态
+            window.location.reload();
+        }
+
+        // 处理登录成功
+        function handleLoginSuccess() {
+            // 设置登录状态到localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+            console.log('登录成功，设置isLoggedIn为true');
+            // 隐藏登录弹窗
+            hideLoginModal();
+            // 刷新页面以更新导航栏状态
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
+        // 产业数据
+        const industryData = {
+            '生产力方案共享': [
+                { name: '工业', sub: ['智能制造', '工业自动化', '工业机器人', '工业互联网'] },
+                { name: '农业', sub: ['智慧农业', '农业自动化', '农业物联网', '农业机器人'] },
+                { name: '服务业', sub: ['智能服务', '服务机器人', '服务自动化', '服务数字化'] },
+                { name: '供应链', sub: ['智能仓储', '物流配送', '智能采购', '供应商管理'] },
+                { name: '训练基地', sub: ['技能培训', '资质认证', '设备实训', '课程体系'] },
+                { name: '共享工厂', sub: ['生产设备', '车间场地', '工艺流程', '质量控制'] },
+                { name: '人类资源', sub: ['人才招聘', '职业规划', '薪酬管理', '绩效考核'] }
+            ],
+            '机器人设备共享': [
+                { name: '具身机器人', sub: ['人形机器人', '仿生机器人', '固定基座型机器人', '轮式/履带式机器人', '多足机器人', '类人形机器人'] },
+                { name: '智能专机', sub: [] },
+                { name: '周边设备', sub: [] },
+                { name: '手抓/夹治具', sub: [] },
+                { name: '工具设备', sub: [] },
+                { name: '零配件', sub: [] },
+                { name: '工业设备', sub: ['焊接', '喷涂', '装配', '搬运'] },
+                { name: '农业设备', sub: [] },
+                { name: '服务业设备', sub: ['家庭', '医疗', '商业'] }
+            ],
+            '资源共享': [
+                { name: '设备资源', sub: ['数控设备', '检测设备', '3D打印', '自动化产线'] },
+                { name: '技术资源', sub: ['专利技术', '研发成果', '工艺方案', '设计服务'] },
+                { name: '人才资源', sub: ['专家顾问', '技术人员', '管理人才', '培训讲师'] },
+                { name: '场地资源', sub: ['厂房', '仓库', '实验室', '办公空间'] }
+            ],
+            '共享消费': [
+                { name: '智造品', sub: ['智能硬件', '工业产品', '消费电子', '家居用品'] },
+                { name: '应用软件产品', sub: ['工业软件', '管理软件', '设计软件', '数据分析'] },
+                { name: '游戏产品', sub: ['手机游戏', 'PC游戏', 'VR游戏', '休闲游戏'] },
+                { name: '影视文学', sub: ['电影', '电视剧', '小说', '动漫'] }
+            ],
+            '我的社群': [
+                { name: '行业交流', sub: ['技术讨论', '市场分析', '趋势预测', '经验分享'] },
+                { name: '资源对接', sub: ['供应链对接', '技术合作', '人才交流', '项目合作'] },
+                { name: '活动组织', sub: ['行业峰会', '技术培训', '展览展示', ' networking'] },
+                { name: '兴趣小组', sub: ['技术研究', '创业孵化', '投资交流', '公益活动'] }
+            ]
+        };
+
+        // 填充产业数据
+        function populateIndustries(tabName) {
+            const industryFilter = document.getElementById('industry-filter');
+            if (!industryFilter) return;
+            
+            industryFilter.innerHTML = '';
+            
+            let industries = [];
+            
+            // 检查tabName是否有效
+            const validTabName = tabName && tabName !== 'null' && tabName !== 'undefined';
+            
+            if (!validTabName) {
+                // 如果没有选中tab或tab无效，显示默认的15个产业
+                industries = [
+                    { name: '机器人、设备共享', sub: ['工业机器人', '服务机器人', '协作机器人', '移动机器人'] },
+                    { name: '共享工厂', sub: ['智能工厂', '柔性制造', '定制化生产', '协同制造'] },
+                    { name: '设备资源', sub: ['数控机床', '加工中心', '检测设备', '自动化设备'] },
+                    { name: '技术资源', sub: ['专利技术', '工艺方案', '设计服务', '研发成果'] },
+                    { name: '人才资源', sub: ['专家顾问', '技术人员', '培训服务', '管理咨询'] },
+                    { name: '场地资源', sub: ['厂房', '仓库', '实验室', '办公空间'] },
+                    { name: '智造品', sub: ['工业产品', '农业产品', '服务业产品', '智能硬件'] },
+                    { name: '应用软件产品', sub: ['工业软件', '管理软件', '设计软件', '数据分析'] },
+                    { name: '游戏产品', sub: ['手机游戏', 'PC游戏', 'VR游戏', '休闲游戏'] },
+                    { name: '影视文学', sub: ['电影', '电视剧', '小说', '动漫'] },
+                    { name: '游乐服务产品', sub: ['主题乐园', '休闲娱乐', '文化体验', '旅游服务'] },
+                    { name: '教育培训产品', sub: ['职业培训', '技能提升', '认证考试', '在线课程'] },
+                    { name: '健康医疗产品', sub: ['医疗器械', '健康管理', '医疗服务', '康复护理'] },
+                    { name: '智能家居产品', sub: ['智能家电', '安防系统', '环境控制', '家庭自动化'] },
+                    { name: '绿色环保产品', sub: ['节能设备', '环保材料', '可再生能源', '循环利用'] }
+                ];
+            } else {
+                // 只显示当前选中tab的产业数据
+                industries = industryData[tabName] || [];
+            }
+            
+            // 填充产业数据
+            industries.forEach((industry, index) => {
+                const item = document.createElement('div');
+                item.className = 'filter-item';
+                item.textContent = industry.name;
+                item.dataset.industry = industry.name;
+                item.dataset.sub = JSON.stringify(industry.sub);
+                
+                // 添加鼠标悬停事件
+                item.addEventListener('mouseenter', (e) => {
+                    showSubFilter(e.target);
+                });
+                
+                // 添加鼠标离开事件
+                item.addEventListener('mouseleave', (e) => {
+                    // 延迟检查鼠标是否在三级菜单上
+                    setTimeout(() => {
+                        if (!document.querySelector('.sub-filter-popup:hover')) {
+                            // 鼠标不在三级菜单上，取消二级菜单的选中状态
+                            item.style.color = '';
+                            item.style.backgroundColor = '';
+                            item.style.fontWeight = '';
+                            item.style.transform = '';
+                        }
+                    }, 200);
+                });
+                
+                // 添加点击事件
+                item.addEventListener('click', () => {
+                    // 获取当前选中的tab
+                    const activeTab = document.querySelector('.main-tab.active');
+                    const tabName = activeTab ? activeTab.dataset.tab : '';
+                    // 动态更新内容
+                    updateContent(tabName, industry.name, null);
+                    // 更新筛选按钮显示
+                    updateFilterButton(industry.name, null);
+                    // 更新面包屑导航：首页 > tab > industry
+                    updateBreadcrumb(tabName, industry.name, null);
+                    // 关闭下拉菜单
+                    toggleFilterDropdown();
+                });
+                
+                industryFilter.appendChild(item);
+            });
+        }
+
+        // 高亮对应的二级菜单
+        function highlightParentSideNav(item) {
+            // 移除所有二级菜单的高亮
+            document.querySelectorAll('.filter-item').forEach(navItem => {
+                navItem.style.color = '';
+                navItem.style.backgroundColor = '';
+                navItem.style.fontWeight = '';
+                navItem.style.transform = '';
+            });
+            
+            // 高亮当前二级菜单
+            item.style.color = 'var(--klein-blue)';
+            item.style.backgroundColor = '#f0f7ff';
+            item.style.fontWeight = '500';
+            item.style.transform = 'translateX(4px)';
+        }
+
+        // 计算并调整三级筛选位置
+        function adjustSubFilterPosition(item) {
+            const subFilter = document.getElementById('sub-filter');
+            if (!subFilter) return;
+            const rect = item.getBoundingClientRect();
+            const contentRowRect = document.querySelector('.content-row').getBoundingClientRect();
+            
+            // 强制回流以获取正确的尺寸
+            subFilter.offsetHeight;
+            
+            const subFilterRect = subFilter.getBoundingClientRect();
+            
+            // 计算基础位置
+            let top = rect.top - contentRowRect.top;
+            
+            // 计算屏幕高度
+            const windowHeight = window.innerHeight;
+            
+            // 计算三级筛选框底部位置
+            const subFilterBottom = rect.top + subFilterRect.height;
+            
+            // 如果三级筛选框超出屏幕底部，调整位置
+            if (subFilterBottom > windowHeight - 20) { // 20px 底部边距
+                top = windowHeight - subFilterRect.height - contentRowRect.top - 20;
+                // 确保位置不会小于0
+                top = Math.max(0, top);
+            }
+            
+            subFilter.style.top = top + 'px';
+        }
+
+        // 生成三级筛选（旧版）
+        function generateSubFilter(subItems, item) {
+            const subFilterItems = document.getElementById('sub-filter-items');
+            if (!subFilterItems) return;
+            subFilterItems.innerHTML = '';
+            
+            subItems.forEach(sub => {
+                const subItem = document.createElement('div');
+                subItem.className = 'filter-item';
+                subItem.textContent = sub;
+                
+                // 添加鼠标悬停事件，保持二级菜单高亮
+                subItem.addEventListener('mouseenter', () => {
+                    highlightParentSideNav(item);
+                });
+                
+                subItem.addEventListener('click', () => {
+                    // 获取当前选中的tab
+                    const activeTab = document.querySelector('.main-tab.active');
+                    const tabName = activeTab ? activeTab.dataset.tab : '';
+                    // 动态更新内容
+                    updateContent(tabName, item.dataset.industry, sub);
+                });
+                
+                subFilterItems.appendChild(subItem);
+            });
+            
+            // 为三级筛选容器添加鼠标悬停事件，保持二级菜单高亮
+            const subFilter = document.getElementById('sub-filter');
+            if (!subFilter) return;
+            subFilter.addEventListener('mouseenter', () => {
+                highlightParentSideNav(item);
+            });
+            
+            // 生成内容后调整位置
+            adjustSubFilterPosition(item);
+        }
+
+        // 显示三级筛选
+        function showSubFilter(target) {
+            const industry = target.dataset.industry;
+            const sub = JSON.parse(target.dataset.sub || '[]');
+            
+            const subFilter = document.getElementById('sub-filter');
+            if (!subFilter) return;
+            if (industry && sub && sub.length > 0) {
+                subFilter.style.display = 'block';
+                generateSubFilter(sub, target);
+                
+                // 高亮对应的二级菜单
+                highlightParentSideNav(target);
+            } else {
+                subFilter.style.display = 'none';
+            }
+        }
+
+        // 隐藏三级筛选
+        function hideSubFilter() {
+            const subFilter = document.getElementById('sub-filter');
+            if (subFilter) {
+                subFilter.style.display = 'none';
+            }
+            // 取消所有二级菜单的选中状态
+            document.querySelectorAll('.filter-item').forEach(navItem => {
+                navItem.style.color = '';
+                navItem.style.backgroundColor = '';
+                navItem.style.fontWeight = '';
+                navItem.style.transform = '';
+            });
+        }
+
+        // 处理产业点击
+        function handleIndustryClick(industryName) {
+            console.log('点击了产业:', industryName);
+            // 这里可以添加产业点击后的逻辑
+        }
+
+        // 处理细分领域点击
+        function handleSubIndustryClick(subIndustryName) {
+            console.log('点击了细分领域:', subIndustryName);
+            // 这里可以添加细分领域点击后的逻辑
+        }
+
+        // 动态更新内容
+        function updateContent(tab, industry, sub) {
+            // 保存当前滚动位置
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // 更新面包屑导航
+            updateBreadcrumb(tab, industry, sub);
+            
+            // 模拟加载内容（这里可以根据实际需求从后端获取数据）
+            const cardContentContainer = document.querySelector('.card-content-container');
+            if (cardContentContainer) {
+                // 直接更新内容，无任何效果
+                const newContent = generateCardContent(tab, industry, sub);
+                cardContentContainer.innerHTML = newContent;
+                
+                // 同步更新分页统计（实时统计当前卡片数量）
+                updatePaginationStats();
+                
+                // 恢复滚动位置
+                window.scrollTo(0, scrollTop);
+                
+                // 为新卡片添加点击事件
+                addCardClickEvents();
+            }
+        }
+
+        // 生成卡片内容
+        function generateCardContent(tab, industry, sub) {
+
+            // ────────── 数据池：机器人设备共享 ──────────
+            const robotData = {
+                '具身机器人': [
+                    { name: '六轴工业机器人', description: 'KR 6 R900是一款高精度六轴工业机器人，最大负载6kg，臂展900mm，重复定位精度达±0.05mm，适用于精密装配、焊接等场景。', price: '￥200,000', sales: 100, img: 'j-1.png', icon: '🤖' },
+                    { name: '人形机器人（标准版）', description: 'RBS-2000全身协调运动人形机器人，身高1.5m，42自由度关节，支持行走、跑动、上下楼梯，适用于人机协作场景。', price: '￥380,000', sales: 67, img: 'j-2.png', icon: '🤖' },
+                    { name: '仿生机器人平台', description: 'BioBot X5高度仿生设计平台，柔性手指抓取力0-100N可调，72个触觉传感器，可自适应抓取异形物体。', price: '￥285,000', sales: 43, img: 'j-3.png', icon: '🦾' },
+                    { name: '固定基座型机器人', description: 'FR-800A固定基座型工业机器人，最大负载8kg，臂展1300mm，IP67防护等级，重复定位精度±0.02mm。', price: '￥158,000', sales: 89, img: 'j-4.png', icon: '🤖' },
+                    { name: '轮式移动机器人', description: 'AMR-300室内自主导航轮式机器人，激光SLAM+视觉融合定位，载重300kg，续航8小时，自动回充。', price: '￥92,000', sales: 156, img: 'j-5.png', icon: '🚜' },
+                    { name: '多足机器人', description: 'HexaBot-6六足仿生机器人，自由度18，适应泥泞/碎石/陡坡等复杂地形，最大越障高度200mm，IP65防护。', price: '￥220,000', sales: 28, img: 'j-6.png', icon: '🦾' },
+                    { name: '类人形协作机器人', description: 'CoBot-ARM双臂协作机器人，单臂7自由度，负载3.5kg，碰撞检测响应<10ms，符合ISO/TS 15066安全标准。', price: '￥320,000', sales: 51, img: 'j-6.png', icon: '🤝' },
+                ],
+                '智能专机': [
+                    { name: '五轴CNC加工中心', description: 'VMC-850L五轴联动加工中心，行程850×550×550mm，主轴转速20000rpm，定位精度±0.003mm，西门子828D数控系统。', price: '￥450,000', sales: 72, img: 'j-7.png', icon: '⚙️' },
+                    { name: '智能焊接专机', description: 'WeldSmart Pro智能焊接专机，自适应焊缝跟踪精度±0.1mm，适用碳钢/不锈钢/铝合金，一次合格率99.5%。', price: '￥185,000', sales: 118, img: 'j-8.png', icon: '🔧' },
+                    { name: 'AI视觉检测专机', description: 'VisionInspect-AI搭载2000万像素工业相机，深度学习缺陷检测模型，检出率>99.8%，支持目标分类、分割。', price: '￥120,000', sales: 94, img: 'j-9.png', icon: '👁️' },
+                    { name: '光纤激光切割专机', description: 'LC-3015光纤激光切割机，功率3kW，最大切割厚度碳钢20mm/不锈钢12mm，定位精度±0.03mm，交换台自动上下料。', price: '￥260,000', sales: 63, img: 'j-10.png', icon: '⚡' },
+                    { name: '自动涂胶专机', description: 'GlueBot-200自动涂胶系统，XYZ三轴运动平台，胶量精度±2%，轨迹速度200mm/s，适配硅胶/环氧/UV胶。', price: '￥88,000', sales: 47, img: 'j-1.png', icon: '🎯' },
+                    { name: '智能拧紧专机', description: 'TorqSmart拧紧专机，扭矩范围5-200Nm，实时扭矩/角度监控曲线，MES数据上传，防错漏装功能。', price: '￥65,000', sales: 132, img: 'j-2.png', icon: '🔩' },
+                ],
+                '工业设备': [
+                    { name: '焊接机器人工作站', description: 'ArcMaster 500弧焊/点焊一体化工作站，适配发那科/库卡本体，焊接速度0-2m/min，含烟尘净化系统。', price: '￥198,000', sales: 85, img: 'j-3.png', icon: '🔥' },
+                    { name: '喷涂机器人系统', description: 'PaintSmart-6X静电旋杯喷涂系统，空气消耗降低30%，上漆率>85%，配色换色时间<15s，VOC排放减少40%。', price: '￥165,000', sales: 56, img: 'j-4.png', icon: '🎨' },
+                    { name: '柔性装配机器人', description: 'FlexAsm-800柔性装配单元，配置快换头+视觉引导，支持多型号零部件自适应装配，换型时间<5min。', price: '￥142,000', sales: 78, img: 'j-5.png', icon: '🏭' },
+                    { name: '重载搬运机器人', description: 'HL-500四轴重载机器人，最大负载500kg，工作半径3.1m，IP67防护，适用于机床上下料和重型搬运场景。', price: '￥115,000', sales: 103, img: 'j-6.png', icon: '🚚' },
+                ],
+                '农业设备': [
+                    { name: '智能采摘机器人', description: 'HarvestBot-3D双目视觉+柔性夹爪采摘机器人，可识别成熟度>95%，损伤率<1%，每小时采摘量约300-500颗。', price: '￥115,000', sales: 39, img: 'zb-17-1.png', icon: '🍎' },
+                    { name: '植保无人机T30', description: 'AgriUAV T30六旋翼植保无人机，载荷30kg，喷洒宽度8m，RTK厘米级定位，日作业面积可达500亩。', price: '￥48,000', sales: 215, img: 'zb-17-2.png', icon: '🌾' },
+                    { name: '温室智能巡检车', description: 'GreenHouse-Scout智能巡检车，搭载多光谱相机+环境传感器组，可实时监测温湿度/CO2/光照，AI病虫害预警。', price: '￥72,000', sales: 34, img: 'zb-17-3.png', icon: '🏡' },
+                ],
+                '服务业设备': [
+                    { name: '家庭服务机器人', description: 'HomeBot-S1家庭服务机器人，含语音助手/安防巡检/老人跌倒检测/智能家居中控功能，待机可达48h。', price: '￥38,000', sales: 287, img: 'z-17-1.png', icon: '🏠' },
+                    { name: '医疗辅助机器人', description: 'MediTrans-200医疗物资运输机器人，洁净室ISO5级别，自动消毒模块，载重200kg，扫码精准对接各科室。', price: '￥250,000', sales: 41, img: 'z-17-2.png', icon: '🏥' },
+                    { name: '末端配送机器人', description: 'DeliverBot-X1室外末端配送机器人，L4级自动驾驶，货箱容量120L，载重50kg，续航60km，支持电梯联动。', price: '￥52,000', sales: 176, img: 'z-17-3.png', icon: '📦' },
+                    { name: '餐饮送餐机器人', description: 'FoodBot-P5智能送餐机器人，三层托盘设计，激光+视觉融合导航，多点位并行配送，日均配送量200+托盘。', price: '￥35,000', sales: 312, img: 'j-7.png', icon: '🍽️' },
+                ],
+                // 周边设备
+                '周边设备': [
+                    { name: '工业视觉相机套件', description: 'VisionPro 2000万像素全局快门相机，支持GigE Vision协议，含环形光源+镜头组，适用于高速检测场景。', price: '￥18,500', sales: 203, img: 'j-9.png', icon: '📷' },
+                    { name: '力控传感器模块', description: 'ForceSense-6D六维力/力矩传感器，量程0-500N，分辨率0.05N，采样率2kHz，支持EtherCAT通信。', price: '￥28,000', sales: 89, img: 'j-4.png', icon: '⚖️' },
+                    { name: '机器人快换系统', description: 'QuickChange-100机器人末端快换装置，重复定位精度±0.01mm，最大负载100kg，支持气路/电信号自动对接。', price: '￥8,600', sales: 156, img: 'j-5.png', icon: '🔌' },
+                    { name: '安全光幕传感器', description: 'SafeGuard-IV四级安全光幕，保护高度600mm，分辨率14mm，响应时间<10ms，符合IEC 61496标准。', price: '￥6,800', sales: 234, img: 'j-6.png', icon: '🛡️' },
+                ],
+                // 手抓/夹治具
+                '手抓/夹治具': [
+                    { name: '气动平行夹爪', description: 'GripAir-PG80气动平行夹爪，夹持力0-200N，单行程10mm，重复定位±0.01mm，适配ISO法兰接口。', price: '￥3,500', sales: 345, img: 'j-1.png', icon: '✋' },
+                    { name: '电动自适应夹爪', description: 'AdaptGrip-E3电动自适应夹爪，3指设计，行程0-60mm可调，内置力传感器，支持Modbus TCP协议控制。', price: '￥12,800', sales: 178, img: 'j-2.png', icon: '🦾' },
+                    { name: '真空吸盘矩阵', description: 'VacMatrix-8真空吸盘矩阵系统，8个独立控制通道，最大吸附力50N/通道，适用于多孔透气材质搬运。', price: '￥9,200', sales: 112, img: 'j-3.png', icon: '🔽' },
+                ],
+                // 工具设备
+                '工具设备': [
+                    { name: '智能扭矩扳手', description: 'TorqWrench-100数字扭矩扳手，量程10-100Nm，精度±1%，蓝牙数据传输，配备防错计数与MES对接功能。', price: '￥5,800', sales: 264, img: 'j-8.png', icon: '🔧' },
+                    { name: '激光测距传感器', description: 'LaserDist-500激光位移传感器，量程±200mm，分辨率0.1μm，采样频率100kHz，适用于精密定位反馈。', price: '￥15,600', sales: 97, img: 'j-9.png', icon: '📏' },
+                    { name: '工业扫码枪', description: 'ScanPro-5000工业级固定式扫码枪，支持一维/二维码，读取速度60帧/s，IP65防护，以太网/RS232双通信。', price: '￥2,800', sales: 432, img: 'j-10.png', icon: '📱' },
+                ],
+                // 零配件
+                '零配件': [
+                    { name: '谐波减速器', description: 'HarmoDrive-25谐波减速器，减速比50:1，额定扭矩50Nm，背隙<1弧分，适配机器人关节驱动。', price: '￥3,200', sales: 521, img: 'j-1.png', icon: '⚙️' },
+                    { name: '伺服电机套装', description: 'ServoPack-750W交流伺服电机套装，额定转速3000rpm，含驱动器，支持EtherCAT总线，17位绝对值编码器。', price: '￥6,500', sales: 387, img: 'j-2.png', icon: '⚡' },
+                    { name: '直线导轨副', description: 'LinearSlide-25滚珠直线导轨副，长度1200mm，精度等级P，运行速度可达3m/s，预压等级Z1。', price: '￥1,850', sales: 654, img: 'j-3.png', icon: '📐' },
+                    { name: '机器人线缆包', description: 'CablePack-R6工业机器人线缆包，含动力/信号/编码器线缆，抗扭1000万次，适用于6轴机器人。', price: '￥4,200', sales: 298, img: 'j-4.png', icon: '🔌' },
+                ],
+                // 默认：全部/无匹配时展示
+                '__default__': [
+                    { name: '六轴工业机器人', description: 'KR 6 R900是一款高精度六轴工业机器人，最大负载6kg，臂展900mm，重复定位精度达±0.05mm，适用于精密装配、焊接等场景。', price: '￥200,000', sales: 100, img: 'j-1.png', icon: '🤖' },
+                    { name: '协作机器人', description: 'CoBot-5柔性协作机器人，7轴自由度，碰撞检测响应<5ms，拖拽示教功能，无需安全围栏即可人机协作。', price: '￥168,000', sales: 128, img: 'j-2.png', icon: '🦾' },
+                    { name: 'AGV移动机器人', description: 'AGV-500激光SLAM自主导航搬运机器人，载重500kg，定位精度±10mm，支持多车调度与电梯联动系统。', price: '￥82,000', sales: 215, img: 'j-3.png', icon: '🚜' },
+                    { name: '焊接机器人', description: 'ArcMaster-500智能弧焊机器人工作站，含激光焊缝跟踪，适配MIG/MAG/TIG工艺，含烟尘净化系统。', price: '￥198,000', sales: 89, img: 'j-4.png', icon: '🔥' },
+                    { name: '码垛机器人', description: 'PalletPro-180四轴码垛机器人，最大负载180kg，节拍可达15次/min，适配各类托盘标准，占地面积小。', price: '￥135,000', sales: 144, img: 'j-5.png', icon: '📦' },
+                    { name: '巡检机器人', description: 'Inspector-GT防爆巡检机器人，搭载热成像+高清云台+气体传感器，IIC防爆认证，自主充电续航8h。', price: '￥162,000', sales: 56, img: 'j-6.png', icon: '🔍' },
+                    { name: '清洁机器人', description: 'CleanBot-3000商用清洁机器人，集扫地/洗地/尘推于一体，工作效率2000㎡/h，自动加排水，L4级自主导航。', price: '￥85,000', sales: 178, img: 'j-7.png', icon: '🧹' },
+                    { name: '矿山机器人', description: 'MineBot-Ex矿用防爆机器人，IP68防护等级，搭载激光雷达+毫米波雷达，适用于井下巡检与危险区域作业。', price: '￥420,000', sales: 18, img: 'j-8.png', icon: '⛏️' },
+                    { name: '水下ROV机器人', description: 'DeepSea-300水下作业ROV，工作深度300m，4K摄像+机械手，光纤通信，适用于水下检测与打捞。', price: '￥350,000', sales: 22, img: 'j-9.png', icon: '🌊' },
+                    { name: '消防机器人', description: 'FireBot-X消防侦察机器人，耐高温800°C，搭载热成像+气体探测+水炮联动，遥控距离1km，适用于火场侦察。', price: '￥280,000', sales: 35, img: 'j-10.png', icon: '🚒' },
+                    { name: '医疗手术机器人', description: 'SurgiBot-M1微创手术辅助机器人系统，7自由度机械臂，3D高清内窥镜，震颤过滤技术，含术前规划软件。', price: '￥2,500,000', sales: 8, img: 'z-17-1.png', icon: '🏥' },
+                    { name: '末端配送机器人', description: 'DeliverBot-X1室外末端配送机器人，L4级自动驾驶，货箱容量120L，载重50kg，续航60km，支持电梯联动。', price: '￥52,000', sales: 176, img: 'z-17-3.png', icon: '📦' },
+                    { name: '农业植保无人机', description: 'AgriUAV T30六旋翼植保无人机，载荷30kg，喷洒宽度8m，RTK定位，日作业500亩，含智能航线规划。', price: '￥48,000', sales: 215, img: 'zb-17-1.png', icon: '🌾' },
+                    { name: '建筑3D打印机器人', description: 'BuildPrint-3D建筑3D打印机器人系统，打印尺寸8m×4m×3m，打印速度100mm/s，适配混凝土/砂浆材料。', price: '￥650,000', sales: 12, img: 'zb-17-2.png', icon: '🏗️' },
+                    { name: '安保巡逻机器人', description: 'GuardBot-P1自主安保巡逻机器人，360°全景监控，车牌/人脸识别，一键报警，适应室内外全天候运行。', price: '￥78,000', sales: 92, img: 'zb-17-3.png', icon: '🛡️' },
+                    { name: '餐饮送餐机器人', description: 'FoodBot-P5智能送餐机器人，三层托盘设计，激光+视觉融合导航，多点位并行配送，日均配送量200+托盘。', price: '￥35,000', sales: 312, img: 'j-1.png', icon: '🍽️' },
+                    { name: '迎宾接待机器人', description: 'RecepBot-AI智能迎宾机器人，含语音交互/人脸识别/自主导航/大屏展示，支持二次开发对接业务系统。', price: '￥45,000', sales: 164, img: 'j-2.png', icon: '🤝' },
+                    { name: '仓储物流机器人', description: 'WarehouseBot-1000料箱搬运机器人，最大负载1000kg，举升高度5m，激光SLAM导航，自动充电续航8h。', price: '￥98,000', sales: 198, img: 'j-3.png', icon: '🚚' },
+                    { name: '智能采摘机器人', description: 'HarvestBot-3D双目视觉水果采摘机器人，成熟度识别>95%，损伤率<1%，作业效率300-500颗/h。', price: '￥115,000', sales: 39, img: 'j-4.png', icon: '🍎' },
+                    { name: '人形机器人平台', description: 'RBS-2000全身协调运动人形机器人，身高1.5m，42自由度关节，支持行走/跑动/上下楼梯，适用于科研实验。', price: '￥380,000', sales: 67, img: 'j-5.png', icon: '🤖' },
+                ]
+            };
+
+            // ────────── 数据池：生产力方案共享 ──────────
+            const solutionData = {
+                '工业': {
+                    '__all__': [
+                        { name: '工业智能制造整体解决方案', description: '覆盖产品设计、工艺规划、制造执行、质量检测全流程数字化，含MES/WMS/QMS多系统集成，支持车间无纸化与可视化管理。', price: '￥280,000', sales: 67, img: 'j-1.png', icon: '🏭' },
+                        { name: '工业自动化产线改造方案', description: '老旧产线柔性自动化改造，非标设备设计制造+PLC编程+机器人集成，兼容多品种共线生产，投资回收期12-18个月。', price: '￥155,000', sales: 82, img: 'j-2.png', icon: '⚙️' },
+                        { name: '工业机器人集成部署方案', description: '从选型评估、仿真验证、安装调试到操作培训全覆盖，支持发那科/KUKA/ABB/安川等主流品牌，OEE提升30%+。', price: '￥220,000', sales: 54, img: 'j-3.png', icon: '🤖' },
+                        { name: '工业互联网平台接入方案', description: '边缘网关+数据采集+云端分析一体化，实现设备全联网、生产过程实时监控、远程运维与预警，支持1000+设备并发接入。', price: '￥120,000', sales: 48, img: 'j-4.png', icon: '🌐' },
+                        { name: '工厂数字孪生解决方案', description: '三维工厂建模+实时数据融合，实现生产过程虚拟仿真、瓶颈分析、能耗优化，支持VR/AR沉浸式巡检与远程协作。', price: '￥350,000', sales: 23, img: 'j-5.png', icon: '🖥️' },
+                        { name: '智能质检视觉方案', description: '工业相机+深度学习AI视觉检测系统，支持表面缺陷、尺寸测量、字符识别，检出率>99.8%，误检率<1%，替代人工质检。', price: '￥88,000', sales: 76, img: 'j-6.png', icon: '👁️' },
+                    ],
+                    '智能制造': [
+                        { name: '高精度智能制造解决方案', description: '基于数字孪生的智能工厂整体方案，含MES/SCADA/ERP全链路集成，支持APS高级排产、质量SPC与设备OEE监控看板。', price: '￥320,000', sales: 31, img: 'j-1.png', icon: '🏭' },
+                        { name: '柔性智能制造平台', description: '面向多品种小批量生产的快速切换方案，含模块化工装夹具系统+AGV调度+RFID追踪，换型时间压缩至15分钟以内。', price: '￥245,000', sales: 45, img: 'j-2.png', icon: '⚙️' },
+                        { name: 'AI智能排产系统', description: '基于约束理论与遗传算法的智能排产引擎，综合考虑设备产能、人员班次、物料供给，生成最优生产计划，交期准时率95%+。', price: '￥98,000', sales: 58, img: 'j-3.png', icon: '📊' },
+                        { name: '智能制造数据中台', description: '设备/质量/能效/物流数据统一汇聚、清洗、建模分析，提供BI可视化看板与异常自动预警，驱动数据化运营决策。', price: '￥150,000', sales: 39, img: 'j-4.png', icon: '🌐' },
+                    ],
+                    '工业自动化': [
+                        { name: '高精度工业自动化解决方案', description: '全产线自动化改造交钥匙方案，含非标设备设计制造、PLC/DCS编程调试、机器人系统集成，可实现人工减少60%、效率提升80%。', price: '￥285,000', sales: 62, img: 'j-1.png', icon: '⚙️' },
+                        { name: '自动化产线快速部署方案', description: '模块化标准化设计，预制装配式输送线+标准工位组合，从安装到投产仅需4-6周，支持产线快速复制扩展。', price: '￥180,000', sales: 73, img: 'j-2.png', icon: '🏭' },
+                        { name: 'PLC/SCADA系统集成方案', description: '覆盖西门子/三菱/欧姆龙/倍福等主流PLC统一接入，SCADA集中监控+数据采集+报警管理，支持OPC UA/MQTT开放协议。', price: '￥65,000', sales: 94, img: 'j-3.png', icon: '🖥️' },
+                        { name: '自动化仓储物流方案', description: '自动化立体仓库+输送分拣线+AGV调度系统一体化部署，出入库效率提升200%，空间利用率提高50%，库存准确率99.9%。', price: '￥420,000', sales: 28, img: 'j-4.png', icon: '📦' },
+                    ],
+                    '工业机器人': [
+                        { name: '工业机器人集成部署方案', description: '从方案设计、仿真验证、机器人选型、系统集成到现场调试培训的全流程服务，支持搬运/焊接/喷涂/装配等多种工艺场景。', price: '￥220,000', sales: 54, img: 'j-1.png', icon: '🤖' },
+                        { name: '多机器人协同作业方案', description: '基于视觉引导的多机械臂协调控制系统，支持双臂协作、多机同步等复杂工艺，产能提升50%+，含离线编程与碰撞检测。', price: '￥300,000', sales: 36, img: 'j-2.png', icon: '🦾' },
+                        { name: '机器人运维托管方案', description: '7×24小时远程监控+定期巡检+备件管理+故障2小时快响，含OEE分析报告与预防性维护计划，降低非计划停机80%。', price: '￥58,000', sales: 87, img: 'j-3.png', icon: '🛠️' },
+                        { name: '机器人二次开发培训方案', description: '覆盖发那科/KUKA/ABB/安川等主流品牌，含离线编程、视觉集成、工艺调试实操课程，经认证考核颁发操作资格证。', price: '￥32,000', sales: 115, img: 'j-4.png', icon: '📚' },
+                    ],
+                    '工业互联网': [
+                        { name: '工业互联网平台搭建方案', description: '边缘计算网关+物联网平台+云端应用SaaS，支持设备全量数据接入、实时分析、远程运维，1000+设备并发管理。', price: '￥180,000', sales: 42, img: 'j-1.png', icon: '🌐' },
+                        { name: '设备预测性维护方案', description: '振动/温度/电流多传感器融合+AI故障预测模型，提前14天预警潜在故障，降低非计划停机70%，延长设备寿命20%。', price: '￥95,000', sales: 53, img: 'j-2.png', icon: '📡' },
+                        { name: '5G+工业互联网方案', description: '5G专网部署+uRLLC低时延通信+MEC边缘计算，满足AGV协同调度、AR远程协作、高清视频质检等高带宽低时延场景。', price: '￥350,000', sales: 19, img: 'j-3.png', icon: '📶' },
+                    ],
+                },
+                '农业': {
+                    '__all__': [
+                        { name: '智慧农业整体解决方案', description: '覆盖种植、灌溉、施肥、采收全链条数字化，含物联网传感器+无人机巡检+智能决策平台，增产15%-25%。', price: '￥160,000', sales: 38, img: 'zb-17-1.png', icon: '🌾' },
+                        { name: '农业物联网监控方案', description: '土壤墒情+气象站+高清视频多维度实时监测，数据通过4G/5G上云，支持阈值报警与远程灌溉控制联动。', price: '￥68,000', sales: 56, img: 'zb-17-2.png', icon: '📡' },
+                        { name: '精准灌溉控制系统', description: '基于土壤湿度/天气预报/作物生长模型的水肥一体化智能灌溉方案，节水30%以上，肥料利用率提高25%。', price: '￥45,000', sales: 78, img: 'zb-17-3.png', icon: '💧' },
+                        { name: '农产品区块链溯源方案', description: '从种植、加工、仓储、物流到销售全链条数据上链存证，消费者扫码可查询完整溯源信息，增信防伪。', price: '￥52,000', sales: 44, img: 'zb-17-1.png', icon: '🔍' },
+                        { name: '植保无人机作业方案', description: '含无人机+飞手培训+保险+航线规划软件一站式交付，支持自动避障和全自主飞行，作业效率为人工喷洒的30倍。', price: '￥38,000', sales: 92, img: 'j-4.png', icon: '✈️' },
+                        { name: '温室智能环控方案', description: '温湿度/光照/CO2多因子协同控制，PID+模糊控制算法，自动调节风机、遮阳、加温设备，提高产量15%-20%。', price: '￥82,000', sales: 35, img: 'zb-17-2.png', icon: '🌡️' },
+                    ],
+                },
+                '服务业': {
+                    '__all__': [
+                        { name: '零售AI智能选址方案', description: '基于LBS大数据+客流画像+竞争态势分析模型，输出选址评分、商圈潜力预测与盈利能力评估报告，辅助科学决策。', price: '￥58,000', sales: 67, img: 'j-7.png', icon: '🏪' },
+                        { name: '餐饮智能运营管理方案', description: '扫码点餐+后厨KDS+会员CRM+供应链管理一体化SaaS平台，降低人力成本30%，翻台率提升20%，复购率提高25%。', price: '￥42,000', sales: 103, img: 'j-8.png', icon: '🍽️' },
+                        { name: '酒店客户体验管理方案', description: 'PMS+CRM+智能客控+AI客服一体化，含入住前中后全触点数字化服务设计，提升客户满意度与复购率25%。', price: '￥65,000', sales: 48, img: 'j-9.png', icon: '🏨' },
+                        { name: '智慧医疗运营方案', description: '门诊智能排队+病区护理呼叫+药房自动发药+资源智能调度，平均等待时长降低40%，患者满意度提升30%。', price: '￥120,000', sales: 31, img: 'j-10.png', icon: '🏥' },
+                        { name: '教育机构OMO数字化方案', description: '涵盖招生获客、教务排课、在线教学、学员续费全流程数字化平台，支持直播/录播/题库/作业批改等功能模块。', price: '￥38,000', sales: 59, img: 'z-17-2.png', icon: '📚' },
+                        { name: '智慧物业统一管理方案', description: '报修/巡检/收费/能耗/安防统一平台，含业主APP+员工端+管理端三端协同，工单处理效率提升60%。', price: '￥75,000', sales: 42, img: 'z-17-3.png', icon: '🏢' },
+                    ],
+                },
+                '供应链': {
+                    '__all__': [
+                        { name: '供应链可视化管控方案', description: '从采购订单到终端交付的端到端全链路可视化平台，支持异常自动预警、预计到达时间智能预测和运力动态调度。', price: '￥140,000', sales: 52, img: 'j-1.png', icon: '🔗' },
+                        { name: '智能采购管理平台', description: 'AI比价引擎+供应商画像评估+三级审批流+自动下单，支持询比价、招投标、合同管理全流程，采购成本降低8%-15%。', price: '￥85,000', sales: 68, img: 'j-2.png', icon: '🛒' },
+                        { name: '智能库存优化方案', description: '基于时间序列预测+机器学习的需求预测引擎，动态计算安全库存和再订货点，实现库存周转率提升30%，缺货率降低50%。', price: '￥62,000', sales: 57, img: 'j-3.png', icon: '📦' },
+                        { name: '供应商协同管理方案', description: '订单确认、发货通知、到货验收、对账结算在线协同平台，支持供应商绩效考核评分与分级管理，协同效率提升40%。', price: '￥55,000', sales: 73, img: 'j-4.png', icon: '🤝' },
+                        { name: '跨境供应链金融方案', description: '应收账款保理融资+信用证+贸易信用保险一站式服务，线上申请最快24h放款，支持多币种结算与汇率风险管理。', price: '￥220,000', sales: 26, img: 'j-5.png', icon: '💰' },
+                        { name: '冷链物流全程监控方案', description: '温湿度传感器+GPS+4G实时上传，全链路温区合规监控，异常自动报警，自动生成合规报告，满足GSP/GMP审计要求。', price: '￥98,000', sales: 39, img: 'j-6.png', icon: '❄️' },
+                    ],
+                },
+                '训练基地': {
+                    '__all__': [
+                        { name: '工业机器人实训基地方案', description: '含发那科/KUKA/ABB主流品牌实训台8-20套，配套离线编程软件、考证系统与课程体系，支持人社部工业机器人操作员认证。', price: '￥450,000', sales: 18, img: 'j-1.png', icon: '🎓' },
+                        { name: '智能制造实训平台方案', description: 'MES+自动化产线缩比模型实训岛，覆盖智能仓储、加工、检测、装配全流程，含数字孪生仿真与实操考核系统。', price: '￥320,000', sales: 14, img: 'j-2.png', icon: '🏭' },
+                        { name: '设备实训中心建设方案', description: '从场地规划、设备选型采购、安装调试到运营培训的一站式交钥匙方案，含3年运营支持与定期课程更新服务。', price: '￥550,000', sales: 9, img: 'j-3.png', icon: '🔧' },
+                        { name: 'VR仿真实训方案', description: '焊接/喷涂/高空作业等危险工种VR仿真培训系统，含力反馈手套+头显+评分系统，安全替代现场实操训练。', price: '￥180,000', sales: 22, img: 'j-4.png', icon: '🥽' },
+                        { name: '职业技能鉴定系统方案', description: '考核标准数字化+实操过程录像+AI自动评分+成绩报告一键生成，支持多工种鉴定标准配置和在线远程监考。', price: '￥85,000', sales: 33, img: 'j-5.png', icon: '📋' },
+                        { name: '双元制校企合作方案', description: '企业定制化课程开发+校内实训基地共建+学生顶岗实习+就业推荐一站式服务，促进产教深度融合。', price: '￥120,000', sales: 27, img: 'j-6.png', icon: '🤝' },
+                    ],
+                },
+                '共享工厂': {
+                    '__all__': [
+                        { name: '共享工厂运营管理平台', description: '设备在线预约+智能工位排产+产能撮合+费用结算一体化SaaS平台，实现工厂设备资源利用率最大化。', price: '￥180,000', sales: 31, img: 'j-1.png', icon: '🏭' },
+                        { name: '共享制造订单撮合方案', description: 'AI供需匹配引擎，根据订单工艺要求自动匹配具备闲置产能的工厂，含在线报价、合同签署与进度追踪功能。', price: '￥85,000', sales: 46, img: 'j-2.png', icon: '🔗' },
+                        { name: '设备共享计费结算方案', description: '按时/按件/按产能多模式计费，支持押金管理、阶梯定价、收益自动分账，账单透明可追溯，资金T+1结算。', price: '￥58,000', sales: 52, img: 'j-3.png', icon: '💰' },
+                        { name: '共享工厂品控追溯方案', description: '从原料入库、加工工序到成品出库的生产全过程记录系统，支持扫码追溯和质量报告自动生成。', price: '￥92,000', sales: 37, img: 'j-4.png', icon: '🔍' },
+                        { name: '工厂能耗优化方案', description: '高耗能设备实时监测+AI峰谷调度+能效对标分析，综合节能15%-25%，含碳排核算与能源管理报告。', price: '￥60,000', sales: 44, img: 'j-5.png', icon: '⚡' },
+                        { name: '设备融资租赁方案', description: '联合金融机构提供设备直租/回租/经营租赁多种金融方案，审批快、首付低，支持灵活还款与期末留购。', price: '￥150,000', sales: 29, img: 'j-6.png', icon: '🏦' },
+                    ],
+                },
+                '人类资源': {
+                    '__all__': [
+                        { name: '人才数字化管理平台', description: '含招聘管理、员工档案、考勤排班、绩效考核、薪酬核算等全模块HR SaaS，支持多组织架构与灵活审批流配置。', price: '￥85,000', sales: 56, img: 'j-1.png', icon: '👥' },
+                        { name: '技能人才共享撮合方案', description: '工程师/技工/设计师按技能标签分类，企业按需调用共享人才，灵活用工结算，含社保代缴与意外险保障。', price: '￥52,000', sales: 78, img: 'j-2.png', icon: '🤝' },
+                        { name: '劳动力大数据分析方案', description: '行业薪酬水平、人才供需、技能趋势、人员流动等多维度数据分析报告，辅助企业制定薪酬策略与人才规划。', price: '￥68,000', sales: 43, img: 'j-3.png', icon: '📊' },
+                        { name: 'AI智能简历筛选方案', description: 'NLP岗位画像+简历解析+智能评分排序，支持批量筛选与候选人画像匹配，筛选效率提升5倍，匹配准确率>90%。', price: '￥35,000', sales: 89, img: 'j-4.png', icon: '🤖' },
+                        { name: '员工培训效果评估方案', description: '学习行为追踪+知识评测+能力图谱构建+ROI量化分析，实现培训投入与业务产出的可量化关联评估。', price: '￥42,000', sales: 61, img: 'j-5.png', icon: '📚' },
+                        { name: '灵活用工合规管理方案', description: '电子合同签署+社保个税代缴+用工风险筛查+政策法规库，确保灵活用工全流程合规，降低用工法律风险。', price: '￥58,000', sales: 47, img: 'j-6.png', icon: '📋' },
+                    ],
+                },
+            };
+
+            // ────────── 选取数据池 ──────────
+            let cardData;
+
+            if (tab === '机器人设备共享') {
+                // 精确匹配二级分类，取对应数据池；无匹配时用默认
+                if (industry && robotData[industry]) {
+                    cardData = robotData[industry];
+                } else {
+                    cardData = robotData['__default__'];
+                }
+            } else if (tab === '生产力方案共享') {
+                const industryPool = solutionData[industry];
+                if (industryPool) {
+                    if (sub && industryPool[sub]) {
+                        cardData = industryPool[sub];
+                    } else {
+                        cardData = industryPool['__all__'];
+                    }
+                } else {
+                    // 无industry时，汇总所有方案展示
+                    cardData = Object.values(solutionData).flatMap(pool => pool['__all__'] || []);
+                }
+            } else {
+                // 资源共享、共享消费、我的社群 — 暂无数据
+                cardData = [];
+            }
+
+            // ────────── 空数据面板 ──────────
+            if (!cardData || cardData.length === 0) {
+                return `
+                    <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; color: #86909C;">
+                        <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.4;">📭</div>
+                        <div style="font-size: 16px; font-weight: 500; color: #86909C; margin-bottom: 8px;">暂无数据，请刷新</div>
+                        <div style="font-size: 13px; color: #C9CDD4;">当前面板暂无内容，请稍后重试或切换其他页签</div>
+                    </div>
+                `;
+            }
+
+            // ────────── 渲染卡片 ──────────
+            // 条数控制：方案20条、设备12条
+            let displayLimit = cardData.length;
+            if (tab === '生产力方案共享') {
+                displayLimit = Math.min(cardData.length, 10);
+            } else if (tab === '机器人设备共享') {
+                displayLimit = Math.min(cardData.length, 12);
+            }
+
+            let content = '';
+            for (let i = 0; i < displayLimit; i++) {
+                const data = cardData[i % cardData.length];
+                content += `
+                    <div class="content-card">
+                        <div style="height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <img src="images/${data.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">${data.icon}</div>
+                        </div>
+                        <div style="padding: 10px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #1D2129; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;" title="${data.name}">${data.name}</div>
+                            <div style="font-size: 12px; color: #86909C; margin-bottom: 8px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="${data.description}">${data.description}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 16px; color: #FF6600; font-weight: 600;">${data.price}</span>
+                                <span style="font-size: 12px; color: #86909C;">已售 ${data.sales}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return content;
+        }
+
+        // 更新分页数据统计
+        function updatePaginationStats() {
+            const statsEl = document.querySelector('.pagination-stats');
+            if (!statsEl) return;
+            const cardCount = document.querySelectorAll('.card-content-container .content-card').length;
+            const hasEmpty = document.querySelector('.card-content-container [style*="grid-column: 1 / -1"]');
+            const total = hasEmpty ? 0 : cardCount;
+            statsEl.innerHTML = '共 <b style="color: #1D2129;">' + total + '</b> 条';
+        }
+
+        // 处理标签切换
+        function handleTabClick(tabName) {
+            console.log('切换到标签:', tabName);
+            // 渲染分类标签
+            renderCategoryTags(tabName);
+            // 同步更新卡片内容区
+            updateContent(tabName, null, null);
+        }
+        
+        // 渲染分类标签（二级 + 三级）
+        let currentSecondaryCategory = null; // 当前选中的二级分类
+        let currentTertiaryCategory = null;  // 当前选中的三级分类
+        
+        function renderCategoryTags(tabName, preselectedSecondary) {
+            const secondaryContainer = document.getElementById('secondary-category-tags');
+            const tertiaryContainer = document.getElementById('tertiary-category-tags');
+            const tertiaryRow = document.getElementById('tertiary-category-row');
+            
+            if (!secondaryContainer) return;
+            
+            // 获取该tab的分类数据
+            const categories = industryData[tabName] || [];
+            
+            // 清空
+            secondaryContainer.innerHTML = '';
+            if (tertiaryContainer) tertiaryContainer.innerHTML = '';
+            if (tertiaryRow) tertiaryRow.style.display = 'none';
+            
+            currentSecondaryCategory = null;
+            currentTertiaryCategory = null;
+            
+            // 创建"全部"标签
+            const allTag = document.createElement('span');
+            allTag.className = 'category-tag active';
+            allTag.textContent = '全部';
+            allTag.addEventListener('click', () => {
+                // 取消所有二级选中
+                document.querySelectorAll('#secondary-category-tags .category-tag').forEach(t => t.classList.remove('active'));
+                allTag.classList.add('active');
+                // 隐藏三级
+                if (tertiaryRow) tertiaryRow.style.display = 'none';
+                if (tertiaryContainer) tertiaryContainer.innerHTML = '';
+                currentSecondaryCategory = null;
+                currentTertiaryCategory = null;
+                // 更新内容
+                updateContent(tabName, null, null);
+            });
+            secondaryContainer.appendChild(allTag);
+            
+            // 创建各分类标签
+            categories.forEach(cat => {
+                const tag = document.createElement('span');
+                tag.className = 'category-tag';
+                tag.textContent = cat.name;
+                tag.addEventListener('click', () => {
+                    // 取消所有二级选中
+                    document.querySelectorAll('#secondary-category-tags .category-tag').forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+                    currentSecondaryCategory = cat.name;
+                    currentTertiaryCategory = null;
+                    
+                    // 如果有三级子分类，展示三级行
+                    if (cat.sub && cat.sub.length > 0) {
+                        tertiaryContainer.innerHTML = '';
+                        // 三级"全部"
+                        const subAllTag = document.createElement('span');
+                        subAllTag.className = 'category-tag active';
+                        subAllTag.textContent = '全部';
+                        subAllTag.addEventListener('click', () => {
+                            document.querySelectorAll('#tertiary-category-tags .category-tag').forEach(t => t.classList.remove('active'));
+                            subAllTag.classList.add('active');
+                            currentTertiaryCategory = null;
+                            updateContent(tabName, cat.name, null);
+                        });
+                        tertiaryContainer.appendChild(subAllTag);
+                        
+                        // 三级子分类
+                        cat.sub.forEach(sub => {
+                            const subTag = document.createElement('span');
+                            subTag.className = 'category-tag';
+                            subTag.textContent = sub;
+                            subTag.addEventListener('click', () => {
+                                document.querySelectorAll('#tertiary-category-tags .category-tag').forEach(t => t.classList.remove('active'));
+                                subTag.classList.add('active');
+                                currentTertiaryCategory = sub;
+                                updateContent(tabName, cat.name, sub);
+                            });
+                            tertiaryContainer.appendChild(subTag);
+                        });
+                        
+                        tertiaryRow.style.display = 'flex';
+                    } else {
+                        tertiaryRow.style.display = 'none';
+                        tertiaryContainer.innerHTML = '';
+                    }
+                    
+                    // 更新内容
+                    updateContent(tabName, cat.name, null);
+                });
+                secondaryContainer.appendChild(tag);
+            });
+            
+            // 如果有预选中的二级分类，自动选中
+            if (preselectedSecondary) {
+                const tags = secondaryContainer.querySelectorAll('.category-tag');
+                tags.forEach(t => {
+                    if (t.textContent === preselectedSecondary) {
+                        t.click();
+                    }
+                });
+            }
+            
+            // 重置按钮事件
+            const resetBtn = document.getElementById('resetCategoryTags');
+            if (resetBtn) {
+                resetBtn.onclick = () => {
+                    // 重新渲染
+                    renderCategoryTags(tabName);
+                    updateContent(tabName, null, null);
+                };
+            }
+        }
+
+        // 切换筛选下拉菜单
+        function toggleFilterDropdown() {
+            const menu = document.getElementById('filterDropdownMenu');
+            const arrow = document.getElementById('filterArrow');
+            const subFilter = document.getElementById('sub-filter');
+            if (!menu) return;
+            const isDisplayed = menu.style.display === 'block';
+            
+            if (isDisplayed) {
+                menu.style.display = 'none';
+                if (subFilter) subFilter.style.display = 'none';
+                if (arrow) arrow.innerHTML = '<path d="M4.5 2.5L8 6L4.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+            } else {
+                menu.style.display = 'block';
+                if (arrow) arrow.innerHTML = '<path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+                generateFilterContent();
+            }
+        }
+
+        // 生成筛选内容
+        function generateFilterContent() {
+            const content = document.querySelector('.filter-dropdown-content');
+            const industries = [
+                { name: '全部分类', sub: [] },
+                { name: '机器人、设备共享', sub: ['工业机器人', '服务机器人', '协作机器人', '移动机器人'] },
+                { name: '共享工厂', sub: ['智能工厂', '柔性制造', '定制化生产', '协同制造'] },
+                { name: '设备资源', sub: ['数控机床', '加工中心', '检测设备', '自动化设备'] },
+                { name: '技术资源', sub: ['专利技术', '工艺方案', '设计服务', '研发成果'] },
+                { name: '人才资源', sub: ['专家顾问', '技术人员', '培训服务', '管理咨询'] },
+                { name: '场地资源', sub: ['厂房', '仓库', '实验室', '办公空间'] },
+                { name: '智造品', sub: ['工业产品', '农业产品', '服务业产品', '智能硬件'] },
+                { name: '应用软件产品', sub: ['工业软件', '管理软件', '设计软件', '数据分析'] },
+                { name: '游戏产品', sub: ['手机游戏', 'PC游戏', 'VR游戏', '休闲游戏'] },
+                { name: '影视文学', sub: ['电影', '电视剧', '小说', '动漫'] },
+                { name: '游乐服务产品', sub: ['主题乐园', '休闲娱乐', '文化体验', '旅游服务'] },
+                { name: '教育培训产品', sub: ['职业培训', '技能提升', '认证考试', '在线课程'] },
+                { name: '健康医疗产品', sub: ['医疗器械', '健康管理', '医疗服务', '康复护理'] },
+                { name: '智能家居产品', sub: ['智能家电', '安防系统', '环境控制', '家庭自动化'] },
+                { name: '绿色环保产品', sub: ['节能设备', '环保材料', '可再生能源', '循环利用'] }
+            ];
+            
+            content.innerHTML = '';
+            industries.forEach(industry => {
+                const item = document.createElement('div');
+                item.className = 'filter-dropdown-item filter-item';
+                item.textContent = industry.name;
+                item.dataset.industry = industry.name;
+                item.dataset.sub = JSON.stringify(industry.sub);
+                
+                item.addEventListener('mouseenter', (e) => {
+                    showSubFilter(e.target);
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    // 延迟检查鼠标是否在三级菜单上
+                    setTimeout(() => {
+                        if (!document.querySelector('.sub-filter-popup:hover')) {
+                            // 鼠标不在三级菜单上，取消二级菜单的选中状态
+                            item.style.color = '';
+                            item.style.backgroundColor = '';
+                            item.style.fontWeight = '';
+                            item.style.transform = '';
+                        }
+                    }, 200);
+                });
+                
+                item.addEventListener('click', () => {
+                    const currentTabName = document.querySelector('.main-tab.active')?.dataset.tab || '';
+                    
+                    if (industry.name === '全部分类' || industry.name === '全部产业') {
+                        updateContent(currentTabName, null, null);
+                        updateFilterButton(null, null);
+                        updateBreadcrumb(currentTabName, null, null);
+                    } else if (!industry.sub || industry.sub.length === 0) {
+                        updateContent(currentTabName, industry.name, null);
+                        updateFilterButton(industry.name, null);
+                        updateBreadcrumb(currentTabName, industry.name, null);
+                    } else {
+                        // 如果有子菜单，更新按钮显示二级菜单名称
+                        updateFilterButton(industry.name, null);
+                        updateBreadcrumb(currentTabName, industry.name, null);
+                    }
+                    // 选择后立即关闭下拉菜单
+                    toggleFilterDropdown();
+                });
+                
+                content.appendChild(item);
+            });
+        }
+        
+        // 显示三级筛选
+        function showSubFilter(item) {
+            const industry = item.dataset.industry;
+            const sub = JSON.parse(item.dataset.sub || '[]');
+            
+            const subFilter = document.getElementById('sub-filter');
+            
+            if (industry && sub && sub.length > 0) {
+                if (subFilter) subFilter.style.display = 'block';
+                generateSubFilter(sub, item);
+                highlightParentSideNav(item);
+            } else {
+                if (subFilter) subFilter.style.display = 'none';
+            }
+        }
+        
+        // 高亮对应的二级菜单
+        function highlightParentSideNav(item) {
+            document.querySelectorAll('.filter-item').forEach(navItem => {
+                navItem.style.color = '';
+                navItem.style.backgroundColor = '';
+                navItem.style.fontWeight = '';
+                navItem.style.transform = '';
+            });
+            
+            item.style.color = 'var(--klein-blue)';
+            item.style.backgroundColor = '#f0f7ff';
+            item.style.fontWeight = '500';
+            item.style.transform = 'translateX(4px)';
+        }
+        
+        // 计算并调整三级筛选位置
+        function adjustSubFilterPosition(item) {
+            const subFilter = document.getElementById('sub-filter');
+            if (!subFilter) return;
+            
+            const filterDropdown = document.querySelector('.filter-dropdown');
+            if (!filterDropdown) return;
+            const dropdownRect = filterDropdown.getBoundingClientRect();
+            const rect = item.getBoundingClientRect();
+            
+            // 计算相对于filter-dropdown的top位置
+            let top = rect.top - dropdownRect.top;
+            
+            // 强制回流以获取正确的尺寸
+            subFilter.offsetHeight;
+            const subFilterRect = subFilter.getBoundingClientRect();
+            
+            // 确保不会超出屏幕底部
+            const windowHeight = window.innerHeight;
+            const subFilterBottom = rect.top + subFilterRect.height;
+            
+            if (subFilterBottom > windowHeight - 20) {
+                top = windowHeight - subFilterRect.height - dropdownRect.top - 20;
+                top = Math.max(36, top); // 最小36px，避免覆盖按钮
+            }
+            
+            subFilter.style.top = top + 'px';
+        }
+        
+        // 生成三级筛选（新版）
+        function generateSubFilter(subItems, item) {
+            const subFilterItems = document.getElementById('sub-filter-items');
+            if (!subFilterItems) return;
+            subFilterItems.innerHTML = '';
+            
+            subItems.forEach(sub => {
+                const subItem = document.createElement('div');
+                subItem.className = 'filter-item';
+                subItem.textContent = sub;
+                
+                subItem.addEventListener('mouseenter', () => {
+                    highlightParentSideNav(item);
+                });
+                
+                subItem.addEventListener('click', () => {
+                    const industryName = item.dataset.industry;
+                    const currentTabName = document.querySelector('.main-tab.active')?.dataset.tab || '';
+                    updateContent(currentTabName, industryName, sub);
+                    updateFilterButton(industryName, sub);
+                    toggleFilterDropdown();
+                });
+                
+                subFilterItems.appendChild(subItem);
+            });
+            
+            adjustSubFilterPosition(item);
+        }
+
+        // 更新筛选按钮显示
+        function updateFilterButton(industry, sub) {
+            const filterSelection = document.getElementById('filterSelection');
+            if (!filterSelection) return;
+            
+            if (!industry || industry === '全部分类' || industry === '全部产业') {
+                filterSelection.textContent = '全部分类';
+            } else if (!sub) {
+                filterSelection.textContent = industry;
+            } else {
+                filterSelection.textContent = industry + ' > ' + sub;
+            }
+        }
+
+        // 分类筛选函数
+        function filterByCategory() {
+            const select = document.getElementById('categoryFilter');
+            if (!select) return;
+            const category = select.value;
+            const currentTabName = document.querySelector('.main-tab.active')?.dataset.tab || '';
+            
+            if (category) {
+                updateContent(currentTabName, category, null);
+            } else {
+                updateContent(currentTabName, null, null);
+            }
+        }
+
+        // 点击其他地方关闭筛选菜单
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('filterDropdownMenu');
+            const toggle = document.getElementById('filterToggle');
+            const subFilterPopup = document.querySelector('.sub-filter-popup');
+            
+            if (menu && toggle && !menu.contains(e.target) && !toggle.contains(e.target) && (!subFilterPopup || !subFilterPopup.contains(e.target))) {
+                menu.style.display = 'none';
+                const arrow = document.getElementById('filterArrow');
+                if (arrow) {
+                    arrow.innerHTML = '<path d="M4.5 2.5L8 6L4.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+                }
+                
+                const subFilter = document.getElementById('sub-filter');
+                if (subFilter) subFilter.style.display = 'none';
+                
+                document.querySelectorAll('.filter-item').forEach(navItem => {
+                    navItem.style.color = '';
+                    navItem.style.backgroundColor = '';
+                    navItem.style.fontWeight = '';
+                    navItem.style.transform = '';
+                });
+            }
+        });
+        
+        // 从URL参数中获取值
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // 生成其他筛选项标签
+        function generateOtherFilters(tabName) {
+            const container = document.querySelector('.other-filters-container');
+            if (!container) return;
+            
+            // 清空容器
+            container.innerHTML = '';
+            
+            // 添加标题
+            const titleElement = document.createElement('span');
+            titleElement.style.cssText = `font-size: 14px; color: #374151; font-weight: 500; margin-right: 16px;`;
+            titleElement.textContent = '全部分类';
+            container.appendChild(titleElement);
+            
+            // 根据tab动态获取标签列表
+            const tabTags = {
+                '生产力方案共享': ['工业', '农业', '服务业', '供应链', '训练基地', '共享工厂', '人类资源'],
+                '机器人设备共享': ['具身机器人', '智能专机', '周边设备', '手抓/夹治具', '工具设备', '零配件', '工业设备', '农业设备', '服务业设备'],
+                '资源共享': ['场地共享', '设备租赁', '技术服务', '人才派遣', '资金对接'],
+                '共享消费': ['共享办公', '共享出行', '共享充电', '共享存储', '共享厨房'],
+                '我的社群': ['技术交流', '项目合作', '招聘求职', '资源互换', '经验分享']
+            };
+            
+            const filterTags = tabTags[tabName] || ['工业', '农业', '服务业'];
+            
+            filterTags.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'filter-tag';
+                tagElement.textContent = tag;
+                // 美化标签样式，与页面整体配色一致
+                tagElement.style.cssText = `
+                    padding: 6px 30px;
+                    border: 1.5px solid #E5E7EB;
+                    background: linear-gradient(135deg, #ffffff 0%, #F7FAFF 100%);
+                    border-radius: 22px;
+                    font-size: 13px;
+                    color: #4B5563;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 0 2px 4px rgba(0, 81, 217, 0.06);
+                    font-weight: 500;
+                    letter-spacing: 0.3px;
+                    position: relative;
+                    overflow: hidden;
+                `;
+                
+                // 保留原有文本
+                tagElement.textContent = tag;
+                
+                tagElement.addEventListener('mouseenter', () => {
+                    const isSelected = tagElement.classList.contains('selected');
+                    if (isSelected) {
+                        // 选中状态的hover效果：橙色增强
+                        tagElement.style.borderColor = '#EA580C';
+                        tagElement.style.color = '#9A3412';
+                        tagElement.style.background = 'linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%)';
+                        tagElement.style.boxShadow = '0 6px 16px rgba(243, 112, 33, 0.35)';
+                    } else {
+                        // 默认状态的hover效果：蓝色渐变背景
+                        tagElement.style.borderColor = '#0051D9';
+                        tagElement.style.color = '#0051D9';
+                        tagElement.style.background = 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)';
+                        tagElement.style.boxShadow = '0 4px 12px rgba(0, 81, 217, 0.2)';
+                    }
+                    tagElement.style.transform = 'translateY(-2px)';
+                    tagElement.style.letterSpacing = '0.5px';
+                });
+                
+                tagElement.addEventListener('mouseleave', () => {
+                    const isSelected = tagElement.classList.contains('selected');
+                    if (isSelected) {
+                        tagElement.style.borderColor = '#FF6600';
+                        tagElement.style.color = '#C2410C';
+                        tagElement.style.background = 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)';
+                        tagElement.style.boxShadow = '0 4px 12px rgba(243, 112, 33, 0.25)';
+                    } else {
+                        tagElement.style.borderColor = '#E5E7EB';
+                        tagElement.style.color = '#4B5563';
+                        tagElement.style.background = 'linear-gradient(135deg, #ffffff 0%, #F7FAFF 100%)';
+                        tagElement.style.boxShadow = '0 2px 4px rgba(0, 81, 217, 0.06)';
+                    }
+                    tagElement.style.transform = 'translateY(0)';
+                    tagElement.style.letterSpacing = '0.3px';
+                });
+                
+                tagElement.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    
+                    // 获取当前选中的tab
+                    const currentTab = document.querySelector('.main-tab.active')?.textContent || document.querySelector('.main-tab.selected')?.textContent || '生产力方案共享';
+                    
+                    // 检查当前标签是否已选中（通过类名判断）
+                    const isSelected = tagElement.classList.contains('selected');
+                    
+                    if (isSelected) {
+                        // 取消选中状态
+                        tagElement.classList.remove('selected');
+                        tagElement.style.background = 'linear-gradient(135deg, #ffffff 0%, #F7FAFF 100%)';
+                        tagElement.style.borderColor = '#E5E7EB';
+                        tagElement.style.color = '#4B5563';
+                        tagElement.style.boxShadow = '0 2px 4px rgba(0, 81, 217, 0.06)';
+                        
+                        // 更新内容显示全部
+                        updateContent(currentTab, null, null);
+                        // 更新面包屑导航
+                        updateBreadcrumb(currentTab, null, null);
+                    } else {
+                        // 移除其他标签的选中状态
+                        document.querySelectorAll('.filter-tag').forEach(t => {
+                            t.classList.remove('selected');
+                            t.style.background = 'linear-gradient(135deg, #ffffff 0%, #F7FAFF 100%)';
+                            t.style.borderColor = '#E5E7EB';
+                            t.style.color = '#4B5563';
+                            t.style.boxShadow = '0 2px 4px rgba(0, 81, 217, 0.06)';
+                        });
+                        
+                        // 设置当前标签为选中状态（橙色主题）
+                        tagElement.classList.add('selected');
+                        tagElement.style.background = 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)';
+                        tagElement.style.borderColor = '#FF6600';
+                        tagElement.style.color = '#C2410C';
+                        tagElement.style.boxShadow = '0 4px 12px rgba(243, 112, 33, 0.25)';
+                        
+                        // 更新内容
+                        updateContent(currentTab, tag, null);
+                        // 更新面包屑导航（标签作为三级筛选跟在tab后面）
+                        updateBreadcrumb(currentTab, null, tag);
+                    }
+                    // 不更新 filterButton，不关闭下拉菜单
+                });
+                
+                container.appendChild(tagElement);
+                
+                // 在最后一个标签后面添加重置按钮
+                if (index === filterTags.length - 1) {
+                    const resetBtn = document.createElement('button');
+                    resetBtn.id = 'resetTagBtn';
+                    resetBtn.textContent = '重置';
+                    resetBtn.style.cssText = `
+                        margin-left: 12px;
+                        padding: 6px 16px;
+                        border: 1px solid #e5e7eb;
+                        background-color: white;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        color: #6b7280;
+                        transition: all 0.3s;
+                    `;
+                    
+                    resetBtn.addEventListener('mouseenter', () => {
+                        resetBtn.style.borderColor = '#ef4444';
+                        resetBtn.style.color = '#ef4444';
+                    });
+                    
+                    resetBtn.addEventListener('mouseleave', () => {
+                        resetBtn.style.borderColor = '#e5e7eb';
+                        resetBtn.style.color = '#6b7280';
+                    });
+                    
+                    resetBtn.addEventListener('click', () => {
+                        resetTagFilter();
+                    });
+                    
+                    container.appendChild(resetBtn);
+                }
+            });
+        }
+        
+        // 重置全部分类筛选
+        function resetIndustryFilter() {
+            const filterSelection = document.getElementById('filterSelection');
+            if (filterSelection) {
+                filterSelection.textContent = '全部分类';
+            }
+            
+            const currentTabName = document.querySelector('.main-tab.active')?.dataset.tab || '';
+            updateContent(currentTabName, null, null);
+            updateBreadcrumb(currentTabName, null, null);
+            toggleFilterDropdown();
+        }
+        
+        // 重置标签筛选
+        function resetTagFilter() {
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.classList.remove('selected');
+                tag.style.background = 'linear-gradient(135deg, #ffffff 0%, #F7FAFF 100%)';
+                tag.style.borderColor = '#E5E7EB';
+                tag.style.color = '#4B5563';
+                tag.style.boxShadow = '0 2px 4px rgba(0, 81, 217, 0.06)';
+            });
+            
+            // 获取当前选中的tab
+            const currentTab = document.querySelector('.main-tab.active')?.textContent || document.querySelector('.main-tab.selected')?.textContent || '生产力方案共享';
+            updateContent(currentTab, null, null);
+            
+            // 更新面包屑导航，显示当前选中的tab
+            updateBreadcrumb(currentTab, null, null);
+        }
+
+        // 更新面包屑导航
+        function updateBreadcrumb(tab, industry, sub) {
+            const breadcrumb = document.querySelector('.breadcrumb');
+            if (!breadcrumb) return;
+            
+            let breadcrumbHTML = '<a href="商城首页.html">首页</a>';
+            
+            // 检查参数有效性
+            const validTab = tab && tab !== 'null' && tab !== 'undefined';
+            const validIndustry = industry && industry !== 'null' && industry !== 'undefined';
+            const validSub = sub && sub !== 'null' && sub !== 'undefined';
+            
+            // 构建面包屑导航：首页 > 选中tab > 二级分类 > 三级分类
+            if (validTab) {
+                if (validSub) {
+                    // 首页 > tab (link) > industry > sub (current)
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><a href="#" class="breadcrumb-tab-link" data-tab="${tab}">${tab}</a>`;
+                    if (validIndustry) {
+                        breadcrumbHTML += `<span class="breadcrumb-separator"></span><a href="#" class="breadcrumb-industry-link" data-industry="${industry}">${industry}</a>`;
+                    }
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${sub}</span>`;
+                } else if (validIndustry) {
+                    // 首页 > tab (link) > industry (current)
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><a href="#" class="breadcrumb-tab-link" data-tab="${tab}">${tab}</a>`;
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${industry}</span>`;
+                } else {
+                    // 只选择tab时
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${tab}</span>`;
+                }
+            } else if (validIndustry) {
+                // 没有tab，但有industry
+                if (validSub) {
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><a href="商品方案列表页.html?industry=${encodeURIComponent(industry)}">${industry}</a>`;
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${sub}</span>`;
+                } else {
+                    breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${industry}</span>`;
+                }
+            } else if (validSub) {
+                // 如果只有sub参数，显示三级菜单
+                breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">${sub}</span>`;
+            } else {
+                // 如果没有任何参数，显示产品列表
+                breadcrumbHTML += `<span class="breadcrumb-separator"></span><span class="breadcrumb-current">全部</span>`;
+            }
+            
+            breadcrumb.innerHTML = breadcrumbHTML;
+        }
+
+        // 面包屑tab链接点击事件（使用事件委托）
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('breadcrumb-tab-link')) {
+                e.preventDefault();
+                // 点击面包屑中的tab时，保持当前选中tab标题不变，不更新为【全部】
+                const currentTab = document.querySelector('.main-tab.active');
+                if (currentTab) {
+                    const currentTabName = currentTab.dataset.tab;
+                    // 重新加载当前tab的内容，面包屑保持为当前tab标题
+                    updateContent(currentTabName, null, null);
+                    updateBreadcrumb(currentTabName, null, null);
+                }
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL参数中获取值
+            const tabParam = getUrlParam('tab');
+            const industryParam = getUrlParam('industry');
+            const subParam = getUrlParam('sub');
+            const searchParam = getUrlParam('search');
+            const tagParam = getUrlParam('tag');
+            
+            // 如果是首页Tab，直接跳转回商城首页
+            if (tabParam === '首页') {
+                window.location.href = '商城首页.html';
+                return;
+            }
+            
+            // 选中对应的tab
+            const mainTabs = document.querySelectorAll('.main-tab');
+            let tabFound = false;
+            mainTabs.forEach(tab => {
+                if (tabParam && tabParam !== 'null' && tabParam !== 'undefined' && tab.dataset.tab === tabParam) {
+                    tab.classList.add('active');
+                    tabFound = true;
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // 如果没有找到对应的tab且tabParam不为null/undefined，保持第一个tab为active
+            if (!tabFound && tabParam && tabParam !== 'null' && tabParam !== 'undefined' && mainTabs.length > 0) {
+                mainTabs[0].classList.add('active');
+            }
+            
+            // 获取当前选中的tab名称
+            const currentTabName = document.querySelector('.main-tab.active')?.textContent || document.querySelector('.main-tab.selected')?.textContent || '生产力方案共享';
+            
+            // 初始化分类标签（新标签系统），默认选中"全部"
+            const targetTab = tabParam || currentTabName || '生产力方案共享';
+            renderCategoryTags(targetTab);
+            
+            // 默认选中"全部"时更新内容
+            updateContent(targetTab, null, null);
+            
+            // 如果有 industryParam，预选中对应的二级分类，随后预选三级分类
+            if (industryParam && industryParam !== 'null' && industryParam !== 'undefined') {
+                const secondaryTags = document.querySelectorAll('#secondary-category-tags .category-tag');
+                secondaryTags.forEach(t => {
+                    if (t.textContent === industryParam) {
+                        t.click(); // 触发三级标签渲染
+                    }
+                });
+                
+                // 若携带 sub 参数，继续预选对应的三级分类
+                if (subParam && subParam !== 'null' && subParam !== 'undefined') {
+                    const tertiaryTags = document.querySelectorAll('#tertiary-category-tags .category-tag');
+                    tertiaryTags.forEach(t => {
+                        if (t.textContent === subParam) {
+                            t.click();
+                        }
+                    });
+                }
+            }
+            
+            // 兜底：确保"全部"标签处于选中态（无 industry 参数时）
+            const activeSecondary = document.querySelector('#secondary-category-tags .category-tag.active');
+            if (!activeSecondary) {
+                const allTag = document.querySelector('#secondary-category-tags .category-tag');
+                if (allTag && allTag.textContent === '全部') {
+                    allTag.click();
+                }
+            }
+            
+            // 填充搜索框内容
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput && searchParam && searchParam !== 'null' && searchParam !== 'undefined') {
+                searchInput.value = searchParam;
+            }
+            
+            // 为list页面的搜索发送按钮添加点击事件
+            const searchSendBtn = document.querySelector('.search-btn-compact');
+            if (searchSendBtn) {
+                searchSendBtn.addEventListener('click', function() {
+                    const searchInput = document.querySelector('.search-input');
+                    const searchText = searchInput ? searchInput.value.trim() : '';
+                    window.location.href = `商品方案列表页.html?search=${encodeURIComponent(searchText)}&filter=industry`;
+                });
+            }
+
+            // 热门搜索话题标签点击：填入搜索框并自动搜索
+            document.querySelectorAll('.quick-tag-link').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const searchInput = document.querySelector('.search-input');
+                    if (searchInput) {
+                        searchInput.value = this.textContent.trim();
+                    }
+                    window.location.href = `商品方案列表页.html?search=${encodeURIComponent(this.textContent.trim())}&filter=industry`;
+                });
+            });
+            
+            // Tab点击事件：切换标签时重新渲染分类
+            mainTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    // 首页直接跳转
+                    if (tabName === '首页') {
+                        window.location.href = '商城首页.html';
+                        return;
+                    }
+                    mainTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    handleTabClick(tabName);
+                });
+            });
+
+            // 动态填充推荐区卡片
+            populateRecommendedCards();
+            
+            // 为所有卡片添加点击事件
+            addCardClickEvents();
+        });
+        
+        // 获取当前选中的二级分类
+        function getCurrentCategory() {
+            const filterSelection = document.getElementById('filterSelection');
+            
+            // 先检查顶部筛选按钮
+            if (filterSelection && filterSelection.textContent && filterSelection.textContent !== '全部分类') {
+                const text = filterSelection.textContent.trim();
+                // 如果格式是 "行业 > 子分类"，提取子分类部分
+                if (text.includes(' > ')) {
+                    return text.split(' > ')[1];
+                }
+                return text;
+            }
+            
+            // 再检查下方的筛选标签（.filter-tag.selected）
+            const selectedTag = document.querySelector('.filter-tag.selected');
+            if (selectedTag && selectedTag.textContent) {
+                return selectedTag.textContent.trim();
+            }
+            
+            // 如果没有选中分类，随机返回一个机器人设备共享下的二级分类
+            const categories = ['具身机器人', '智能专机', '周边设备', '手抓/夹治具', '工具设备', '零配件', '工业设备', '农业设备', '服务业设备'];
+            return categories[Math.floor(Math.random() * categories.length)];
+        }
+        
+        // 为所有卡片添加点击事件
+        function addCardClickEvents() {
+            // 为内容卡片添加点击事件
+            const contentCards = document.querySelectorAll('.card-content-container .content-card');
+            contentCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const currentTab = document.querySelector('.tab-item.active')?.textContent || document.querySelector('.tab-item.selected')?.textContent || document.querySelector('.main-tab.active')?.textContent || '';
+                    const category = getCurrentCategory();
+                    // 获取设备名称：取卡片内容区的第一个div（文本溢出省略的即是名称）
+                    const nameElement = this.querySelector('div[style*="text-overflow: ellipsis"]');
+                    const name = nameElement ? nameElement.textContent.trim() : '设备详情';
+                    
+                    if (currentTab.includes('机器人设备共享')) {
+                        window.open('设备详情页.html?from=list&nav=' + encodeURIComponent(currentTab) + '&category=' + encodeURIComponent(category) + '&name=' + encodeURIComponent(name), '_blank');
+                    } else {
+                        window.open('方案详情页.html?from=list&nav=' + encodeURIComponent(currentTab), '_blank');
+                    }
+                });
+            });
+            
+            // 为推荐卡片添加点击事件
+            const recommendedCards = document.querySelectorAll('.filter:last-child .content-card');
+            recommendedCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const currentTab = document.querySelector('.tab-item.active')?.textContent || document.querySelector('.tab-item.selected')?.textContent || document.querySelector('.main-tab.active')?.textContent || '';
+                    const category = getCurrentCategory();
+                    // 获取设备名称：取卡片内容区的第一个div（文本溢出省略的即是名称）
+                    const nameElement = this.querySelector('div[style*="text-overflow: ellipsis"]');
+                    const name = nameElement ? nameElement.textContent.trim() : '设备详情';
+                    
+                    if (currentTab.includes('机器人设备共享')) {
+                        window.open('设备详情页.html?from=list&nav=' + encodeURIComponent(currentTab) + '&category=' + encodeURIComponent(category) + '&name=' + encodeURIComponent(name), '_blank');
+                    } else {
+                        window.open('方案详情页.html?from=list&nav=' + encodeURIComponent(currentTab), '_blank');
+                    }
+                });
+            });
+        }
+        
+        // 动态填充推荐区卡片
+        function populateRecommendedCards() {
+            const recommendedSection = document.querySelector('.filter:last-child .filter-items');
+            if (!recommendedSection) return;
+            
+            // 计算推荐区的高度（使用offsetHeight以获取实际高度）
+            const recommendedSectionHeight = recommendedSection.offsetHeight;
+            
+            // 计算单个卡片的高度（包括间距）
+            const cardHeight = 160; // 卡片高度约为160px（100px图片 + 60px内容）
+            
+            // 计算可以容纳的卡片数量
+            const maxCards = Math.max(1, Math.ceil(recommendedSectionHeight / cardHeight));
+            
+            // 卡片数据
+            const cardData = [
+                { name: '工业机器人', description: '智能工业自动化解决方案', price: '12.50万', img: 'j-1.png', icon: '🤖' },
+                { name: 'AGV移动机器人', description: '智能物流搬运解决方案', price: '8.20万', img: 'j-2.png', icon: '🚜' },
+                { name: '协作机器人', description: '灵活协作型机器人解决方案', price: '6.80万', img: 'j-3.png', icon: '🦾' },
+                { name: '服务机器人', description: '智能服务型机器人解决方案', price: '5.50万', img: 'j-4.png', icon: '🤖' },
+                { name: '焊接机器人', description: '高精度焊接解决方案', price: '9.80万', img: 'j-5.png', icon: '🤖' },
+                { name: '码垛机器人', description: '高效码垛解决方案', price: '7.50万', img: 'j-6.png', icon: '🦾' },
+                { name: '巡检机器人', description: '智能巡检解决方案', price: '6.20万', img: 'j-7.png', icon: '🚜' },
+                { name: '清洁机器人', description: '智能清洁解决方案', price: '3.50万', img: 'j-8.png', icon: '🤖' },
+                { name: '矿山机器人', description: '智能矿山解决方案', price: '18.50万', img: 'j-9.png', icon: '🤖' },
+                { name: '水下机器人', description: '智能水下作业解决方案', price: '15.20万', img: 'j-10.png', icon: '🦾' },
+                { name: '消防机器人', description: '智能消防解决方案', price: '13.80万', img: 'z-17-1.png', icon: '🚜' },
+                { name: '巡检无人机', description: '智能巡检解决方案', price: '9.50万', img: 'z-17-2.png', icon: '🤖' },
+                { name: '教育机器人', description: '智能教育解决方案', price: '4.20万', img: 'z-17-3.png', icon: '🤖' },
+                { name: '医疗机器人', description: '智能医疗解决方案', price: '15.80万', img: 'zb-17-1.png', icon: '🦾' },
+                { name: '配送机器人', description: '智能配送解决方案', price: '5.20万', img: 'zb-17-2.png', icon: '🚜' }
+            ];
+            
+            // 清空现有卡片
+            recommendedSection.innerHTML = '';
+            
+            // 添加新卡片
+            for (let i = 0; i < maxCards; i++) {
+                const data = cardData[i % cardData.length];
+                const card = createRecommendedCard(data);
+                recommendedSection.appendChild(card);
+            }
+        }
+        
+        // 创建推荐卡片
+        function createRecommendedCard(data) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.style.cursor = 'pointer';
+            card.innerHTML = `
+                <div class="card-image-container" style="background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                    <img src="images/${data.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: #e8f4ff; color: #0051d9; font-size: 24px;">${data.icon}</div>
+                </div>
+                <div style="padding: 8px;">
+                    <div style="font-size: 14px; font-weight: 500; color: #333; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">${data.name}</div>
+                    <div style="font-size: 12px; color: #666; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;">${data.description}</div>
+                    <div style="font-size: 16px; color: #FF6600; font-weight: 500;"><span style="font-size: 14px;">¥</span>${data.price}</div>
+                </div>
+            `;
+            // 添加点击事件
+            card.addEventListener('click', function() {
+                const currentTab = document.querySelector('.tab-item.active')?.textContent || document.querySelector('.tab-item.selected')?.textContent || document.querySelector('.main-tab.active')?.textContent || '';
+                const category = getCurrentCategory();
+                
+                if (currentTab.includes('机器人设备共享')) {
+                    window.location.href = '设备详情页.html?from=list&nav=' + encodeURIComponent(currentTab) + '&category=' + encodeURIComponent(category) + '&name=' + encodeURIComponent(data.name);
+                } else {
+                    window.location.href = '方案详情页.html?from=list&nav=' + encodeURIComponent(currentTab);
+                }
+            });
+            return card;
+        }
+        
+        // 监听窗口大小变化，重新填充推荐区卡片
+        window.addEventListener('resize', populateRecommendedCards);
+    </script>
+
+    <!-- 聊天面板 -->
+    <div class="ai-chat-overlay" id="aiChatOverlay" onclick="this.classList.remove('open');document.getElementById('aiChatPanel').classList.remove('open');document.getElementById('aiAssistantBtn').style.display='';document.getElementById('aiAssistantLabel').style.display='';"></div>
+    <div class="ai-chat-panel" id="aiChatPanel">
+        <div class="ai-chat-header">
+            <div class="ai-chat-header-left">
+                <!-- 头部小图标 -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="2" x2="12" y2="5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+                    <circle cx="12" cy="1.5" r="1.5" fill="#fff" opacity="0.8"/>
+                    <rect x="5" y="6" width="14" height="11" rx="5" stroke="#fff" stroke-width="1.3" fill="none"/>
+                    <rect x="3" y="9" width="2" height="5" rx="1" fill="#fff" opacity="0.25"/>
+                    <rect x="19" y="9" width="2" height="5" rx="1" fill="#fff" opacity="0.25"/>
+                    <circle cx="9" cy="11.5" r="1.5" fill="#fff"/>
+                    <circle cx="15" cy="11.5" r="1.5" fill="#fff"/>
+                    <path d="M9 15.5 Q12 17.5 15 15.5" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                </svg>
+                <div>
+                    <div class="ai-chat-header-title">我的助理</div>
+                    <div class="ai-chat-header-subtitle">方案与需求解答</div>
+                </div>
+            </div>
+            <button class="ai-chat-close" id="aiChatClose" onclick="document.getElementById('aiChatOverlay').classList.remove('open');document.getElementById('aiChatPanel').classList.remove('open');document.getElementById('aiAssistantBtn').style.display='';document.getElementById('aiAssistantLabel').style.display='';">✕</button>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <!-- 初始欢迎消息由JS插入 -->
+        </div>
+        <div class="ai-chat-quick-actions" id="aiChatQuickActions">
+            <button class="ai-chat-quick-btn" data-q="我想生产一个鼠标">我想生产一个鼠标</button>
+            <button class="ai-chat-quick-btn" data-q="鼠标有哪些生产工艺">鼠标有哪些生产工艺</button>
+            <button class="ai-chat-quick-btn" data-q="需要哪些设备">需要哪些设备</button>
+            <button class="ai-chat-quick-btn" data-q="设备顺序怎样的">设备顺序怎样的</button>
+            <button class="ai-chat-quick-btn" data-q="帮我在网页找对应的设备">帮我在网页找对应的设备</button>
+        </div>
+        <div class="ai-chat-input-area">
+            <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="输入您的问题…" />
+            <button class="ai-chat-send" id="aiChatSend">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+    // 我的助理 - 聊天交互（独立脚本块）
+    (function() {
+        var KB = {
+            '我想生产一个鼠标': '鼠标生产是成熟的制造流程，建议先了解工艺和所需设备。您可点击 "鼠标有哪些生产工艺" 查看具体流程，或 "需要哪些设备" 查看设备清单 😊',
+            '鼠标有哪些生产工艺': '鼠标生产包含<b style="color:#FF6600">5道核心工艺</b>：<br>① 注塑成型 → ② 表面处理(喷涂/UV) → ③ SMT贴片 → ④ 组装锁付 → ⑤ 测试包装',
+            '需要哪些设备': '对应设备清单：<br>注塑机 → 喷涂/UV设备 → SMT贴片机 → 自动锁螺丝机 → 测试治具',
+            '设备顺序怎样的': '采购顺序建议：<br>1.注塑机(产能基准) → 2.SMT贴片机(并行安装) -> 3.表面处理设备 -> 4.组装设备 -> 5.测试包装设备',
+            '帮我在网页找对应的设备': '3种方式：<br>①顶部搜索框搜设备名称<br>②左侧分类Tab筛选<br>③下方筛选标签精筛'
+        };
+        var opened = false;
+        var msg = document.getElementById('aiChatMessages');
+        var inp = document.getElementById('aiChatInput');
+        function addBot(html) {
+            // 移除打字动画节点（ai-typing 的父容器）
+            var typingEl = msg.querySelector('.ai-typing');
+            if (typingEl) typingEl.closest('.ai-msg').remove();
+            var d = document.createElement('div');
+            d.className = 'ai-msg assistant';
+            d.innerHTML = '<div class="ai-msg-avatar"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="2" r="2" fill="#fff" opacity="0.8"/><rect x="5" y="6" width="14" height="11" rx="5" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="9" cy="11.5" r="1.5" fill="#fff"/><circle cx="15" cy="11.5" r="1.5" fill="#fff"/><path d="M9 15.5 Q12 17.5 15 15.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div><div class="ai-msg-bubble">'+html+'</div>';
+            msg.appendChild(d);
+            msg.scrollTop = msg.scrollHeight;
+        }
+        function addUser(t) {
+            var d = document.createElement('div');
+            d.className = 'ai-msg user';
+            d.innerHTML = '<div class="ai-msg-avatar">我</div><div class="ai-msg-bubble">'+t+'</div>';
+            msg.appendChild(d);
+            msg.scrollTop = msg.scrollHeight;
+        }
+        function typing() {
+            var d = document.createElement('div');
+            d.className = 'ai-msg assistant';
+            d.innerHTML = '<div class="ai-msg-avatar"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="2" r="2" fill="#fff" opacity="0.8"/><rect x="5" y="6" width="14" height="11" rx="5" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="9" cy="11.5" r="1.5" fill="#fff"/><circle cx="15" cy="11.5" r="1.5" fill="#fff"/><path d="M9 15.5 Q12 17.5 15 15.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div><div class="ai-typing"><span></span><span></span><span></span></div>';
+            msg.appendChild(d);
+            msg.scrollTop = msg.scrollHeight;
+        }
+        function reply(q) {
+            var t = q.trim();
+            if (!t) return;
+            for (var k in KB) { if (t.indexOf(k)>=0 || k.indexOf(t)>=0) return KB[k]; }
+            if (/工艺|流程|步骤/.test(t)) return KB['鼠标有哪些生产工艺'];
+            if (/设备|需要|买|哪些/.test(t)) return KB['需要哪些设备'];
+            if (/顺序|先买|下单|先后/.test(t)) return KB['设备顺序怎样的'];
+            if (/找|搜索|页面|导航|分类/.test(t)) return KB['帮我在网页找对应的设备'];
+            return '您可以问我：<br>• 我想生产一个鼠标<br>• 鼠标有哪些生产工艺<br>• 需要哪些设备<br>• 设备顺序怎样的<br>• 帮我在网页找对应的设备<br><br>或点击上方快捷按钮 😊';
+        }
+        function send() {
+            var t = inp.value.trim();
+            if (!t) return;
+            inp.value = '';
+            addUser(t);
+            typing();
+            setTimeout(function() { addBot(reply(t)); }, 800);
+        }
+        document.getElementById('aiChatSend').addEventListener('click', send);
+        inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+        });
+        document.querySelectorAll('.ai-chat-quick-btn').forEach(function(b) {
+            b.addEventListener('click', function() {
+                var q = this.getAttribute('data-q');
+                if (!q) return;
+                inp.value = q;
+                send();
+            });
+        });
+        // 首次打开欢迎语由按钮onclick触发，此处监听class变化
+        var btn = document.getElementById('aiAssistantBtn');
+        if (btn) {
+            var origClick = btn.onclick;
+            btn.onclick = function(e) {
+                if (origClick) origClick.call(this, e);
+                if (!opened) {
+                    opened = true;
+                    setTimeout(function() {
+                        addBot('您好！我是<b style="color:#FF6600">采购方案助理</b> 👋<br>请直接输入问题，或点击快捷按钮开始。');
+                    }, 300);
+                }
+            };
+        }
+    })();
+    </script>
+
+    <!-- 公共页脚引用 -->
+    <iframe src="公共页脚.html" style="width: 100%; height: 200px; border: none;"></iframe>
+</body>
+</html>

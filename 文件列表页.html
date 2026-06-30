@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>文档编辑</title>
+    <style>
+        /* ========== 响应式基础字体 ========== */
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        @media (max-width: 1440px) { html { font-size: 15px; } }
+        @media (max-width: 1366px) { html { font-size: 14px; } }
+        @media (max-width: 1280px) { html { font-size: 13px; } }
+        @media (max-width: 1024px) { html { font-size: 12px; } }
+        @media (max-width: 768px) { html { font-size: 11px; } }
+        @media (max-width: 600px) { html { font-size: 10px; } }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+
+        :root {
+            --primary: #0051D9;
+            --primary-light: #E8F0FE;
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --danger: #FF4D4F;
+            --text: #1D2129;
+            --text-secondary: #666;
+            --text-light: #999;
+            --bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --radius: 0.75rem;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== Tab栏 ========== */
+        #tab-bar {
+            display: none;
+            background: var(--white);
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        body.has-tab-bar #tab-bar {
+            display: flex;
+        }
+
+        body.has-tab-bar #icons-wrapper {
+            display: none;
+        }
+
+        .tabs-scroll-container {
+            display: flex;
+            gap: 0.25rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            white-space: nowrap;
+            align-items: center;
+        }
+
+        .tabs-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tabs-inner {
+            display: inline-flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+
+        .tab-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg);
+            border-radius: 0.375rem 0.375rem 0 0;
+            cursor: pointer;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            border-bottom: 2px solid transparent;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .tab-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .tab-item.active {
+            background: var(--white);
+            border-color: var(--border);
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .tab-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tab-icon.text { background: linear-gradient(135deg, #0051D9, #3377EE); }
+        .tab-icon.demo { background: linear-gradient(135deg, #FAAD14, #F59E0B); }
+        .tab-icon.table { background: linear-gradient(135deg, #52C41A, #73D13D); }
+        .tab-icon.pdf { background: linear-gradient(135deg, #FF4D4F, #EE5A5A); }
+
+        .tab-close {
+            margin-left: 0.5rem;
+            opacity: 0;
+            font-size: 1rem;
+            color: var(--text-light);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-close:hover {
+            background: #FFF1F0;
+            color: var(--danger);
+        }
+
+        .tab-item:hover .tab-close {
+            opacity: 1;
+        }
+
+        .tab-add {
+            width: 2.2rem;
+            height: 2.2rem;
+            padding: 0;
+            border: 2px dashed var(--border);
+            border-radius: 0.375rem;
+            background: var(--white);
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-add::before {
+            content: '';
+            width: 0.75rem;
+            height: 0.125rem;
+            background: currentColor;
+            position: absolute;
+        }
+
+        .tab-add::after {
+            content: '';
+            width: 0.125rem;
+            height: 0.75rem;
+            background: currentColor;
+            position: absolute;
+        }
+
+        .tab-add:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .tab-add.fixed {
+            position: absolute;
+            right: 0.75rem;
+        }
+
+        /* ========== 下拉菜单 ========== */
+        .dropdown-menu {
+            display: none;
+            position: fixed;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 0.5rem;
+            z-index: 9999;
+            min-width: 10rem;
+        }
+
+        .dropdown-menu.show {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.8125rem;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .dropdown-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .dropdown-icon.text { background: linear-gradient(135deg, #0051D9, #3377EE); }
+        .dropdown-icon.demo { background: linear-gradient(135deg, #FAAD14, #F59E0B); }
+        .dropdown-icon.table { background: linear-gradient(135deg, #52C41A, #73D13D); }
+        .dropdown-icon.pdf { background: linear-gradient(135deg, #FF4D4F, #EE5A5A); }
+
+        /* ========== 图标选择区域 ========== */
+        #icons-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3.75rem;
+            padding: 2rem;
+        }
+
+        .icon-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-block:hover {
+            transform: translateY(-0.25rem);
+        }
+
+        .icon-square {
+            width: 4rem;
+            height: 4rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .icon-block:hover .icon-square {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .icon-square.w { background: linear-gradient(135deg, #0051D9, #3377EE); }
+        .icon-square.p { background: linear-gradient(135deg, #FAAD14, #F59E0B); }
+        .icon-square.s { background: linear-gradient(135deg, #52C41A, #73D13D); }
+        .icon-square.pdf { background: linear-gradient(135deg, #FF4D4F, #EE5A5A); }
+
+        .icon-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ========== 内容区域 ========== */
+        #content-area {
+            display: none;
+            flex: 1;
+            background: var(--white);
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            overflow: hidden;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        body.has-tab-bar #content-area {
+            display: flex;
+            padding-top: 0;
+            margin-top: 3.5rem;
+            height: calc(100vh - 3.5rem);
+        }
+
+        #content-area img {
+            width: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        #default-text {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== 标题设置框 ========== */
+        .title-setting {
+            background: var(--white);
+            padding: 1.5rem 1rem 1rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-setting.show {
+            display: flex;
+        }
+
+        .title-setting label {
+            font-size: 0.875rem;
+            color: var(--text);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .title-setting input {
+            width: 30rem;
+            max-width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .title-setting .actions {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .title-setting .action-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            background: var(--white);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .title-setting .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .title-setting input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <div id="tab-bar">
+        <div class="tabs-scroll-container">
+            <div class="tabs-inner"></div>
+        </div>
+        <button class="tab-add" id="addBtn">+</button>
+    </div>
+
+    <div class="dropdown-menu" id="tabAddDropdown">
+        <div class="dropdown-item" data-type="text">
+            <span class="dropdown-icon text">W</span>
+            <span>新建文件</span>
+        </div>
+        <div class="dropdown-item" data-type="table">
+            <span class="dropdown-icon table">S</span>
+            <span>新建表格</span>
+        </div>
+        <div class="dropdown-item" data-type="demo">
+            <span class="dropdown-icon demo">P</span>
+            <span>新建演示文稿</span>
+        </div>
+        <div class="dropdown-item" data-type="pdf">
+            <span class="dropdown-icon pdf">P</span>
+            <span>新建PDF</span>
+        </div>
+    </div>
+
+    <div id="icons-wrapper">
+        <div class="icon-block" data-type="text">
+            <div class="icon-square w">W</div>
+            <span class="icon-text">文字</span>
+        </div>
+        <div class="icon-block" data-type="demo">
+            <div class="icon-square p">P</div>
+            <span class="icon-text">演示</span>
+        </div>
+        <div class="icon-block" data-type="table">
+            <div class="icon-square s">S</div>
+            <span class="icon-text">表格</span>
+        </div>
+        <div class="icon-block" data-type="pdf">
+            <div class="icon-square pdf">P</div>
+            <span class="icon-text">PDF</span>
+        </div>
+    </div>
+
+    <div id="content-area">
+        <div class="title-setting" id="title-setting">
+            <input type="text" id="tab-title" placeholder="请输入标题">
+            <div class="actions">
+                <button class="action-btn">分享</button>
+                <button class="action-btn">下载</button>
+            </div>
+        </div>
+        <img id="excel-image" src="images/excel.png" alt="Excel">
+        <img id="ppt-image" src="images/ppt.png" alt="PPT">
+        <img id="word-image" src="images/word.png" alt="Word">
+        <img id="pdf-image" src="images/PDF.png" alt="PDF">
+        <span id="default-text">文档内容区域</span>
+    </div>
+
+    <script>
+        const tabBar = document.getElementById('tab-bar');
+        const iconsWrapper = document.getElementById('icons-wrapper');
+        const contentArea = document.getElementById('content-area');
+        const dropdownMenu = document.getElementById('tabAddDropdown');
+        const addBtn = document.getElementById('addBtn');
+        const tabsScrollContainer = document.querySelector('.tabs-scroll-container');
+        const tabsInner = document.querySelector('.tabs-inner');
+        const titleSetting = document.getElementById('title-setting');
+        const tabTitleInput = document.getElementById('tab-title');
+
+        let fileTabs = [];
+        let activeTabId = null;
+
+        function updateAddBtnPosition() {
+            const tabsWidth = tabsInner.scrollWidth;
+            const addBtnWidth = addBtn.offsetWidth + 4;
+            const availableWidth = tabBar.clientWidth - 24;
+
+            if (tabsWidth + addBtnWidth > availableWidth) {
+                addBtn.classList.add('fixed');
+                tabsScrollContainer.style.maxWidth = (availableWidth - addBtnWidth) + 'px';
+            } else {
+                addBtn.classList.remove('fixed');
+                tabsScrollContainer.style.maxWidth = '';
+            }
+        }
+
+        function updateTabs() {
+            tabsInner.innerHTML = '';
+
+            fileTabs.forEach(tab => {
+                const tabElement = document.createElement('div');
+                tabElement.className = 'tab-item';
+                tabElement.dataset.tabId = tab.id;
+                const icons = { text: 'W', demo: 'P', table: 'S', pdf: 'P' };
+                const colors = { text: 'text', demo: 'demo', table: 'table', pdf: 'pdf' };
+                const displayTitle = tab.title.length > 10 ? tab.title.substring(0, 10) + '...' : tab.title;
+                tabElement.innerHTML = `
+                    <span class="tab-icon ${colors[tab.type]}">${icons[tab.type]}</span>
+                    <span>${displayTitle}</span>
+                    <span class="tab-close">×</span>
+                `;
+
+                const closeButton = tabElement.querySelector('.tab-close');
+                closeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeTab(tab.id);
+                });
+
+                tabElement.addEventListener('click', () => activateTab(tab.id));
+
+                tabsInner.appendChild(tabElement);
+            });
+
+            updateAddBtnPosition();
+
+            if (fileTabs.length > 0) {
+                tabsScrollContainer.scrollLeft = tabsScrollContainer.scrollWidth;
+            }
+        }
+
+        function activateTab(tabId) {
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const activeTab = document.querySelector(`.tab-item[data-tab-id="${tabId}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+
+            activeTabId = tabId;
+
+            const tabData = fileTabs.find(tab => tab.id === tabId);
+            const excelImage = document.getElementById('excel-image');
+            const defaultText = document.getElementById('default-text');
+
+            const pptImage = document.getElementById('ppt-image');
+            const wordImage = document.getElementById('word-image');
+            const pdfImage = document.getElementById('pdf-image');
+            
+            if (tabData && tabData.type === 'table') {
+                excelImage.style.display = 'block';
+                pptImage.style.display = 'none';
+                wordImage.style.display = 'none';
+                pdfImage.style.display = 'none';
+                defaultText.style.display = 'none';
+                titleSetting.classList.add('show');
+                tabTitleInput.value = tabData.title;
+            } else if (tabData && tabData.type === 'demo') {
+                excelImage.style.display = 'none';
+                pptImage.style.display = 'block';
+                wordImage.style.display = 'none';
+                pdfImage.style.display = 'none';
+                defaultText.style.display = 'none';
+                titleSetting.classList.add('show');
+                tabTitleInput.value = tabData.title;
+            } else if (tabData && tabData.type === 'text') {
+                excelImage.style.display = 'none';
+                pptImage.style.display = 'none';
+                wordImage.style.display = 'block';
+                pdfImage.style.display = 'none';
+                defaultText.style.display = 'none';
+                titleSetting.classList.add('show');
+                tabTitleInput.value = tabData.title;
+            } else if (tabData && tabData.type === 'pdf') {
+                excelImage.style.display = 'none';
+                pptImage.style.display = 'none';
+                wordImage.style.display = 'none';
+                pdfImage.style.display = 'block';
+                defaultText.style.display = 'none';
+                titleSetting.classList.add('show');
+                tabTitleInput.value = tabData.title;
+            } else {
+                excelImage.style.display = 'none';
+                pptImage.style.display = 'none';
+                wordImage.style.display = 'none';
+                pdfImage.style.display = 'none';
+                defaultText.style.display = 'block';
+                titleSetting.classList.remove('show');
+            }
+        }
+
+        function closeTab(tabId) {
+            const tabIndex = fileTabs.findIndex(tab => tab.id === tabId);
+            if (tabIndex === -1) return;
+
+            const isActive = document.querySelector(`.tab-item[data-tab-id="${tabId}"].active`) !== null;
+            
+            fileTabs = fileTabs.filter(tab => tab.id !== tabId);
+            updateTabs();
+
+            if (isActive && fileTabs.length > 0) {
+                const newIndex = Math.min(tabIndex, fileTabs.length - 1);
+                activateTab(fileTabs[newIndex].id);
+            } else if (fileTabs.length === 0) {
+                document.body.classList.remove('has-tab-bar');
+            }
+        }
+
+        document.querySelectorAll('.icon-block').forEach(item => {
+            item.addEventListener('click', () => {
+                const type = item.dataset.type;
+
+                document.body.classList.add('has-tab-bar');
+
+                const sameTypeCount = fileTabs.filter(tab => tab.type === type).length;
+                const names = { text: '新建文档', demo: '新建演示文稿', table: '新建表格', pdf: '新建PDF' };
+                const newTabId = `tab_${type}_${sameTypeCount + 1}`;
+                const newTitle = sameTypeCount > 0 ? `${names[type]} (${sameTypeCount + 1})` : names[type];
+
+                fileTabs.push({
+                    id: newTabId,
+                    type: type,
+                    title: newTitle
+                });
+
+                updateTabs();
+                activateTab(newTabId);
+            });
+        });
+
+        addBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('tabAddDropdown');
+            const rect = this.getBoundingClientRect();
+            const dropdownWidth = 180;
+            const viewportWidth = window.innerWidth;
+            const rightSpace = viewportWidth - rect.right;
+            if (rightSpace < dropdownWidth) {
+                dropdown.style.left = (rect.left - 116) + 'px';
+            } else {
+                dropdown.style.left = rect.left + 'px';
+            }
+            dropdown.style.top = (rect.top + rect.height + 4) + 'px';
+            dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('tabAddDropdown');
+            if (!addBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const type = this.dataset.type;
+
+                document.body.classList.add('has-tab-bar');
+
+                const names = { text: '新建文档', demo: '新建演示文稿', table: '新建表格', pdf: '新建PDF' };
+                const sameTypeCount = fileTabs.filter(tab => tab.type === type).length;
+                const newTabId = `tab_${type}_${sameTypeCount + 1}`;
+                const newTitle = sameTypeCount > 0 ? `${names[type]} (${sameTypeCount + 1})` : names[type];
+
+                fileTabs.push({
+                    id: newTabId,
+                    type: type,
+                    title: newTitle
+                });
+
+                updateTabs();
+                activateTab(newTabId);
+
+                dropdownMenu.classList.remove('show');
+            });
+        });
+
+        let isDragging = false;
+        let startX, startScrollLeft;
+
+        tabsScrollContainer.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            startX = e.clientX;
+            startScrollLeft = tabsScrollContainer.scrollLeft;
+            tabsScrollContainer.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            const x = e.clientX;
+            const walk = (x - startX) * 2;
+            tabsScrollContainer.scrollLeft = startScrollLeft - walk;
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isDragging) {
+                isDragging = false;
+                tabsScrollContainer.style.cursor = 'grab';
+            }
+        });
+
+        tabsScrollContainer.style.cursor = 'grab';
+
+        // 标题输入框事件监听
+        tabTitleInput.addEventListener('input', function() {
+            if (activeTabId) {
+                const tabIndex = fileTabs.findIndex(tab => tab.id === activeTabId);
+                if (tabIndex !== -1) {
+                    const tab = fileTabs[tabIndex];
+                    const defaultNames = { text: '新建文档', demo: '新建演示文稿', table: '新建表格', pdf: '新建PDF' };
+                    fileTabs[tabIndex].title = this.value || defaultNames[tab.type] || '新建文档';
+                    updateTabs();
+                    activateTab(activeTabId);
+                }
+            }
+        });
+
+        window.addEventListener('resize', updateAddBtnPosition);
+    </script>
+</body>
+</html>

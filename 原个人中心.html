@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>工业智能生产力平台</title>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        /* 基础重置与全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            /* 主色调 */
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --light-gray: #86909C;
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.25rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.25rem;
+            --spacing-3xl: 1.875rem;
+            --spacing-4xl: 3.125rem;
+        }
+
+        /* 登录弹窗容器样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-iframe {
+            background-color: transparent !important;
+            width: 26.25rem;
+            height: 31.25rem;
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .modal-iframe {
+                width: 90%;
+                height: 31.25rem;
+            }
+        }
+
+        /* 美化滚动条 */
+        ::-webkit-scrollbar {
+            width: 0.5rem;
+            height: 0.5rem;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 0.25rem;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 0.25rem;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-gray);
+        }
+
+        /* 侧边栏滚动条 */
+        .manage-sidebar ::-webkit-scrollbar {
+            width: 0.375rem;
+        }
+
+        .manage-sidebar ::-webkit-scrollbar-track {
+            background: var(--white);
+        }
+
+        .manage-sidebar ::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+
+        .manage-sidebar ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-gray);
+        }
+
+        /* 内容区域滚动条 */
+        .manage-content ::-webkit-scrollbar {
+            width: 0.5rem;
+        }
+
+        .manage-content ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+
+        .manage-content ::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+
+        .manage-content ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-gray);
+        }
+
+        /* 其他浏览器滚动条样式 */
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--light-bg);
+        }
+
+        /* Firefox 侧边栏 */
+        .manage-sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--white);
+        }
+
+        /* Firefox 内容区域 */
+        .manage-content {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--light-bg);
+        }
+
+        :root {
+            /* 主色调 */
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+
+            /* AI对话框配色 */
+            --ai-chat-bg: #FFFFFF;
+            --ai-input-bg: #FFFFFF;
+            --ai-text: #1D2129;
+            --ai-desc: #86909C;
+            --ai-border: #E5E7EB;
+            --ai-send: #06b6d4;
+            --ai-tag-bg: #F2F3F5;
+            --ai-tag-hover: #E5E7EB;
+
+            /* 响应式断点 */
+            --breakpoint-md: 62rem;
+            --breakpoint-sm: 48rem;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            color: #333;
+            line-height: var(--line-height-base);
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 通用容器 */
+        .container {
+            width: 90rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 头部区域 */
+        header {
+            color: var(--white);
+            padding-top: 2.25rem;
+        }
+        
+        /* 搜索容器 */
+        .blank-container {
+            width: 100%;
+            max-width: 90rem;
+            padding: 3.125rem 1.875rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .search-logo {
+            font-size: 2.75rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-slogan {
+            font-size: 1rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--klein-blue), var(--hermes-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: left;
+            white-space: nowrap;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .search-main {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 80%;
+        }
+
+        .send-btn {
+            background: #06b6d4;
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            padding: 0;
+            line-height: 1;
+            min-width: 2.25rem;
+            min-height: 2.25rem;
+        }
+
+        .send-btn:hover {
+            background: #04a4be;
+        }
+
+        .cart-btn {
+            background: white;
+            color: var(--klein-blue);
+            border: 1px solid var(--klein-blue);
+            border-radius: 0.625rem;
+            padding: 0.5rem 1.125rem;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-btn:hover {
+            background: var(--klein-blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -0.375rem;
+            right: -0.5rem;
+            background: var(--hermes-orange);
+            color: white;
+            border-radius: 0.625rem;
+            min-width: 1.5rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            padding: 0 0.375rem;
+        }
+
+        .main-tab {
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 1.5rem;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+            color: var(--deep-gray);
+        }
+
+        .main-tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab.active {
+            color: var(--klein-blue);
+            border-bottom: 3px solid var(--klein-blue);
+            font-weight: 600;
+        }
+
+        .create-center-btn {
+            padding: 0.75rem 1.875rem;
+            margin: 0 0.75rem;
+            background: #FFFAF7;
+            color: #F37021;
+            border: 1px solid #FFE5D9;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: center;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(243, 112, 33, 0.1);
+        }
+
+        .create-center-btn:hover {
+            background: #FFF5EE;
+            color: #E0631D;
+            border-color: #FFCCB3;
+            box-shadow: 0 2px 6px rgba(243, 112, 33, 0.15);
+        }
+
+        .create-center-btn:active {
+            box-shadow: 0 1px 3px rgba(243, 112, 33, 0.1);
+        }
+
+        /* 底部输入框 */
+        .input-container {
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #9c9fa4;
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-box textarea::placeholder {
+            color: #86909C;
+            font-size: 16px;
+        }
+
+        .input-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+            gap: 12px;
+            min-height: 40px;
+        }
+
+        .input-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .upload-btn {
+            color: #86909C;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        /* 标签导航容器 */
+        .tab-container {
+            background: var(--light-bg);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* 导航标签栏 */
+        .tab-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            gap: 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            height: 50px;
+        }
+
+        .tab {
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--ai-desc);
+            padding: 0 24px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .tab.active {
+            color: var(--klein-blue);
+            font-weight: bold;
+            border-bottom: 3px solid var(--klein-blue);
+            width: 200px;
+            font-size: 20px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .ai-team-btn {
+            background: var(--hermes-orange);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 180px;
+        }
+
+        .ai-team-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ai-team-btn:hover::before {
+            left: 100%;
+        }
+
+        .ai-team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.4);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1350px) {
+            .container {
+                width: 100%;
+                padding: 0 2.5rem;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .search-logo {
+                font-size: 2.25rem;
+            }
+
+            .blank-container {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .case-know-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .main-tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-main {
+                width: 100%;
+                max-width: none;
+            }
+
+            .tab {
+                padding: 0 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            .tab.active {
+                font-size: 1rem;
+                width: 9.375rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-container .container {
+                padding: 0;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab, .main-tab {
+                padding: 0 0.625rem;
+                font-size: 0.8125rem;
+            }
+
+            .search-logo {
+                font-size: 2rem;
+            }
+
+            .logo-slogan {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 面包屑导航样式 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--deep-gray);
+        }
+        
+        .breadcrumb a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--klein-blue);
+            text-decoration: none;
+        }
+        
+        .breadcrumb-separator {
+            color: var(--ai-desc);
+            font-size: 12px;
+        }
+        
+        .breadcrumb-separator::before {
+            content: '›';
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        .breadcrumb-current {
+            color: var(--deep-gray);
+            font-weight: 500;
+            padding: 2px 6px;
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        .edit-btn {
+            background: transparent;
+            border: 1px solid #0051D9;
+            color: #0051D9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+        
+        .edit-btn:hover {
+            background: #0051D9;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.3);
+        }
+
+        .info-item {
+            background: white;
+            padding: 14px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #86909C;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #1D2129;
+            font-weight: 500;
+        }
+
+        .info-link {
+            color: #0051D9;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .info-link:hover {
+            color: #0044bb;
+            text-decoration: underline;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background: var(--deep-gray);
+            color: var(--white);
+            padding: 40px 20px;
+            margin-top: 30px;
+        }
+
+        .footer-wrap {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-col h3 {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .footer-col p {
+            font-size: 13px;
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        /* ========== 新增：个人管理模块样式 ========== */
+        .personal-manage {
+            max-width: 1440px;
+            margin: 0 auto 20px;
+        }
+        .manage-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow: hidden;
+            min-height: 800px;
+        }
+        .edit-profile {
+            background: rgba(255,255,255,0.2);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .edit-profile:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .manage-body {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1px;
+            background: var(--border);
+            height: 800px;
+        }
+        .manage-sidebar {
+            background: var(--white);
+            overflow-y: auto;
+            max-height: calc(100vh - 190px);
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .menu-item {
+            padding: 12px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--deep-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            justify-content: space-between;
+        }
+        .menu-item:hover {
+            background-color: var(--light-bg);
+        }
+        .menu-item.active {
+            background-color: #EEF5FF;
+            color: var(--klein-blue);
+            font-weight: 600;
+        }
+        .menu-item-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .menu-icon {
+            font-size: 16px;
+        }
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--classic-gray);
+        }
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-left: 32px;
+            max-height: 200px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .team-members.collapsed {
+            max-height: 0;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: var(--white);
+            height: 40px;
+        }
+        .team-member:hover {
+            background-color: var(--light-bg);
+        }
+        .team-member.active {
+            background-color: #EEF5FF;
+            color: var(--klein-blue);
+            font-weight: 600;
+        }
+        .member-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .member-name {
+            font-size: 13px;
+            color: var(--deep-gray);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.5;
+        }
+        .manage-content {
+            background: var(--white);
+            padding: 14px 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 190px);
+        }
+        .content-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--deep-gray);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            line-height: 1.4;
+        }
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--deep-gray);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            line-height: 1.5;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--klein-blue);
+            box-shadow: 0 0 0 2px rgba(0,81,217,0.1);
+        }
+        .form-actions {
+            grid-column: span 2;
+            margin-top: 24px;
+        }
+        .save-btn {
+            background: var(--klein-blue);
+            color: var(--white);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .save-btn:hover {
+            background: #0047b3;
+        }
+        .cancel-btn {
+            background: var(--light-bg);
+            color: var(--deep-gray);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: all 0.3s;
+        }
+        .cancel-btn:hover {
+            background: var(--border);
+        }
+        
+        /* 统计卡片悬停效果 */
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        /* 个人管理模块响应式适配 */
+        @media (max-width: 992px) {
+            .manage-body {
+                grid-template-columns: 12.5rem 1fr;
+            }
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                grid-column: span 1;
+            }
+        }
+        @media (max-width: 768px) {
+            .manage-body {
+                grid-template-columns: 1fr;
+            }
+            .manage-content {
+                padding: 1.25rem;
+            }
+        }
+        
+        /* 退出确认对话框样式 */
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            background-color: rgba(29, 33, 41, 0.6);
+            backdrop-filter: blur(2px);
+        }
+
+        .logout-modal.show {
+            display: flex;
+        }
+
+        .logout-modal-content {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            padding: 1.875rem 2.25rem;
+            width: 25rem;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            text-align: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-1.25rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D2129;
+            margin-bottom: 16px;
+        }
+
+        .logout-modal-message {
+            font-size: 14px;
+            color: #86909C;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .logout-modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .logout-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .logout-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .logout-modal-btn.confirm {
+            background-color: #F37021;
+            color: #FFFFFF;
+            border-color: #F37021;
+        }
+
+        .logout-modal-btn.confirm:hover {
+            background-color: #e0631d;
+            border-color: #e0631d;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 编辑信息弹窗 -->
+    <div id="editModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;" onclick="if(event.target===this)hideEditModal()">
+        <div style="background: white; border-radius: 12px; width: 650px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                <h3 style="font-size: 16px; font-weight: 600; margin: 0;">编辑个人信息</h3>
+                <button onclick="hideEditModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #999;">×</button>
+            </div>
+            <div style="display: flex; gap: 32px; padding: 24px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding-top: 20px;">
+                    <img id="editAvatar" src="images/tx-2.png" alt="头像" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover;">
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('avatarUpload').click()" style="padding: 8px 20px; background: transparent; color: #666; border: 1px solid #d9d9d9; border-radius: 6px; cursor: pointer; font-size: 13px;">更换头像</button>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">名称</label>
+                        <input type="text" id="editName" value="林工" style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">职务</label>
+                        <select id="editPosition" style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: white;">
+                            <option value="工程师" selected>工程师</option>
+                            <option value="设计师">设计师</option>
+                            <option value="项目经理">项目经理</option>
+                            <option value="技术总监">技术总监</option>
+                            <option value="产品经理">产品经理</option>
+                            <option value="市场经理">市场经理</option>
+                            <option value="销售经理">销售经理</option>
+                            <option value="行政主管">行政主管</option>
+                            <option value="财务主管">财务主管</option>
+                            <option value="总经理">总经理</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">生日</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="birthYear" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                            <select id="birthMonth" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                            <select id="birthDay" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">性别</label>
+                        <div style="display: flex; gap: 24px;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="gender" value="男" checked>
+                                <span>男</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="gender" value="女">
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">简介</label>
+                        <textarea id="editIntro" rows="3" style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; resize: vertical; box-sizing: border-box;">专业从事工艺品设计与开发，拥有10年行业经验，擅长3D建模和产品渲染。</textarea>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid #e5e7eb; justify-content: flex-end;">
+                <button onclick="hideEditModal()" style="padding: 10px 24px; border: 1px solid #d9d9d9; border-radius: 6px; background: white; cursor: pointer; font-size: 14px;">取消</button>
+                <button onclick="saveEditInfo()" style="padding: 10px 24px; background: #0051D9; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">保存</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function initBirthdaySelectors() {
+            const yearSelect = document.getElementById('birthYear');
+            const monthSelect = document.getElementById('birthMonth');
+            const daySelect = document.getElementById('birthDay');
+            
+            for (let y = 2025; y >= 1960; y--) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y + '年';
+                if (y === 1990) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+            
+            for (let m = 1; m <= 12; m++) {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m + '月';
+                if (m === 1) opt.selected = true;
+                monthSelect.appendChild(opt);
+            }
+            
+            for (let d = 1; d <= 31; d++) {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d + '日';
+                if (d === 15) opt.selected = true;
+                daySelect.appendChild(opt);
+            }
+        }
+        initBirthdaySelectors();
+    </script>
+
+    <!-- 退出确认对话框 -->
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-modal-content">
+            <h3 class="logout-modal-title">确认退出</h3>
+            <p class="logout-modal-message">您确定要退出登录吗？退出后需要重新登录才能继续使用。</p>
+            <div class="logout-modal-buttons">
+                <button id="logoutCancelBtn" class="logout-modal-btn cancel">取消</button>
+                <button id="logoutConfirmBtn" class="logout-modal-btn confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗容器 -->
+    <div class="modal-overlay" id="loginModal">
+        <iframe class="modal-iframe" src="登录弹窗.html" style="background-color: transparent;"></iframe>
+    </div>
+
+    <!-- 公共头部引用 -->
+    <iframe src="顶部导航栏.html" style="width: 100%; height: 36px; border: none; position: fixed; top: 0; left: 0; z-index: 99998;"></iframe>
+
+    <!-- 头部区域 -->
+    <header>
+        <div class="container">
+            <!-- 搜索容器 -->
+            <div class="blank-container" style="padding: 40px 30px;">
+                <div class="search-container" style="display: flex; align-items: center; gap: 28px;">
+                        <div class="logo-section" onclick="window.location.href='商城首页.html'" style="cursor: pointer;">
+                            <div class="search-logo" style="color: #0051D9;">RaaS.Dao</div>
+                            <div class="logo-slogan" style="color: #0051D9;">共创・共享</div>
+                        </div>
+                    <div class="search-main" style="flex: 1; max-width: 900px;">
+                        <div class="chat-input-wrapper">
+                            <div class="input-container" style="border-radius: 24px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); padding: 16px 30px;border: 1px solid #ededed">
+                                <div class="input-box">
+                                    <textarea placeholder="请输入..." class="search-input" rows="1" style="font-size: 16px; height: 40px; line-height: 40px;"></textarea>
+                                </div>
+                                <div class="input-tool-row" style="padding-top: 8px; gap: 8px;">
+                                    <div class="input-tool-left" style="gap: 12px; display: flex; align-items: center;">
+                                        <div class="upload-btn" style="color: #666; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid #e0e0e0; border-radius: 4px; transition: all 0.3s; background: #f9fafb;">
+                                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                            以图找品
+                                        </div>
+                                        <span style="color: #ccc; margin: 0 4px;">|</span>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">供应链</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">训练基地</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">共享工厂</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">设备共享</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">影视/文学</div>
+                                        </div>
+                                        <style>
+                                            .quick-tag:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                            .upload-btn:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                        </style>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const uploadBtn = document.querySelector('.upload-btn');
+                                                const imageUpload = document.getElementById('imageUpload');
+                                                if (uploadBtn) {
+                                                    uploadBtn.addEventListener('click', function() {
+                                                        if (imageUpload) {
+                                                            imageUpload.click();
+                                                        }
+                                                    });
+                                                }
+                                                if (imageUpload) {
+                                                    imageUpload.addEventListener('change', function(e) {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const fileName = e.target.files[0].name;
+                                                            alert('已选择文件: ' + fileName);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                    </div>
+                                    <button class="send-btn" onclick="window.location.href='商品方案列表页.html?filter=industry'" style="background: #06b6d4; width: 36px; height: 36px;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="3" x2="12" y2="21"></line>
+                                            <polyline points="3 12 12 3 21 12"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-section" style="display: flex; align-items: center;">
+                        <button class="cart-btn" style="display: flex; align-items: center; gap: 6px; padding: 8px 40px; border: 1px solid #08b6d4; border-radius: 6px; background: #ffffff; color: #08b6d4; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+                            <span class="btn-icon">🛒</span>
+                            <span class="btn-text">购物车</span>
+                            <span class="cart-badge" style="background: #f37021; color: white; font-size: 12px; padding: 1px 6px; border-radius: 10px; font-weight: bold;">99+</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 标签导航 -->
+    <div class="tab-container">
+        <div class="container">
+            <div class="tab-row">
+                <div class="tabs">
+                    <button class="create-center-btn" onclick="window.parent.location.href='创造中心.html'">创造中心</button>
+                    <div class="main-tab" data-tab="生产力方案共享" onclick="window.location.href='商品方案列表页.html?tab=生产力方案共享'">生产力方案共享</div>
+                    <div class="main-tab" data-tab="机器人设备共享" onclick="window.location.href='商品方案列表页.html?tab=机器人设备共享'">机器人设备共享</div>
+                    <div class="main-tab" data-tab="资源共享" onclick="window.location.href='商品方案列表页.html?tab=资源共享'">资源共享</div>
+                    <div class="main-tab" data-tab="共享消费" onclick="window.location.href='商品方案列表页.html?tab=共享消费'">共享消费</div>
+                    <div class="main-tab" data-tab="我的社群" onclick="window.location.href='商品方案列表页.html?tab=我的社群'">我的社群</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb-container">
+        <div class="container" style="padding: 14px 0;">
+            <div class="breadcrumb">
+                <a href="商城首页.html">首页</a>
+                <span class="breadcrumb-separator"></span>
+                <span class="breadcrumb-current">个人中心</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 个人管理模块 ========== -->
+    <div class="personal-manage">
+        <div class="manage-card">
+            <div class="manage-body">
+                <div class="manage-sidebar">
+                    <div class="sidebar-menu">
+                        <div class="menu-item active">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">👤</span>
+                                <span>个人信息</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">🛒</span>
+                                <span>我的购物车</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">💰</span>
+                                <span>我的报价</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📋</span>
+                                <span>我的订单</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📄</span>
+                                <span>我的方案</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">❤️</span>
+                                <span>我的收藏</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">🧾</span>
+                                <span>发票管理</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📍</span>
+                                <span>地址管理</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="manage-content">
+                    <!-- 个人信息内容 -->
+                    <div id="content-personal" style="display: block;">
+                        <div class="content-title">个人信息</div>
+                        <div class="profile-card" style="background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); border-radius: 12px; padding: 24px; margin-top: 16px; border: 1px solid #e5e7eb;">
+                            <div style="display: flex; gap: 24px;">
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                                    <div style="display: flex; gap: 16px;">
+                                        <div class="profile-avatar" style="width: 110px; height: 110px; border-radius: 50%; background: rgba(0, 81, 217, 0.1); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; border: 1px solid rgba(0, 81, 217, 0.2);">
+                                            <span style="font-size: 60px;">👤</span>
+                                        </div>
+                                        <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <h2 style="font-size: 22px; font-weight: bold; color: #1D2129; margin: 0;">HI,林工</h2>
+                                                <span style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); color: #F37021; font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500;">Lv.5</span>
+                                                <span style="background: #E6F7FF; color: #1890FF; border-radius: 4px; padding: 2px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                    </svg>
+                                                    组织用户
+                                                </span>
+                                            <button class="edit-btn" onclick="showEditModal()">编辑账号信息</button>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; color: #666;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                <span>职务：工程师</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                <span>生日：1990-01-15</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <path d="M12 6v6l4 2"></path>
+                                                </svg>
+                                                <span>性别：男</span>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 14px; color: #666;">
+                                            <div style="display: flex; align-items: flex-start; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" style="margin-top: 2px;">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                </svg>
+                                                <div>
+                                                    <span>简介：</span>
+                                                    <span style="color: #374151;">专业从事工艺品设计与开发，拥有10年行业经验，擅长3D建模和产品渲染。</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 我的能力卡片 -->
+                                        <div style="padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0051D9" stroke-width="2">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                        <circle cx="12" cy="7" r="4"></circle>
+                                                    </svg>
+                                                    <span style="font-size: 15px; font-weight: 600; color: #1F2937;">我的能力</span>
+                                                </div>
+                                                <div style="display: flex; gap: 8px;">
+                                                    <button style="padding: 4px 12px; font-size: 12px; color: #0051D9; border: 1px solid #0051D9; border-radius: 4px; background: white; cursor: pointer;">编辑</button>
+                                                    <button style="padding: 4px 12px; font-size: 12px; color: #FFFFFF; border: none; border-radius: 4px; background: #0051D9; cursor: pointer;">授权</button>
+                                                </div>
+                                            </div>
+                                            <div style="font-size: 14px; color: #666;">
+                                                <div style="margin-bottom: 8px;">
+                                                    <span style="color: #9CA3AF;">行业：</span>
+                                                    <span style="color: #374151;">制造业、互联网、服务业</span>
+                                                </div>
+                                                <div>
+                                                    <span style="color: #9CA3AF;">技能：</span>
+                                                    <span style="color: #374151;">项目管理、数据分析、产品设计、技术开发</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 我的组织卡片 -->
+                                        <div style="padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0051D9" stroke-width="2">
+                                                        <path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                                                    </svg>
+                                                    <span style="font-size: 15px; font-weight: 600; color: #1F2937;">我的组织</span>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;font-size: 14px;">
+                                                <span>东莞市蓓佳尔工艺品有限公司（<span style="color: #F37021;">审核中</span>）</span>
+                                                <a href="#" style="color: #0051D9; text-decoration: none; font-size: 13px; font-weight: 500;">进入 →</a>
+                                            </div>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;font-size: 14px;">
+                                                <span>东莞市蓓佳尔工艺品有限公司（技术部-工程师）</span>
+                                                <a href="#" style="color: #0051D9; text-decoration: none; font-size: 13px; font-weight: 500;">进入 →</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 1px; background: repeating-linear-gradient(0deg, #d9d9d9 0px, #d9d9d9 4px, transparent 4px, transparent 8px);"></div>
+                            <div style="flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                        </svg>
+                                        手机
+                                    </div>
+                                    <div class="info-value">13826469793</div>
+                                    <a href="#" class="info-link">重新绑定</a>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                        邮箱
+                                    </div>
+                                    <div class="info-value" style="color: #999;">未绑定</div>
+                                    <a href="#" class="info-link">去绑定</a>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        </svg>
+                                        第三方账号
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                                        <span style="font-size: 13px; color: #666;">微信：</span>
+                                        <img src="images/tx-2.png" alt="微信头像" style="width: 24px; height: 24px; border-radius: 4px;">
+                                        <span style="font-size: 13px; color: #1D2129;">林工</span>
+                                        <a href="#" class="info-link">重新绑定</a>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 13px; color: #666;">支付宝：</span>
+                                        <a href="#" class="info-link">支付宝绑定</a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M12 6v6l4 2"></path>
+                                        </svg>
+                                        我的元宝
+                                        <a href="#" class="info-link">消费记录</a>
+                                    </div>
+                                    <div class="info-value" style="color: #F37021; font-size: 20px; font-weight: bold;">375</div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <a href="#" class="info-link">去充值 →</a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        账号设置
+                                    </div>
+                                    <div style="font-size: 13px; color: #666; margin-bottom: 4px;">账号：liulin965565</div>
+                                    <div style="font-size: 13px; color: #666;">
+                                        密码：********* <a href="#" class="info-link">修改密码</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <!-- 我的购物车内容 -->
+                    <div id="content-cart" style="display: none;">
+                        <div class="content-title">我的购物车</div>
+                        <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center;width: 50%;">
+                            <input type="text" placeholder="搜索产品名称、型号、品牌" style="flex: 1; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; outline: none;">
+                            <select style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; color: #666; background: white; cursor: pointer;">
+                                <option value="">全部类型</option>
+                                <option value="buy">仅可购买</option>
+                                <option value="rent">可共享</option>
+                                <option value="both">可购买/可共享</option>
+                            </select>
+                            <button style="padding: 10px 20px; background: transparent; color: #0051D9; border: 1px solid #0051D9; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">搜 索</button>
+                        </div>
+                        <div style="margin-top: 16px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #f5f5f5;">
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">
+                                            <input type="checkbox" style="margin-right: 8px;">全选
+                                        </th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">产品信息</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">单价</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">数量</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">小计</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">加购时间</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 16px;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; gap: 12px;">
+                                                <img src="images/qigang.png" alt="产品图片" style="width: 80px; height: 80px; border-radius: 4px; object-fit: cover;">
+                                                <div>
+                                                    <div style="font-weight: 500; color: #333;">气缸件</div>
+                                                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                                                        <span style="background: #f5f5f5; color: #999; font-size: 11px; padding: 2px 6px; border-radius: 4px;">仅可购买</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #999; margin-top: 6px;">型号: GTC200S08W</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #333;">
+                                            <div style="color: #f50606;">¥151.17</div>
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <button style="width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; cursor: pointer;">-</button>
+                                                <input type="number" value="1" style="width: 50px; height: 28px; text-align: center; border: 1px solid #e5e7eb; border-radius: 4px;">
+                                                <button style="width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; cursor: pointer;">+</button>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 16px; font-weight: 600; color: #F37021;">
+                                            <div style="color: #f50606;">¥151.17</div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #666;">
+                                            2024-03-23 16:34:57
+                                        </td>
+                                        <td style="padding: 16px; font-size: 13px;">
+                                            <div style="color: #0051D9; cursor: pointer; margin-bottom: 4px;">加入收藏</div>
+                                            <div style="color: #999; cursor: pointer;">删除</div>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 16px;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; gap: 12px;">
+                                                <img src="images/jqr.png" alt="产品图片" style="width: 80px; height: 80px; border-radius: 4px; object-fit: cover;">
+                                                <div>
+                                                    <div style="font-weight: 500; color: #333;">工业机器人</div>
+                                                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                                                        <span style="background: #e6f7ff; color: #1890ff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">可购买 / 可共享</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #999; margin-top: 6px;">型号: IRB-6700</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #333;">
+                                            <div style="color: #f50606;">¥125000.00</div>
+                                            <div style="font-size: 12px; color: #575856;">(共享: ¥8500/月)</div>
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <button style="width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; cursor: pointer;">-</button>
+                                                <input type="number" value="1" style="width: 50px; height: 28px; text-align: center; border: 1px solid #e5e7eb; border-radius: 4px;">
+                                                <button style="width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; cursor: pointer;">+</button>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #333;">
+                                            <div style="font-size: 16px; font-weight: 600; color: #f50606;">¥125000.00</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #575856;">(共享: ¥8500/月)</div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #666;">
+                                            2024-03-22 10:15:30
+                                        </td>
+                                        <td style="padding: 16px; font-size: 13px;">
+                                            <div style="color: #0051D9; cursor: pointer; margin-bottom: 4px;">加入收藏</div>
+                                            <div style="color: #999; cursor: pointer;">删除</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 16px; padding: 16px 20px; background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 8px; display: flex; justify-content: flex-end; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 24px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; color: #666;">已选 <span style="color: #f50606; font-weight: 600;">3</span> 件</span>
+                                    <span style="color: #999;">|</span>
+                                    <span style="font-size: 14px; color: #666;">明细</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; color: #666;">金额总计</span>
+                                    <span style="font-size: 18px; font-weight: 600; color: #52c41a;">¥8,500.00/月</span>
+                                </div>
+                                <button style="padding: 10px 24px; background: #52c41a; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">立即共享</button>
+                            </div>
+                            <div style="width: 1px; height: 40px; background: #e5e7eb; margin: 0 20px;"></div>
+                            <div style="display: flex; align-items: center; gap: 24px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; color: #666;">已选 <span style="color: #f50606; font-weight: 600;">3</span> 件</span>
+                                    <span style="color: #999;">|</span>
+                                    <span style="font-size: 14px; color: #666;">明细</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 14px; color: #666;">金额总计</span>
+                                    <span style="font-size: 18px; font-weight: 600; color: #f50606;">¥125,151.17</span>
+                                </div>
+                                <button style="padding: 10px 24px; background: #f50606; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">立即购买</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 我的收藏内容 -->
+                    <div id="content-favorite" style="display: none;">
+                        <div class="content-title">我的收藏</div>
+                        <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center;width: 50%;">
+                            <input type="text" placeholder="搜索产品名称、型号、品牌" style="flex: 1; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; outline: none;">
+                            <select style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; color: #666; background: white; cursor: pointer;">
+                                <option value="">全部类型</option>
+                                <option value="buy">仅可购买</option>
+                                <option value="rent">可共享</option>
+                                <option value="both">可购买/可共享</option>
+                            </select>
+                            <button style="padding: 10px 20px; background: transparent; color: #0051D9; border: 1px solid #0051D9; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">搜 索</button>
+                        </div>
+                        <div style="margin-top: 16px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #f5f5f5;">
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">
+                                            <input type="checkbox" style="margin-right: 8px;">全选
+                                        </th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">产品信息</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">单价</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">收藏时间</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 14px; font-weight: 600; color: #333; border-bottom: 1px solid #e5e7eb; white-space: nowrap;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 16px;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; gap: 12px;">
+                                                <img src="images/qigang.png" alt="产品图片" style="width: 80px; height: 80px; border-radius: 4px; object-fit: cover;">
+                                                <div>
+                                                    <div style="font-weight: 500; color: #333;">气缸件</div>
+                                                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                                                        <span style="background: #f5f5f5; color: #999; font-size: 11px; padding: 2px 6px; border-radius: 4px;">仅可购买</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #999; margin-top: 6px;">型号: GTC200S08W</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #333;">
+                                            <div>售价: ¥151.17</div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #666;">
+                                            2024-03-23 16:34:57
+                                        </td>
+                                        <td style="padding: 16px; font-size: 13px;">
+                                            <div style="color: #0051D9; cursor: pointer; margin-bottom: 4px;">加入购物车</div>
+                                            <div style="color: #999; cursor: pointer;">取消收藏</div>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 16px;">
+                                            <input type="checkbox">
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="display: flex; gap: 12px;">
+                                                <img src="images/jqr.png" alt="产品图片" style="width: 80px; height: 80px; border-radius: 4px; object-fit: cover;">
+                                                <div>
+                                                    <div style="font-weight: 500; color: #333;">工业机器人</div>
+                                                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                                                        <span style="background: #e6f7ff; color: #1890ff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">可购买 / 可共享</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #999; margin-top: 6px;">型号: IRB-6700</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #333;">
+                                            <div>售价: ¥125000.00</div>
+                                            <div style="font-size: 12px; color: #52c41a;">共享单价: ¥8500/月</div>
+                                        </td>
+                                        <td style="padding: 16px; font-size: 14px; color: #666;">
+                                            2024-03-22 10:15:30
+                                        </td>
+                                        <td style="padding: 16px; font-size: 13px;">
+                                            <div style="color: #0051D9; cursor: pointer; margin-bottom: 4px;">加入购物车</div>
+                                            <div style="color: #999; cursor: pointer;">取消收藏</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- 地址管理内容 -->
+                    <div id="content-address" style="display: none;">
+                        <div class="content-title">收货地址</div>
+                        <div style="margin-top: 16px; padding: 16px 20px; background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); border: 1px solid #e5e7eb; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: #666;">您已经添加 <span style="color: #0051D9; font-weight: 600;">2</span> 条收货地址，还可以新增 <span style="color: #0051D9; font-weight: 600;">28</span> 条</span>
+                            <button style="padding: 10px 20px; background: linear-gradient(135deg, #0051D9, #0066ff); color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500; box-shadow: 0 2px 8px rgba(0, 81, 217, 0.25); transition: all 0.3s;">+ 添加收件地址</button>
+                        </div>
+                        <div style="margin-top: 20px; display: grid; gap: 16px;">
+                            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #0051D9, #0066ff);"></div>
+                                <div style="position: absolute; top: 16px; right: 16px;">
+                                    <span style="background: linear-gradient(135deg, #EEF5FF, #E6F0FF); color: #0051D9; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 4px;">默认地址</span>
+                                </div>
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #EEF5FF, #E6F0FF); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0051D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                    </div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 16px; font-weight: 600; color: #1D2129;">林先生</span>
+                                            <span style="font-size: 14px; color: #666;">13826469793</span>
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: 14px; color: #666; line-height: 1.6;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 6px;">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
+                                                <circle cx="12" cy="10" r="3"></circle>
+                                            </svg>
+                                            辽宁省 沈阳市 康平县 万江街道100
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <button style="padding: 6px 14px; background: transparent; color: #666; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.3s;">修改</button>
+                                        <button style="padding: 6px 14px; background: transparent; color: #f50606; border: 1px solid #f50606; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.3s;">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #e5e7eb;"></div>
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 48px; height: 48px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                    </div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 16px; font-weight: 600; color: #1D2129;">张三</span>
+                                            <span style="font-size: 14px; color: #666;">15201252112</span>
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: 14px; color: #666; line-height: 1.6;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 6px;">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"></path>
+                                                <circle cx="12" cy="10" r="3"></circle>
+                                            </svg>
+                                            陕西省 西安市 雁塔区 东莞110
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <button style="padding: 6px 14px; background: #0051D9; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.3s;">设为默认</button>
+                                        <button style="padding: 6px 14px; background: transparent; color: #666; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.3s;">修改</button>
+                                        <button style="padding: 6px 14px; background: transparent; color: #f50606; border: 1px solid #f50606; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.3s;">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <iframe src="公共页脚.html" frameborder="0" width="100%" height="280px" style="border: none; margin: 0; padding: 0;"></iframe>
+
+    <script>
+        console.log('脚本开始加载');
+        // 显示登录弹窗
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏登录弹窗
+        function hideLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 显示退出确认对话框
+        function showLogoutConfirm() {
+            const logoutModal = document.getElementById('logoutModal');
+            if (logoutModal) {
+                logoutModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 隐藏退出确认对话框
+        function hideLogoutConfirm() {
+            const logoutModal = document.getElementById('logoutModal');
+            if (logoutModal) {
+                logoutModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 退出登录函数
+        function logout() {
+            try {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = '商城首页.html';
+            } catch (error) {
+                console.error('退出登录时出错:', error);
+                window.location.href = '商城首页.html';
+            }
+        }
+
+        // 处理登录成功
+        function handleLoginSuccess() {
+            localStorage.setItem('isLoggedIn', 'true');
+            hideLoginModal();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
+        // 显示编辑信息弹窗
+        function showEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 隐藏编辑信息弹窗
+        function hideEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 保存编辑信息
+        function saveEditInfo() {
+            const name = document.getElementById('editName').value;
+            const position = document.getElementById('editPosition').value;
+            const year = document.getElementById('editBirthYear').value;
+            const month = document.getElementById('editBirthMonth').value;
+            const day = document.getElementById('editBirthDay').value;
+            const birthday = year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0');
+            const gender = document.querySelector('input[name="editGender"]:checked').value;
+            const intro = document.getElementById('editIntro').value;
+            
+            alert('保存成功！\n名称: ' + name + '\n职务: ' + position + '\n生日: ' + birthday + '\n性别: ' + gender + '\n简介: ' + intro);
+            hideEditModal();
+        }
+
+        // 处理来自iframe的消息
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'SHOW_LOGIN_MODAL') {
+                showLoginModal();
+                event.stopPropagation();
+            } else if (event.data.type === 'SHOW_LOGOUT_MODAL') {
+                showLogoutConfirm();
+                event.stopPropagation();
+            } else if (event.data.type === 'LOGIN_SUCCESS') {
+                handleLoginSuccess();
+                event.stopPropagation();
+            } else if (event.data.type === 'CLOSE_MODAL') {
+                hideLoginModal();
+                event.stopPropagation();
+            }
+        });
+
+        // 全局函数，供iframe调用
+        window.showLogoutConfirm = showLogoutConfirm;
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // TAB切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+
+            // 菜单项点击事件
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (!item.hasAttribute('onclick')) {
+                    item.addEventListener('click', (e) => {
+                        // 阻止事件冒泡
+                        e.stopPropagation();
+                        
+                        // 移除所有菜单项的激活状态
+                        document.querySelectorAll('.menu-item').forEach(menu => menu.classList.remove('active'));
+                        // 激活当前菜单项
+                        item.classList.add('active');
+                        
+                        // 隐藏所有内容区域
+                        document.getElementById('content-personal').style.display = 'none';
+                        document.getElementById('content-cart').style.display = 'none';
+                        document.getElementById('content-favorite').style.display = 'none';
+                        document.getElementById('content-address').style.display = 'none';
+                        
+                        // 获取菜单文本（只获取直接子元素的文本）
+                        const menuContent = item.querySelector('.menu-item-content');
+                        const menuText = menuContent ? menuContent.textContent.replace(/\s+/g, ' ').trim() : item.textContent.trim();
+                        
+                        // 根据菜单项显示对应的内容区域
+                        console.log('菜单文本:', menuText);
+                        if (menuText.includes('个人信息')) {
+                            document.getElementById('content-personal').style.display = 'block';
+                        } else if (menuText.includes('我的购物车')) {
+                            document.getElementById('content-cart').style.display = 'block';
+                        } else if (menuText.includes('我的收藏')) {
+                            document.getElementById('content-favorite').style.display = 'block';
+                        } else if (menuText.includes('地址管理')) {
+                            document.getElementById('content-address').style.display = 'block';
+                        }
+                    });
+                }
+            });
+
+            // 初始化退出确认对话框
+            const logoutModal = document.getElementById('logoutModal');
+            const logoutCancelBtn = document.getElementById('logoutCancelBtn');
+            const logoutConfirmBtn = document.getElementById('logoutConfirmBtn');
+
+            if (logoutCancelBtn) {
+                logoutCancelBtn.addEventListener('click', hideLogoutConfirm);
+            }
+
+            if (logoutConfirmBtn) {
+                logoutConfirmBtn.addEventListener('click', function() {
+                    hideLogoutConfirm();
+                    logout();
+                });
+            }
+
+            if (logoutModal) {
+                logoutModal.addEventListener('click', function(e) {
+                    if (e.target === logoutModal) {
+                        hideLogoutConfirm();
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && logoutModal.classList.contains('show')) {
+                        hideLogoutConfirm();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

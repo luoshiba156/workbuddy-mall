@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RaaS商城解决方案详情页</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.148.0/examples/jsm/"
+        }
+    }
+    </script>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        /* 基础重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-gray: #86909C;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --border-radius: 0.75rem;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.25rem;
+            --line-height-base: 1.5;
+            --line-height-lg: 1.6;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.25rem;
+            --spacing-3xl: 1.875rem;
+        }
+
+        body {
+            background: var(--light-bg);
+            color: #333;
+            line-height: var(--line-height-base);
+        }
+
+        /* 通用容器 */
+        .container {
+            max-width: 90rem;
+            margin: 0 auto;
+        }
+
+    </style>
+    <style>
+        /* 基础重置与全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        /* 登录弹窗容器样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            z-index: 99999;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        /* 确保iframe背景透明 */
+        .modal-iframe {
+            background-color: transparent !important;
+            width: 26.25rem;
+            min-height: 31.25rem;
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .modal-iframe {
+                width: 90%;
+                height: 31.25rem;
+            }
+        }
+
+        /* 退出确认弹窗样式 */
+        .logout-modal-content {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            padding: 1.875rem 2.25rem;
+            width: 25rem;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            text-align: center;
+            z-index: 100000;
+        }
+
+        .logout-modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1D2129;
+            margin-bottom: 1rem;
+        }
+
+        .logout-modal-message {
+            font-size: var(--font-size-base);
+            color: #86909C;
+            margin-bottom: 1.5rem;
+            line-height: var(--line-height-base);
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .logout-modal-btn {
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .logout-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .logout-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .logout-modal-btn.confirm {
+            background-color: #F37021;
+            color: #FFFFFF;
+            border-color: #F37021;
+        }
+
+        .logout-modal-btn.confirm:hover {
+            background-color: #e0631d;
+            border-color: #e0631d;
+        }
+
+        :root {
+            /* 主色调 */
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --classic-gray: #86909C;
+
+            /* AI对话框配色 */
+            --ai-chat-bg: #FFFFFF;
+            --ai-input-bg: #FFFFFF;
+            --ai-text: #1D2129;
+            --ai-desc: #86909C;
+            --ai-border: #E5E7EB;
+            --ai-send: var(--hermes-orange);
+            --ai-tag-bg: #F2F3F5;
+            --ai-tag-hover: #E5E7EB;
+
+            /* 响应式断点 */
+            --breakpoint-md: 992px;
+            --breakpoint-sm: 768px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            color: #333;
+            line-height: var(--line-height-base);
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 2.25rem;
+        }
+
+        /* 通用容器 */
+        .container {
+            width: 90rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .welcome {
+            background: var(--white);
+            color: var(--deep-gray);
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.25rem;
+            font-size: var(--font-size-base);
+        }
+        .login {
+            background: var(--white);
+            color: var(--klein-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .login:hover {
+            background: var(--hermes-orange);
+            color: var(--white);
+        }
+
+        /* 头部区域 */
+        header {
+            color: var(--white);
+        }
+
+        /* AI智能体对话框 */
+        .ai-chat-container {
+            width: 100%;
+            max-width: 50rem;
+            margin: 0 auto 2.5rem;
+            background: var(--ai-chat-bg);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--ai-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* 搜索容器 */
+        .blank-container {
+            width: 100%;
+            max-width: 90rem;
+            padding: 3.125rem 1.875rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .search-logo {
+            font-size: 2.75rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-slogan {
+            font-size: 1rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--klein-blue), var(--hermes-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: left;
+            white-space: nowrap;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .search-main {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 80%;
+        }
+
+        .search-input-row {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 2.75rem;
+        }
+
+        /* 底部输入框 */
+        .input-container {
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-gray);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #9c9fa4;
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-box textarea::placeholder {
+            color: var(--classic-gray);
+            font-size: 1rem;
+        }
+
+        .input-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--border-gray);
+            gap: 0.75rem;
+            min-height: 2.5rem;
+        }
+
+        .input-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .input-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input-tag {
+            background: var(--light-gray);
+            color: var(--deep-gray);
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.75rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .input-tag:hover {
+            background: var(--border-gray);
+        }
+
+
+        .send-btn {
+            background: #06b6d4;
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            padding: 0;
+            line-height: 1;
+            min-width: 2.25rem;
+            min-height: 2.25rem;
+            z-index: 9999;
+        }
+
+        .send-btn:hover {
+            background: #04a4be;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .quote-btn {
+            background: var(--hermes-orange);
+            color: white;
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(243, 112, 33, 0.2);
+        }
+
+        .quote-btn:hover {
+            background: #e66a1a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(243, 112, 33, 0.3);
+        }
+
+        .cart-btn {
+            background: white;
+            color: var(--klein-blue);
+            border: 1px solid var(--klein-blue);
+            border-radius: 0.625rem;
+            padding: 0.5rem 1.125rem;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-btn:hover {
+            background: var(--klein-blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -0.375rem;
+            right: -0.5rem;
+            background: var(--hermes-orange);
+            color: white;
+            border-radius: 0.625rem;
+            min-width: 1.5rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            padding: 0 0.375rem;
+        }
+
+        .search-tags {
+            display: flex;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: white;
+            color: var(--deep-gray);
+            padding: 0.25rem 1rem;
+            border-radius: 1.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e7ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tag:hover {
+            background: var(--klein-blue);
+            color: white;
+            border-color: var(--klein-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .ai-input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--ai-text);
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .ai-input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ai-input-box textarea::placeholder {
+            color: var(--ai-desc);
+            font-size: 1rem;
+        }
+
+        .ai-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--ai-border);
+        }
+
+        .ai-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn {
+            color: var(--ai-desc);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            color: var(--klein-blue);
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        .content-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .section-tab.active {
+            border-bottom: 2px solid #0051d9;
+            color: #0051d9;
+            font-weight: 500;
+        }
+
+        .divider {
+            color: #d1d5db;
+            font-size: 1rem;
+            padding: 0 4px;
+        }
+
+        .ai-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .ai-tag {
+            background: var(--ai-tag-bg);
+            color: var(--ai-text);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .ai-tag:hover {
+            background: var(--ai-tag-hover);
+        }
+
+        /* 模型标签样式 */
+        .model-tags {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .model-tag {
+            background: var(--light-bg);
+            color: var(--deep-gray);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .model-tag:hover {
+            background: var(--border);
+            color: var(--klein-blue);
+        }
+
+        .model-tag.active {
+            background: var(--klein-blue);
+            color: white;
+        }
+
+        .send-btn {
+            background: var(--ai-send);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #04a4be;
+        }
+
+        /* 标签导航容器 */
+        .tab-container {
+            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* 导航标签栏 */
+        .tab-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            height: 60px;
+        }
+
+        .tab {
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 24px;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab {
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 24px;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .main-tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab.active {
+            color: var(--klein-blue);
+            border-bottom: 3px solid var(--klein-blue);
+            font-weight: 600;
+        }
+
+        .create-center-btn {
+            padding: 0.75rem 1.875rem;
+            margin: 0 0.75rem;
+            background: #FFFAF7;
+            color: #F37021;
+            border: 1px solid #FFE5D9;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: center;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(243, 112, 33, 0.1);
+        }
+
+        .create-center-btn:hover {
+            background: #FFF5EE;
+            color: #E0631D;
+            border-color: #FFCCB3;
+            box-shadow: 0 2px 6px rgba(243, 112, 33, 0.15);
+        }
+
+        .create-center-btn:active {
+            box-shadow: 0 1px 3px rgba(243, 112, 33, 0.1);
+        }
+
+        .ai-team-btn {
+            background: var(--hermes-orange);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 36px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-team-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ai-team-btn:hover::before {
+            left: 100%;
+        }
+
+        .ai-team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.4);
+        }
+
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--ai-desc);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1350px) {
+            .container {
+                width: 100%;
+                padding: 0 2.5rem;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .search-logo {
+                font-size: 2.25rem;
+            }
+
+            .blank-container {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .case-know-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-main {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .main-tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .content-row {
+                flex-direction: column;
+            }
+
+            .filter {
+                width: 100%;
+                margin-bottom: 0.625rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-container .container {
+                padding: 0;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab, .main-tab {
+                padding: 0 0.625rem;
+                font-size: 0.8125rem;
+            }
+
+            .search-logo {
+                font-size: 2rem;
+            }
+
+            .logo-slogan {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 面包屑导航样式 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.875rem;
+            font-size: var(--font-size-base);
+            color: var(--deep-gray);
+        }
+        
+        .breadcrumb a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--klein-blue);
+            text-decoration: none;
+        }
+        
+        .breadcrumb-separator {
+            color: var(--ai-desc);
+            font-size: 0.75rem;
+        }
+        
+        .breadcrumb-separator::before {
+            content: '›';
+            font-size: 1rem;
+            font-weight: 300;
+        }
+        
+        .breadcrumb-current {
+            color: var(--deep-gray);
+            font-weight: 500;
+            padding: 0.125rem 0.375rem;
+            background: transparent;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 公共头部引用 -->
+    <iframe src="顶部导航栏.html" style="width: 100%; height: 36px; border: none; position: fixed; top: 0; left: 0; z-index: 99998;"></iframe>
+
+    <!-- 头部区域 -->
+    <header>
+        <div class="container">
+            <!-- 搜索容器 -->
+            <div class="blank-container" style="padding: 40px 30px;">
+                <div class="search-container" style="display: flex; align-items: center; gap: 28px;">
+                        <div class="logo-section" onclick="window.location.href='商城首页.html'" style="cursor: pointer;">
+                            <div class="search-logo" style="color: #0051D9;">RaaS.Dao</div>
+                            <div class="logo-slogan" style="color: #0051D9;">共创・共享</div>
+                        </div>
+                    <div class="search-main" style="flex: 1; max-width: 900px;">
+                        <div class="chat-input-wrapper">
+                            <div class="input-container" style="border-radius: 24px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); padding: 16px 30px;border: 1px solid #ededed">
+                                <div class="input-box">
+                                    <textarea placeholder="请输入..." class="search-input" rows="1" style="font-size: 16px; height: 40px; line-height: 40px;"></textarea>
+                                </div>
+                                <div class="input-tool-row" style="padding-top: 8px; gap: 8px;">
+                                    <div class="input-tool-left" style="gap: 12px; display: flex; align-items: center;">
+                                        <div class="upload-btn" style="color: #666; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid #e0e0e0; border-radius: 4px; transition: all 0.3s; background: #f9fafb;">
+                                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                            以图找品
+                                        </div>
+                                        <span style="color: #ccc; margin: 0 4px;">|</span>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">供应链</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">训练基地</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">共享工厂</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">设备租赁</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">影视/文学</div>
+                                        </div>
+                                        <style>
+                                            .quick-tag:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                            .upload-btn:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                        </style>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const uploadBtn = document.querySelector('.upload-btn');
+                                                const imageUpload = document.getElementById('imageUpload');
+                                                if (uploadBtn) {
+                                                    uploadBtn.addEventListener('click', function() {
+                                                        if (imageUpload) {
+                                                            imageUpload.click();
+                                                        }
+                                                    });
+                                                }
+                                                if (imageUpload) {
+                                                    imageUpload.addEventListener('change', function(e) {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const fileName = e.target.files[0].name;
+                                                            alert('已选择文件: ' + fileName);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                    </div>
+                                    <button class="send-btn" onclick="window.location.href='商品方案列表页.html?filter=industry'" style="background: #06b6d4; width: 36px; height: 36px;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="3" x2="12" y2="21"></line>
+                                            <polyline points="3 12 12 3 21 12"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-section" style="display: flex; align-items: center;">
+                        <button class="cart-btn" style="display: flex; align-items: center; gap: 6px; padding: 8px 40px; border: 1px solid #08b6d4; border-radius: 6px; background: #ffffff; color: #08b6d4; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+                            <span class="btn-icon">🛒</span>
+                            <span class="btn-text">购物车</span>
+                            <span class="cart-badge" style="background: #f37021; color: white; font-size: 12px; padding: 1px 6px; border-radius: 10px; font-weight: bold;">99+</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 标签导航 -->
+    <div class="tab-container">
+        <div class="container">
+            <div class="tab-row">
+                <div class="tabs">
+                    <button class="create-center-btn" onclick="window.parent.location.href='创造中心.html'">创造中心</button>
+                    <div class="main-tab" data-tab="生产力方案共享" onclick="window.location.href='商品方案列表页.html?tab=生产力方案共享'">生产力方案共享</div>
+                    <div class="main-tab" data-tab="机器人设备共享" onclick="window.location.href='商品方案列表页.html?tab=机器人设备共享'">机器人设备共享</div>
+                    <div class="main-tab" data-tab="资源共享" onclick="window.location.href='商品方案列表页.html?tab=资源共享'">资源共享</div>
+                    <div class="main-tab" data-tab="共享消费" onclick="window.location.href='商品方案列表页.html?tab=共享消费'">共享消费</div>
+                    <div class="main-tab" data-tab="我的社群" onclick="window.location.href='商品方案列表页.html?tab=我的社群'">我的社群</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 面包屑导航 -->
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="商城首页.html">首页</a>
+            <span class="breadcrumb-separator"></span>
+            <a href="商品方案列表页.html?tab=生产力方案共享">生产力方案共享</a>
+            <span class="breadcrumb-separator"></span>
+            <a href="商品方案列表页.html?tab=生产力方案共享&industry=汽车制造">汽车制造</a>
+            <span class="breadcrumb-separator"></span>
+            <span class="breadcrumb-current">机器人焊接 + 自动上下料</span>
+        </div>
+    </div>
+
+    <!-- 登录弹窗容器 -->
+    <div class="modal-overlay" id="loginModal">
+        <iframe class="modal-iframe" src="登录弹窗.html" style="background-color: transparent;"></iframe>
+    </div>
+
+    <!-- 退出确认弹窗 -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="logout-modal-content">
+            <h3 class="logout-modal-title">退出登录</h3>
+            <p class="logout-modal-message">确定要退出登录吗？</p>
+            <div class="logout-modal-buttons">
+                <button class="logout-modal-btn cancel" onclick="hideLogoutModal()">取消</button>
+                <button class="logout-modal-btn confirm" onclick="logout()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.querySelector('.upload-btn');
+            const imageUpload = document.getElementById('imageUpload');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function() {
+                    if (imageUpload) {
+                        imageUpload.click();
+                    }
+                });
+            }
+            if (imageUpload) {
+                imageUpload.addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        const fileName = e.target.files[0].name;
+                        alert('已选择文件: ' + fileName);
+                    }
+                });
+            }
+
+            // 处理来自子页面的消息
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'SHOW_LOGIN_MODAL') {
+                    showLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'SHOW_LOGOUT_MODAL') {
+                    showLogoutModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'LOGIN_SUCCESS') {
+                    // 登录成功，隐藏登录弹窗并刷新页面
+                    handleLoginSuccess();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'CLOSE_MODAL') {
+                    // 关闭登录弹窗
+                    hideLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        // 显示登录弹窗
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏登录弹窗
+        function hideLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 点击遮罩层关闭登录弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginModal = document.getElementById('loginModal');
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) {
+                    hideLoginModal();
+                }
+            });
+        });
+
+        // 显示退出确认弹窗
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏退出确认弹窗
+        function hideLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 执行退出登录
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            hideLogoutModal();
+            // 刷新页面以更新导航栏状态
+            window.location.reload();
+        }
+
+        // 处理登录成功
+        function handleLoginSuccess() {
+            // 设置登录状态到localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+            console.log('登录成功，设置isLoggedIn为true');
+            // 隐藏登录弹窗
+            hideLoginModal();
+            // 刷新页面以更新导航栏状态
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
+        // 跳转到AI聊天页面并携带方案信息
+        function goToAIChat() {
+            // 获取方案信息
+            const mainImage = document.getElementById('mainImage');
+            const imageUrl = mainImage ? mainImage.src : 'images/1.png';
+            
+            // 获取方案标题（名称）
+            const titleElement = document.querySelector('div[style="font-size: 16px; color: var(--deep-gray); font-weight: 500; line-height: 1.4;"]');
+            const title = titleElement ? titleElement.textContent.trim().split('（')[0] : '【汽车制造】机器人焊接 + 自动上下料';
+            
+            // 获取方案描述（概述）
+            const descriptionElement = document.querySelector('div[style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;"]');
+            const description = descriptionElement ? descriptionElement.textContent.trim() : '六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。';
+            
+            // 构建URL参数
+            const params = new URLSearchParams({
+                type: 'consult',
+                consultType: 'solution',
+                image: imageUrl,
+                title: title,
+                description: description
+            });
+            
+            // 跳转到AI页面
+            window.location.href = `创造中心.html?${params.toString()}`;
+        }
+        
+        // 推荐方案数据
+        const solutionData = [
+            [
+                {name: '【汽车制造】机器人装配生产线', desc: '采用工业机器人实现汽车零部件的自动化装配，提高生产效率和装配精度。', img: 'https://picsum.photos/seed/case1/400/200.jpg'},
+                {name: '【汽车制造】智能检测系统', desc: '结合机器视觉和AI技术，实现汽车零部件的自动检测和质量控制。', img: 'https://picsum.photos/seed/case2/400/200.jpg'},
+                {name: '【汽车制造】物流自动化系统', desc: '通过AGV和智能仓储系统，实现汽车生产物流的自动化和智能化。', img: 'https://picsum.photos/seed/case3/400/200.jpg'},
+                {name: '【电子制造】智能装配系统', desc: '采用协作机器人和视觉识别技术，实现电子产品的高精度自动化装配。', img: 'https://picsum.photos/seed/case4/400/200.jpg'},
+                {name: '【食品加工】质量检测系统', desc: '利用机器视觉和AI技术，实现食品生产过程中的实时质量检测和分选。', img: 'https://picsum.photos/seed/case5/400/200.jpg'},
+                {name: '【3C电子】焊接自动化方案', desc: '针对3C电子产品的高精度焊接需求，提供专业的自动化解决方案。', img: 'https://picsum.photos/seed/case6/400/200.jpg'}
+            ],
+            [
+                {name: '【新能源】电池组装生产线', desc: '专为新能源电池生产设计的自动化组装解决方案。', img: 'https://picsum.photos/seed/case7/400/200.jpg'},
+                {name: '【医疗器械】精密装配系统', desc: '满足医疗器械行业对高精度装配的严格要求。', img: 'https://picsum.photos/seed/case8/400/200.jpg'},
+                {name: '【半导体】晶圆检测方案', desc: '先进的半导体晶圆检测和质量控制解决方案。', img: 'https://picsum.photos/seed/case9/400/200.jpg'},
+                {name: '【金属加工】激光切割方案', desc: '高效精密的金属激光切割自动化解决方案。', img: 'https://picsum.photos/seed/case10/400/200.jpg'},
+                {name: '【纺织行业】智能分拣系统', desc: '基于机器视觉的纺织品智能分拣和质量检测方案。', img: 'https://picsum.photos/seed/case11/400/200.jpg'},
+                {name: '【包装行业】码垛机器人方案', desc: '自动化码垛和包装解决方案，提高仓储效率。', img: 'https://picsum.photos/seed/case12/400/200.jpg'}
+            ],
+            [
+                {name: '【航空航天】精密加工方案', desc: '满足航空航天零部件高精度加工需求的自动化方案。', img: 'https://picsum.photos/seed/case13/400/200.jpg'},
+                {name: '【船舶制造】焊接机器人方案', desc: '针对船舶制造行业的大型结构焊接自动化解决方案。', img: 'https://picsum.photos/seed/case14/400/200.jpg'},
+                {name: '【轨道交通】部件检测系统', desc: '轨道交通零部件的自动化检测和质量控制方案。', img: 'https://picsum.photos/seed/case15/400/200.jpg'},
+                {name: '【工程机械】涂装自动化方案', desc: '工程机械零部件的自动化涂装解决方案。', img: 'https://picsum.photos/seed/case16/400/200.jpg'},
+                {name: '【家电制造】装配生产线', desc: '家电产品的自动化装配生产线解决方案。', img: 'https://picsum.photos/seed/case17/400/200.jpg'},
+                {name: '【家具制造】打磨抛光方案', desc: '家具制造行业的自动化打磨和抛光解决方案。', img: 'https://picsum.photos/seed/case18/400/200.jpg'}
+            ]
+        ];
+        let currentSolutionBatch = 0;
+
+        // 渲染推荐方案
+        function renderSolution(batchIndex) {
+            const container = document.getElementById('solutionContainer');
+            const batch = solutionData[batchIndex];
+            container.innerHTML = batch.map(sol => `
+                <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                    <div style="background-color: var(--white); border-radius: 8px; overflow: hidden; box-shadow: var(--card-shadow); transition: all 0.3s; transform: translateY(0);">
+                        <img src="${sol.img}" alt="${sol.name}" style="width: 100%; height: 120px; object-fit: cover; transition: all 0.3s;">
+                        <div style="padding: 10px;">
+                            <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px; line-height: 1.4; transition: all 0.3s;">${sol.name}</h4>
+                            <p style="font-size: 12px; color: var(--light-gray); line-height: 1.5; transition: all 0.3s; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${sol.desc}</p>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // 换一批功能
+        function refreshSolution() {
+            currentSolutionBatch = (currentSolutionBatch + 1) % solutionData.length;
+            renderSolution(currentSolutionBatch);
+        }
+
+        // 页面加载时渲染第一批推荐方案
+        window.addEventListener('DOMContentLoaded', function() {
+            renderSolution(currentSolutionBatch);
+        });
+    </script>
+
+    <!-- 内容区 -->
+    <div class="container" style="height: 100%;">
+        <div style="min-height: 600px; background-color: var(--white); border-radius: 0; box-shadow: var(--card-shadow); margin: 0 0 30px 0; height: 100%;">
+            <div style="display: grid; grid-template-columns: 4fr 1fr; gap: 8px; height: 100%;">
+                <!-- 左侧内容区 -->
+                <div style="display: flex; flex-direction: column; min-height: 100%;">
+                    <!-- 方案详情 -->
+                    <div style="border: 1px solid var(--border); border-radius: 0; overflow: hidden;  box-shadow: var(--card-shadow); flex: 1; display: flex; flex-direction: column;">
+                        <!-- 方案详情 -->
+                        <div style="padding: 0; background-color: var(--white); border-bottom: 1px solid var(--border);">
+                            <div style="background-color: var(--light-bg); padding: 8px 20px; border-bottom: 2px solid var(--white);">
+                                <h3 style="font-size: 18px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">方案详情</h3>
+                            </div>
+                            <div style="padding: 10px 10px 16px 10px; min-height: 320px;">
+                            <div style="display: flex; gap: 20px;">
+                                <!-- 左侧图片区 -->
+                                <div style="flex: 0 0 480px;">
+                                    <!-- 主图 -->
+                                    <div style="padding: 0; margin-bottom: 8px;">
+                                        <img id="mainImage" src="images/1.png" alt="方案封面图" style="width: 100%; height: 320px; object-fit: cover;">
+                                    </div>
+                                    <!-- 缩略图 -->
+                                    <div style="display: flex; gap: 10px;">
+                                        <div onclick="changeImage('images/1.png')" style="border: 1px solid var(--klein-blue); padding: 3px; border-radius: 4px; background-color: var(--white); width: 96px; height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/1.png" alt="缩略图1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/2.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 96px; height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/2.png" alt="缩略图2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/3.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 96px; height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/3.png" alt="缩略图3" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/4.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 96px; height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/4.png" alt="缩略图4" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/5.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 96px; height: 96px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/5.png" alt="缩略图5" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 右侧信息区 -->
+                                <div style="flex: 1;">
+                                    <div style="display: grid; grid-template-columns: 68px 1fr; gap: 14px 20px; align-items: start;">
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">名称</div>
+                                        <div style="font-size: 16px; color: var(--deep-gray); font-weight: 500; line-height: 1.4;">【汽车制造】机器人焊接 + 自动上下料 <span style="font-size: 14px; color: var(--light-gray); font-weight: normal;">（方案编号：SOL-2026-001）</span></div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">概述</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;">六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。</div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">适用场景</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;">适用于汽车整车制造、汽车零部件焊接、工程机械制造、钢结构焊接、家电制造等行业的自动化焊接生产线，特别适合对焊接精度、效率和质量一致性要求较高的生产场景。</div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">备注</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;">本方案需要根据具体生产环境进行定制化调整本方案需要根据具体生产环境进行定制化调整本方案需要根据具体生产环境进行定制化调整</div>
+                                    </div>
+                                    
+                                    <!-- 操作按钮 -->
+                                    <div class="operation-buttons" style="margin-top: 24px; display: flex; flex-direction: column; gap: 14px; margin-left: 88px;"> <!-- 添加左边距与基本信息内容对齐 -->
+                                        <!-- 第一行按钮 -->
+                                        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+                                            <!-- 3D(STEP)下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>3D(.STEP)</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- BOM表下载按钮 -->
+                                            <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                <span>📥</span>
+                                                <span>BOM表</span>
+                                            </button>
+                                            
+                                            <!-- 技术文档下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>技术文档</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    15元宝
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 运控程序下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>运控程序</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 第二行按钮 -->
+                                        <div style="display: flex; gap: 16px; align-items: center;">
+                                            <!-- 添加到我的方案库按钮 -->
+                                            <button onmouseover="this.style.backgroundColor='#e0631d'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(243, 112, 33, 0.3)';" onmouseout="this.style.backgroundColor='#f37021'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(243, 112, 33, 0.2)';" style="background-color: #f37021; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                <span>+</span>
+                                                <span>添加到我的方案库</span>
+                                            </button>
+                                            
+                                            <!-- 在线咨询按钮 -->
+                                            <button onclick="goToAIChat()" onmouseover="this.style.backgroundColor='#0051D9'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.3)';" onmouseout="this.style.backgroundColor='#0066cc'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 102, 204, 0.2)';" style="background-color: #0066cc; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                <span>💬</span>
+                                                <span>在线咨询</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <style>
+                                        /* 操作按钮 hover 效果 */
+                                        .operation-buttons button:hover,
+                                        .operation-buttons > div button:hover {
+                                            transform: translateY(-3px);
+                                            box-shadow: 0 6px 16px rgba(0, 81, 217, 0.2);
+                                            background-color: var(--klein-blue);
+                                            color: white;
+                                        }
+                                        
+                                        /* 添加到我的方案库按钮 hover 效果 */
+                                        .operation-buttons > button:first-child:hover {
+                                            background-color: #e0631d;
+                                            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.3);
+                                            color: white;
+                                        }
+                                        
+                                        /* Tab 栏 hover 效果 */
+                                        .tab-content-btn:hover {
+                                            background-color: rgba(0, 81, 217, 0.05);
+                                            color: var(--klein-blue);
+                                        }
+                                        
+                                        /* 知识库卡片 hover 效果 */
+                                        .knowledge-card:hover {
+                                            transform: translateY(-4px);
+                                            box-shadow: 0 8px 20px rgba(0, 81, 217, 0.15);
+                                            border-color: var(--klein-blue);
+                                            background-color: rgba(0, 81, 217, 0.02);
+                                            transition: all 0.3s ease;
+                                        }
+                                        
+                                        .knowledge-card:hover h4 {
+                                            color: var(--klein-blue);
+                                            font-weight: 600;
+                                            transition: all 0.3s ease;
+                                        }
+                                        
+                                        .knowledge-card:hover p {
+                                            color: var(--deep-gray);
+                                            transition: all 0.3s ease;
+                                        }
+                                    </style>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分割线 -->
+                        <div style="height: 3px; background-color: #e0e6ed;"></div>
+                        
+                        <!-- Tab 区域 -->
+                        <div id="tab-area" style="background-color: var(--white); border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; min-height: 748px; flex: 1; display: flex; flex-direction: column;">
+                            <!-- Tab 导航 -->
+                            <div style="display: flex; background-color: var(--light-bg); border-bottom: 1px solid var(--border);">
+                                <div class="tab-content-btn active" data-tab="3d" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--klein-blue); background-color: var(--white); transition: all 0.3s; border-bottom: 3px solid var(--klein-blue);">3D文件</div>
+                                <div class="tab-content-btn" data-tab="bom" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-bottom: 3px solid transparent;">BOM清单</div>
+                                <div class="tab-content-btn" data-tab="tech" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-bottom: 3px solid transparent;">技术文档</div>
+                                <div class="tab-content-btn" data-tab="control" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-bottom: 3px solid transparent;">运控程序</div>
+                                <div class="tab-content-btn" data-tab="video" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-bottom: 3px solid transparent;">工作视频</div>
+                                <div class="tab-content-btn" data-tab="knowledge" style="padding: 16px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-bottom: 3px solid transparent;">知识库</div>
+                            </div>
+                            
+                            <!-- Tab 内容 -->
+                            <div style="padding: 0; background-color: var(--white); flex: 1; overflow: hidden;">
+                                <!-- 3D内容 -->
+                                <div id="tab-3d" class="tab-content active" style="padding: 0; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <!-- 3D渲染容器 -->
+                                        <div id="stl-container" style="flex: 1; min-height: 500px; background-color: #f5f5f5; padding: 0; margin: 0; position: relative;">
+                                            <canvas id="stl-canvas" style="width: 100%; height: 100%;"></canvas>
+                                            <!-- Loading遮罩 -->
+                                            <div id="stl-loading" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(245, 245, 245, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
+                                                <div style="width: 60px; height: 60px; border: 4px solid #e0e0e0; border-top-color: #0051D9; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                                <div style="margin-top: 20px; font-size: 16px; color: #666;">加载中...</div>
+                                                <div style="margin-top: 8px; font-size: 14px; color: #999;">正在加载3D模型...</div>
+                                            </div>
+                                            <style>
+                                                @keyframes spin {
+                                                    to { transform: rotate(360deg); }
+                                                }
+                                            </style>
+                                        </div>
+                                        
+                                        <!-- 下载按钮 -->
+                                        <div style="display: flex; justify-content: center; margin-top: 8px;">
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>下载全部3D文件</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- BOM清单内容 -->
+                                <div id="tab-bom" class="tab-content" style="display: none; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    
+                                    <!-- BOM子清单标签 -->
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                                        <div class="bom-subtab" data-subtab="robot" style="padding: 6px 12px; background-color: rgba(0, 81, 217, 0.1); color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 16px; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>机器人及工具清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="gripper" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>手爪(夹治具)清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="special" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>专机设备清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="consumable" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>耗材及易损件清单</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 机器人及工具清单 -->
+                                    <div id="subtab-robot" class="bom-subcontent" style="display: block;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/1.png" alt="六轴机器人" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">六轴机器人</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">KR 6 R900</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">负载6kg，臂展900mm</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接电源</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">TPS 5000</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">500A焊接电源</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">视觉定位系统</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">VisionPro</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">含相机、镜头、光源</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 手爪(夹治具)清单 -->
+                                    <div id="subtab-gripper" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/2.png" alt="焊接手爪" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接手爪</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">个</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">阳极氧化</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">适配KR 6机器人</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">上下料夹具</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">适配上下料机构</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 专机设备清单 -->
+                                    <div id="subtab-special" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">上下料机构</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">含输送线、提升机构</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/3.png" alt="防护围栏" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">防护围栏</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">阳极氧化</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">含安全门、光栅</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">电气控制柜</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">含PLC、触摸屏</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 耗材及易损件清单 -->
+                                    <div id="subtab-consumable" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接焊丝</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">10</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">卷</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">Φ1.0mm</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">ER50-6</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接喷嘴</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">5</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">个</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">15mm</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">镀铬</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">适配TPS 5000</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">机器人油脂</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">瓶</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">500ml</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">关节润滑用</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">导电嘴</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">10</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">个</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">Φ1.0mm</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">适配TPS 5000</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 下载按钮 -->
+                                    <div style="display: flex; justify-content: center; margin-top: 20px;">
+                                        <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                            <span>📥</span>
+                                            <span>下载全部BOM清单</span>
+                                        </button>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 技术文档内容 -->
+                                <div id="tab-tech" class="tab-content" style="display: none; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">组装说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 1.5MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">电器操作说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 1.2MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">测试说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 0.8MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">方案技术方案书</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 2.5MB</div>
+                                            </div>
+                                        </a>
+                                        
+                                        <!-- 下载按钮 -->
+                                        <div style="display: flex; justify-content: center; margin-top: 16px;">
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)'" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)'" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>下载全部技术文档</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 运控程序内容 -->
+                                <div id="tab-control" class="tab-content" style="display: none; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    <div style="display: flex; flex-direction: column; gap: 0;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 20px; margin: 0;">
+                                            <h4 style="font-size: 16px; font-weight: bold; color: var(--klein-blue); margin-bottom: 16px;">运控程序说明</h4>
+                                            <p style="font-size: 14px; color: var(--deep-gray); line-height: 1.6; margin-bottom: 24px;">运控程序是机器人控制系统的核心，负责机器人的运动控制、路径规划和与外部设备的通信。本方案提供的运控程序经过专业团队精心开发，具有以下核心功能：</p>
+                                            <ul style="font-size: 14px; color: var(--deep-gray); line-height: 1.6; margin-bottom: 24px; padding-left: 20px;">
+                                                <li style="margin-bottom: 8px;"><strong>机器人运动轨迹规划</strong>：精确计算机器人运动路径，确保焊接精度和效率</li>
+                                                <li style="margin-bottom: 8px;"><strong>焊接参数控制</strong>：实时调整焊接电流、电压等参数，保证焊接质量</li>
+                                                <li style="margin-bottom: 8px;"><strong>视觉系统集成</strong>：与视觉定位系统无缝对接，实现精准定位</li>
+                                                <li style="margin-bottom: 8px;"><strong>与PLC的通信接口</strong>：支持多种工业通信协议，方便与生产线集成</li>
+                                                <li style="margin-bottom: 8px;"><strong>故障诊断与报警</strong>：实时监测系统状态，及时发现并处理异常情况</li>
+                                            </ul>
+                                            <div style="margin-top: 30px; display: flex; justify-content: center;">
+                                                <div style="position: relative;">
+                                                    <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                        <span>📥</span>
+                                                        <span>下载运控程序</span>
+                                                    </button>
+                                                    <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                        10元宝
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 工作视频内容 -->
+                                <div id="tab-video" class="tab-content" style="display: none; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    <!-- 视频标签导航 -->
+                                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                                        <div onclick="selectVideo(this, 'video-1')" style="padding: 6px 12px; background-color: rgba(0, 81, 217, 0.1); color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 16px; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>机器人焊接操作演示</span>
+                                        </div>
+                                        <div onclick="selectVideo(this, 'video-2')" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>自动上下料系统演示</span>
+                                        </div>
+                                        <div onclick="selectVideo(this, 'video-3')" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>系统维护与保养</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 视频播放区域 -->
+                                    <div id="video-1" class="video-content" style="display: block;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer1" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder1" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">机器人焊接操作演示</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：5:30 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer1', 'videoPlaceholder1')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="video-2" class="video-content" style="display: none;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer2" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder2" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">自动上下料系统演示</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：3:45 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer2', 'videoPlaceholder2')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="video-3" class="video-content" style="display: none;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer3" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder3" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">系统维护与保养</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：4:20 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer3', 'videoPlaceholder3')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <script>
+                                    function selectVideo(element, videoId) {
+                                        // 移除所有标签的选中状态
+                                        const videoTabs = element.parentElement.querySelectorAll('div');
+                                        videoTabs.forEach(tab => {
+                                            tab.style.backgroundColor = 'var(--light-bg)';
+                                            tab.style.color = 'var(--deep-gray)';
+                                            tab.style.borderColor = 'transparent';
+                                        });
+                                        
+                                        // 设置当前标签为选中状态
+                                        element.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+                                        element.style.color = 'var(--klein-blue)';
+                                        element.style.borderColor = 'var(--klein-blue)';
+                                        
+                                        // 隐藏所有视频内容
+                                        const videoContents = document.querySelectorAll('.video-content');
+                                        videoContents.forEach(content => {
+                                            content.style.display = 'none';
+                                        });
+                                        
+                                        // 显示选中的视频内容
+                                        document.getElementById(videoId).style.display = 'block';
+                                    }
+                                    
+                                    function playVideo(videoId, placeholderId) {
+                                        const video = document.getElementById(videoId);
+                                        const placeholder = document.getElementById(placeholderId);
+                                        
+                                        // 显示视频播放器，隐藏占位符（包含播放按钮）
+                                        video.style.display = 'block';
+                                        placeholder.style.display = 'none';
+                                        
+                                        // 开始播放视频
+                                        video.play()
+                                            .then(() => {
+                                                console.log('视频播放开始');
+                                            })
+                                            .catch(error => {
+                                                console.error('视频播放失败:', error);
+                                            });
+                                    }
+                                </script>
+                                
+                                <!-- 知识库内容 -->
+                                <div id="tab-knowledge" class="tab-content" style="display: none; height: 100%; overflow-y: auto;">
+                                    <div style="padding: 15px;">
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">机器人焊接技术要点</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">机器人焊接是一种高精度、高效率的焊接方式，需要注意焊接参数设置、机器人轨迹规划、焊接材料选择、保护气体使用等技术要点。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">自动化生产线维护保养</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">定期检查机器人关节和减速器，添加润滑油，检查焊接设备电缆和接头，确保连接可靠，同时要注意设备的清洁和防护。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">工业机器人选型指南</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">选择合适的工业机器人需要考虑负载能力、工作范围、重复定位精度、速度、加速度、工作环境等因素。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">机器视觉系统应用</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">机器视觉系统在工业自动化中广泛应用，可用于产品检测、定位、识别、测量等任务，提高生产效率和质量。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">智能工厂建设方案</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">智能工厂建设需要整合工业机器人、物联网、大数据、人工智能等技术，实现生产过程的自动化、数字化和智能化。</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧边栏 -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- 推荐方案 -->
+                    <div style="border: 1px solid var(--border); border-radius: 0; padding: 0; background-color: var(--white); box-shadow: var(--card-shadow);">
+                        <div style="background-color: var(--light-bg); padding: 8.5px 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">推荐方案</h3>
+                            <button id="refreshSolution" onclick="refreshSolution()" style="background: transparent; color: var(--deep-gray); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--hermes-orange)';this.style.color='var(--hermes-orange)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--deep-gray)'">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                换一批
+                            </button>
+                        </div>
+                        <div style="padding: 10px;">
+                        <div id="solutionContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        </div>
+                        </div>
+                    </div>
+
+                            <style>
+                                /* 推荐方案卡片 hover 效果 */
+                                div[style*="display: flex; flex-direction: column; gap: 10px;"] a:hover div {
+                                    transform: translateY(-5px);
+                                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                                }
+                                
+                                div[style*="display: flex; flex-direction: column; gap: 10px;"] a:hover img {
+                                    transform: scale(1.05);
+                                    filter: brightness(1.1);
+                                }
+                                
+                                div[style*="display: flex; flex-direction: column; gap: 10px;"] a:hover h4 {
+                                    color: var(--klein-blue);
+                                }
+                            </style>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换图片功能
+        function changeImage(imageSrc) {
+            // 更新主图
+            document.getElementById('mainImage').src = imageSrc;
+            
+            // 更新缩略图边框样式
+            const thumbnails = document.querySelectorAll('[onclick^="changeImage"]');
+            thumbnails.forEach(thumb => {
+                if (thumb.onclick.toString().includes(imageSrc)) {
+                    thumb.style.borderColor = 'var(--klein-blue)';
+                } else {
+                    thumb.style.borderColor = 'var(--border)';
+                }
+            });
+        }
+        
+        // 选择文件功能
+        function selectFile(element) {
+            // 移除所有文件项的选中状态
+            const fileItems = element.parentElement.querySelectorAll('div');
+            fileItems.forEach(item => {
+                item.style.backgroundColor = 'var(--light-bg)';
+                item.style.color = 'var(--deep-gray)';
+                item.style.border = '1px solid transparent';
+            });
+            
+            // 设置当前文件项为选中状态
+            element.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+            element.style.color = 'var(--klein-blue)';
+            element.style.border = '1px solid var(--klein-blue)';
+        }
+        
+        // 初始化Tab切换功能
+        function initTabSwitch() {
+            // 移除现有的事件监听器（避免重复绑定）
+            const btns = document.querySelectorAll('.tab-content-btn');
+            btns.forEach(btn => {
+                // 创建一个新的元素来替换旧元素，从而移除所有事件监听器
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+            
+            // 重新绑定事件监听器
+            document.querySelectorAll('.tab-content-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有 Tab 按钮的 active 类
+                    document.querySelectorAll('.tab-content-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.color = 'var(--light-gray)';
+                        b.style.backgroundColor = 'var(--light-bg)';
+                        b.style.borderBottom = '3px solid transparent';
+                    });
+                    
+                    // 添加当前 Tab 按钮的 active 类
+                    this.classList.add('active');
+                    this.style.color = 'var(--klein-blue)';
+                    this.style.backgroundColor = 'var(--white)';
+                    this.style.borderBottom = '3px solid var(--klein-blue)';
+                    
+                    // 隐藏所有 Tab 内容
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // 显示当前 Tab 内容
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById('tab-' + tabId).style.display = 'block';
+                });
+            });
+        }
+        
+        // 页面加载时初始化Tab切换功能
+        window.addEventListener('DOMContentLoaded', initTabSwitch);
+        
+        // 方案卡片展开/收起功能
+        function toggleCard(card) {
+            const p = card.querySelector('p');
+            if (p.style.webkitLineClamp === 'unset') {
+                // 收起卡片
+                p.style.display = '-webkit-box';
+                p.style.webkitLineClamp = '1';
+                p.style.webkitBoxOrient = 'vertical';
+                p.style.overflow = 'hidden';
+            } else {
+                // 展开卡片
+                p.style.display = 'block';
+                p.style.webkitLineClamp = 'unset';
+                p.style.webkitBoxOrient = 'unset';
+                p.style.overflow = 'visible';
+            }
+        }
+    </script>
+
+    <!-- 页脚 -->
+    <iframe src="公共页脚.html" frameborder="0" width="100%" height="220px"></iframe>
+
+    <script>
+        // TAB切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+
+    </script>
+
+
+
+    <script>
+        // BOM子清单切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const bomSubtabs = document.querySelectorAll('.bom-subtab');
+            const bomSubcontents = document.querySelectorAll('.bom-subcontent');
+            
+            // 设置默认选中第一个标签
+            if (bomSubtabs.length > 0) {
+                bomSubtabs[0].style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+                bomSubtabs[0].style.color = 'var(--klein-blue)';
+                bomSubtabs[0].style.borderColor = 'var(--klein-blue)';
+            }
+            
+            bomSubtabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const subtabId = this.getAttribute('data-subtab');
+                    
+                    // 更新标签样式
+                    bomSubtabs.forEach(t => {
+                        t.style.backgroundColor = 'var(--light-bg)';
+                        t.style.color = 'var(--deep-gray)';
+                        t.style.borderColor = 'transparent';
+                    });
+                    this.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+                    this.style.color = 'var(--klein-blue)';
+                    this.style.borderColor = 'var(--klein-blue)';
+                    
+                    // 显示对应内容
+                    bomSubcontents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById('subtab-' + subtabId).style.display = 'block';
+                });
+            });
+        });
+        
+        // 显示AI对话区
+        function showAIChat() {
+            const tabArea = document.querySelector('#tab-area');
+            if (tabArea) {
+                // 清空tab-area内容，直接填充对话区
+                tabArea.innerHTML = `
+                    <div style="width: 100%; height: 100%; display: flex; flex-direction: column;">
+                        <!-- 顶部标题 -->
+                        <div style="background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB; padding: 8px 24px;background-color: #f2f3f5; display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="font-size: 20px; font-weight: bold; color: #1D2129; margin: 0;">在线咨询</h2>
+                            <button onclick="closeAIChat()" onmouseover="this.style.backgroundColor='#f2f3f5'; this.style.color='#0051D9'; this.style.transform='scale(1.1)';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#86909C'; this.style.transform='scale(1)';" style="background: none; border: none; font-size: 40px; cursor: pointer; color: #86909C; padding: 8px 12px; border-radius: 6px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">
+                                ×
+                            </button>
+                        </div>
+                        
+                        <!-- 对话内容区域 -->
+                        <div class="chat-content" style="flex: 1; max-height: 510px; padding: 24px; overflow-y: auto; background-color: #FFFFFF;">
+                            <!-- 群聊消息 -->
+                            
+                            <!-- 用户消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%; margin-left: auto;">
+                                <div style="background-color: #E4EDFD; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-right-radius: 4px;">
+                                    <p style="margin: 0 0 8px 0;">大家好！我对【汽车制造】机器人焊接 + 自动上下料方案很感兴趣，想了解更多细节。</p>
+                                    <p style="margin: 0 0 8px 0;">这个方案的实施周期大概是多久？</p>
+                                    <p style="margin: 0;">另外，后期维护成本高吗？</p>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:30</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 我的秘书消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background-color: #9C27B0; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                        秘
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #1D2129;">我的秘书</div>
+                                </div>
+                                <div style="background-color: #F7F8FA; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-left-radius: 4px; margin-left: 38px;">
+                                    <p style="margin: 0 0 8px 0;">您好！欢迎咨询我们的机器人焊接方案。</p>
+                                    <p style="margin: 0;">关于您的问题，我们的方案工程师和售后工程师会为您详细解答。</p>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:32</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 方案工程师消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                        工
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #1D2129;">方案工程师</div>
+                                </div>
+                                <div style="background-color: #F7F8FA; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-left-radius: 4px; margin-left: 38px;">
+                                    <p style="margin: 0 0 8px 0;">您好！关于实施周期，根据项目规模和复杂度，一般在2-4个月左右。</p>
+                                    <p style="margin: 0 0 8px 0;">我们的方案包括：</p>
+                                    <ol style="margin: 0 0 8px 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 4px;">设备采购和定制（4-6周）</li>
+                                        <li style="margin-bottom: 4px;">现场安装和调试（2-3周）</li>
+                                        <li style="margin-bottom: 4px;">人员培训（1-2周）</li>
+                                        <li style="margin-bottom: 4px;">试运行和优化（1-2周）</li>
+                                    </ol>
+                                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                        <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden;">
+                                            <img src="images/1.png" alt="机器人焊接设备" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden;">
+                                            <img src="images/2.png" alt="自动上下料系统" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:35</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 售后工程师消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background-color: #2196F3; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                        售
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #1D2129;">售后工程师</div>
+                                </div>
+                                <div style="background-color: #F7F8FA; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-left-radius: 4px; margin-left: 38px;">
+                                    <p style="margin: 0 0 8px 0;">关于后期维护成本，我们的方案具有以下优势：</p>
+                                    <ul style="margin: 0 0 8px 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 4px;">采用工业级机器人，可靠性高，故障率低</li>
+                                        <li style="margin-bottom: 4px;">关键部件有1-2年质保期</li>
+                                        <li style="margin-bottom: 4px;">提供远程诊断和维护支持</li>
+                                        <li style="margin-bottom: 4px;">维护成本约为设备价值的5-8%/年</li>
+                                    </ul>
+                                    <p style="margin: 0;">我们还提供不同等级的维护套餐，您可以根据实际需求选择。</p>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:38</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 项目经理消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background-color: #FF9800; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                        项
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #1D2129;">项目经理</div>
+                                </div>
+                                <div style="background-color: #F7F8FA; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-left-radius: 4px; margin-left: 38px;">
+                                    <p style="margin: 0 0 8px 0;">您好！我是本项目的项目经理。</p>
+                                    <p style="margin: 0 0 8px 0;">如果您决定采用我们的方案，我们会为您提供：</p>
+                                    <ul style="margin: 0 0 8px 0; padding-left: 20px;">
+                                        <li style="margin-bottom: 4px;">详细的项目实施计划</li>
+                                        <li style="margin-bottom: 4px;">专业的项目管理团队</li>
+                                        <li style="margin-bottom: 4px;">定期的进度汇报</li>
+                                        <li style="margin-bottom: 4px;">完善的验收流程</li>
+                                    </ul>
+                                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                        <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden;">
+                                            <img src="images/3.png" alt="项目实施现场" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden;">
+                                            <img src="images/4.png" alt="团队协作" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:40</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 用户消息 -->
+                            <div style="margin-bottom: 24px; max-width: 80%; margin-left: auto;">
+                                <div style="background-color: #E4EDFD; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-right-radius: 4px;">
+                                    <p style="margin: 0 0 8px 0;">非常感谢各位的详细解答！我对这个方案很感兴趣。</p>
+                                    <p style="margin: 0;">能否提供一份详细的方案报价和实施时间表？</p>
+                                    <div style="margin-top: 8px; text-align: right; font-size: 12px; color: #86909C;">06-06 10:42</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 底部输入区域 -->
+                        <div style="background-color: #FFFFFF; border-top: 1px solid #E5E7EB; padding: 16px 24px; display: flex; justify-content: center;">
+                            <div class="ai-chat-container" style="width: 80%; max-width: none; margin: 0; background: #FFFFFF; border-radius: 24px; padding: 14px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #E5E7EB; display: flex; flex-direction: column; gap: 12px;">
+                                <div class="ai-input-box" style="width: 100%;">
+                                    <textarea id="chatInput" placeholder="输入你的问题..." style="width: 100%; background: transparent; border: none; outline: none; color: #1D2129; font-size: 16px; resize: none; height: 24px; max-height: 160px; line-height: 24px; padding: 4px 0; overflow: hidden !important; scrollbar-width: none;"></textarea>
+                                </div>
+                                <div class="ai-tool-row" style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #E5E7EB;">
+                                    <div class="ai-tool-left" style="display: flex; align-items: center; gap: 8px;">
+                                        <label class="upload-btn" style="color: #86909C; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; transition: all 0.3s;">
+                                            <input type="file" multiple style="display: none;">
+                                            <span>📎</span> 上传文件
+                                        </label>
+                                        <span class="divider" style="color: #d1d5db; font-size: 16px; padding: 0 4px;">|</span>
+                                        <div class="model-tags" style="display: flex; gap: 6px; align-items: center;">
+                                            <div class="model-tag" data-function="draw" onclick="toggleModelTag(this)" style="background: #F2F3F5; color: #1D2129; padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.3s; white-space: nowrap; border: 1px solid transparent;">画示意图</div>
+                                        </div>
+                                    </div>
+                                    <button class="send-btn" onclick="sendMessage()" style="background: #06b6d4; color: #FFFFFF; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background-color 0.2s;">
+                                        ↑
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加输入框自动高度适配
+                setTimeout(() => {
+                    const textarea = document.querySelector('#chatInput');
+                    if (textarea) {
+                        // 聚焦到输入框
+                        textarea.focus();
+                        
+                        // 初始化高度
+                        textarea.style.height = 'auto';
+                        textarea.style.height = textarea.scrollHeight + 'px';
+                        
+                        // 输入时调整高度
+                        textarea.addEventListener('input', () => {
+                            textarea.style.height = 'auto';
+                            textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+                        });
+                        
+                        // 滚动到输入框位置，确保输入框可见且页脚不显示
+                        const inputContainer = textarea.closest('.ai-chat-container');
+                        if (inputContainer) {
+                            // 计算滚动位置，确保输入框在屏幕上方三分之一处
+                            const windowHeight = window.innerHeight;
+                            const documentHeight = document.documentElement.scrollHeight;
+                            const inputTop = inputContainer.getBoundingClientRect().top + window.pageYOffset;
+                            
+                            // 计算目标滚动位置，使输入框在屏幕上方三分之一处
+                            let targetScroll = inputTop - (windowHeight * 0.3);
+                            
+                            // 确保滚动后不会显示页脚，预留200px的安全距离
+                            const maxScroll = documentHeight - windowHeight - 200;
+                            targetScroll = Math.min(targetScroll, maxScroll);
+                            
+                            // 确保滚动位置不小于0
+                            targetScroll = Math.max(targetScroll, 0);
+                            
+                            window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                        }
+                    }
+                }, 100);
+            }
+        }
+        
+        // 关闭AI对话区，恢复最初的tab区
+        function closeAIChat() {
+            const tabArea = document.querySelector('#tab-area');
+            if (tabArea) {
+                // 恢复最初的tab区结构
+                tabArea.innerHTML = `
+                    <!-- Tab 导航 -->
+                    <div style="width: 120px; background-color: var(--light-bg); border-right: 1px solid var(--border);">
+                        <div class="tab-content-btn active" data-tab="3d" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--klein-blue); background-color: var(--white); transition: all 0.3s; border-left: 4px solid var(--klein-blue); position: relative;">3D文件</div>
+                        <div class="tab-content-btn" data-tab="bom" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">BOM清单</div>
+                        <div class="tab-content-btn" data-tab="tech" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">技术文档</div>
+                        <div class="tab-content-btn" data-tab="control" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">运控程序</div>
+                        <div class="tab-content-btn" data-tab="video" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">工作视频</div>
+                        <div class="tab-content-btn" data-tab="knowledge" style="padding: 16px 22px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">知识库</div>
+                    </div>
+                    
+                    <!-- Tab 内容 -->
+                    <div style="flex: 1; padding: 0; background-color: var(--white);">
+                        <!-- 3D内容 -->
+                        <div id="tab-3d" class="tab-content active" style="padding: 0;">
+                            <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【3D文件】</h3>
+                            </div>
+                            <div style="padding: 0 10px 10px 10px;">
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <!-- 视频 -->
+                                <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 0; margin: 0;">
+                                    <video autoplay muted loop width="100%" height="100%" style="object-fit: cover;">
+                                        <source src="video/3D.mp4" type="video/mp4">
+                                        您的浏览器不支持视频播放。
+                                    </video>
+                                </div>
+                                
+                                <!-- 下载按钮 -->
+                                <div style="display: flex; justify-content: center; margin-top: 8px;">
+                                    <div style="position: relative;">
+                                        <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                            <span>📥</span>
+                                            <span>下载全部3D文件</span>
+                                        </button>
+                                        <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            10元宝
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <!-- BOM清单内容 -->
+                        <div id="tab-bom" class="tab-content" style="display: none;">
+                            <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【BOM清单】</h3>
+                            </div>
+                            <div style="padding: 0 10px 10px 10px;">
+                            
+                            <!-- BOM子清单标签 -->
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                                <div class="bom-subtab" data-subtab="robot" style="padding: 6px 12px; background-color: rgba(0, 81, 217, 0.1); color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 16px; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                    <span>📋</span>
+                                    <span>机器人及工具清单</span>
+                                </div>
+                                <div class="bom-subtab" data-subtab="gripper" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                    <span>📋</span>
+                                    <span>手爪(夹治具)清单</span>
+                                </div>
+                                <div class="bom-subtab" data-subtab="special" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                    <span>📋</span>
+                                    <span>专机设备清单</span>
+                                </div>
+                                <div class="bom-subtab" data-subtab="consumable" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                    <span>📋</span>
+                                    <span>耗材及易损件清单</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 机器人及工具清单 -->
+                            <div id="subtab-robot" class="bom-subcontent" style="display: block;">
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                        <thead>
+                                            <tr style="background-color: var(--light-bg);">
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/1.png" alt="六轴机器人" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">六轴机器人</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">KR 6 R900</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">负载6kg，臂展900mm</td>
+                                            </tr>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">焊接电源</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">TPS 5000</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">500A焊接电源</td>
+                                            </tr>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">视觉定位系统</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">VisionPro</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">含相机、镜头、光源</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 手爪(夹治具)清单 -->
+                            <div id="subtab-gripper" class="bom-subcontent" style="display: none;">
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                        <thead>
+                                            <tr style="background-color: var(--light-bg);">
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/2.png" alt="焊接手爪" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">焊接手爪</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">个</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">阳极氧化</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">适配KR 6机器人</td>
+                                            </tr>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">上下料夹具</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">适配上下料机构</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 专机设备清单 -->
+                            <div id="subtab-special" class="bom-subcontent" style="display: none;">
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                        <thead>
+                                            <tr style="background-color: var(--light-bg);">
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">上下料机构</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">含输送线、提升机构</td>
+                                            </tr>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/3.png" alt="防护围栏" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">防护围栏</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">阳极氧化</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">含安全门、光栅</td>
+                                            </tr>
+                                            <tr style="transition: background-color 0.3s;">
+                                                <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">电气控制柜</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                <td style="padding: 12px; border: 1px solid var(--border);">含PLC、触摸屏</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 重新初始化tab切换功能
+                initTabSwitch();
+            }
+        }
+        
+        // 切换模型标签选中状态
+        function toggleModelTag(element) {
+            if (element.classList.contains('selected')) {
+                // 取消选中
+                element.classList.remove('selected');
+                element.style.background = '#F2F3F5';
+                element.style.color = '#1D2129';
+                element.style.border = '1px solid transparent';
+            } else {
+                // 选中
+                element.classList.add('selected');
+                element.style.background = '#E4EDFD';
+                element.style.color = '#0051D9';
+                element.style.border = '1px solid #C7D7FE';
+            }
+        }
+        
+        // 发送消息函数
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                const chatContent = document.querySelector('.chat-content');
+                if (chatContent) {
+                    // 获取当前时间
+                    const now = new Date();
+                    const time = `${now.getMonth() + 1}-${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                    
+                    // 添加用户消息
+                    chatContent.innerHTML += `
+                        <div style="margin-bottom: 24px; max-width: 80%; margin-left: auto;">
+                            <div style="background-color: #E4EDFD; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-right-radius: 4px;">
+                                ${message.replace(/\n/g, '<br>')}
+                            </div>
+                            <div style="margin-top: 6px; text-align: right; font-size: 12px; color: #86909C;">${time}</div>
+                        </div>
+                    `;
+                    
+                    // 清空输入框
+                    input.value = '';
+                    
+                    // 滚动到底部
+                    chatContent.scrollTop = chatContent.scrollHeight;
+                    
+                    // 模拟AI回复
+                    setTimeout(() => {
+                        const replyTime = `${now.getMonth() + 1}-${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${(now.getMinutes() + 1).toString().padStart(2, '0')}`;
+                        
+                        chatContent.innerHTML += `
+                            <div style="margin-bottom: 24px; max-width: 80%;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                        工
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #1D2129;">方案工程师</div>
+                                </div>
+                                <div style="background-color: #F7F8FA; border-radius: 12px; padding: 12px 16px; line-height: 1.6; font-size: 14px; color: #1D2129; border-bottom-left-radius: 4px; margin-left: 38px;">
+                                    感谢您的咨询，我们会尽快为您提供详细的方案信息。如果您有任何其他问题，请随时告诉我们。
+                                </div>
+                                <div style="margin-top: 6px; text-align: right; font-size: 12px; color: #86909C; margin-left: 38px;">${replyTime}</div>
+                            </div>
+                        `;
+                        // 滚动到底部
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    }, 1000);
+                }
+            }
+        }
+
+        // 3D渲染相关变量
+        let scene, camera, renderer, mesh;
+        let isLoaded = false;
+        let isAutoRotate = true;
+
+        // 初始化3D渲染
+        function init3DViewer() {
+            const container = document.getElementById('stl-container');
+            if (!container) return;
+
+            // 创建场景
+            scene = new THREE.Scene();
+            
+            // 创建空间网格背景
+            createSpaceBackground();
+
+            // 创建相机
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 2000);
+            camera.position.set(120, 80, 150);
+            camera.lookAt(0, 30, 0);
+
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('stl-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0xf5f5f5, 1);
+
+            // 添加环境光
+            const ambientLight = new THREE.AmbientLight(0x404050, 0.8);
+            scene.add(ambientLight);
+
+            // 添加主方向光（模拟太阳光）
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            directionalLight.position.set(100, 150, 100);
+            scene.add(directionalLight);
+
+            // 添加补光
+            const fillLight = new THREE.DirectionalLight(0x6688ff, 0.5);
+            fillLight.position.set(-50, 50, -50);
+            scene.add(fillLight);
+
+            // 添加底部反光
+            const bottomLight = new THREE.DirectionalLight(0x4466aa, 0.3);
+            bottomLight.position.set(0, -50, 0);
+            scene.add(bottomLight);
+
+            // 创建金属材质
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x00a8ff,
+                shininess: 150,
+                specular: 0x88ccff,
+                emissive: 0x003366,
+                emissiveIntensity: 0.1
+            });
+
+            // 创建一个组来存放STL模型
+            const group = new THREE.Group();
+            mesh = group;
+            scene.add(mesh);
+
+            // 使用ES模块动态加载STLLoader
+            async function loadSTLModel() {
+                try {
+                    const { STLLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.148.0/examples/jsm/loaders/STLLoader.js');
+                    const loader = new STLLoader();
+                    loader.load('video/sg.stl', function (geometry) {
+                        // 隐藏loading遮罩
+                        const loadingEl = document.getElementById('stl-loading');
+                        if (loadingEl) {
+                            loadingEl.style.display = 'none';
+                        }
+                        
+                        const stlMesh = new THREE.Mesh(geometry, material);
+                        
+                        // 计算并应用缩放使其适应场景
+                        const boundingBox = new THREE.Box3().setFromBufferAttribute(geometry.attributes.position);
+                        const size = boundingBox.getSize(new THREE.Vector3());
+                        const maxDim = Math.max(size.x, size.y, size.z);
+                        const scale = 100 / maxDim;
+                        stlMesh.scale.set(scale, scale, scale);
+                        
+                        // 居中模型
+                        const center = boundingBox.getCenter(new THREE.Vector3());
+                        stlMesh.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+                        
+                        group.add(stlMesh);
+                        autoFitCamera();
+                    }, undefined, function (error) {
+                        // 隐藏loading遮罩
+                        const loadingEl = document.getElementById('stl-loading');
+                        if (loadingEl) {
+                            loadingEl.style.display = 'none';
+                        }
+                        console.error('加载STL模型失败:', error);
+                        // 如果加载失败，显示一个简单的立方体作为占位符
+                        const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
+                        const box = new THREE.Mesh(boxGeometry, material);
+                        group.add(box);
+                        autoFitCamera();
+                    });
+                } catch (e) {
+                    // 隐藏loading遮罩
+                    const loadingEl = document.getElementById('stl-loading');
+                    if (loadingEl) {
+                        loadingEl.style.display = 'none';
+                    }
+                    console.error('加载STLLoader失败:', e);
+                    // 如果加载失败，显示一个简单的立方体作为占位符
+                    const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
+                    const box = new THREE.Mesh(boxGeometry, material);
+                    group.add(box);
+                    autoFitCamera();
+                }
+            }
+            
+            loadSTLModel();
+
+            // 自动调整相机位置以完整展示模型
+            function autoFitCamera() {
+                const boundingBox = new THREE.Box3().setFromObject(group);
+                const center = boundingBox.getCenter(new THREE.Vector3());
+                const size = boundingBox.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraZ = (maxDim / 2) / Math.tan(fov / 2);
+                
+                cameraZ *= 1.5;
+                camera.position.set(cameraZ * 0.8, cameraZ * 0.5, cameraZ);
+                camera.lookAt(center);
+            }
+
+            // 创建3D编辑器风格的空间背景
+            function createSpaceBackground() {
+                // 创建主要的XY平面网格（地面）
+                const xyGrid = new THREE.GridHelper(500, 50, 0x4a9eff, 0xe0e0e0);
+                scene.add(xyGrid);
+                
+                // 创建XZ平面网格（后墙）
+                const xzGridGeometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+                const xzGridMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xd0d0d0,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const xzGrid = new THREE.Mesh(xzGridGeometry, xzGridMaterial);
+                xzGrid.position.set(0, 250, -250);
+                xzGrid.rotation.x = Math.PI / 2;
+                scene.add(xzGrid);
+                
+                // 创建YZ平面网格（右墙）
+                const yzGridGeometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+                const yzGridMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xd0d0d0,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const yzGrid = new THREE.Mesh(yzGridGeometry, yzGridMaterial);
+                yzGrid.position.set(250, 250, 0);
+                yzGrid.rotation.y = -Math.PI / 2;
+                scene.add(yzGrid);
+                
+                // 创建坐标轴
+                createAxes();
+            }
+            
+            // 创建坐标轴
+            function createAxes() {
+                const axisLength = 300;
+                
+                // X轴（红色）
+                const xMaterial = new THREE.LineBasicMaterial({ color: 0xff4444 });
+                const xPoints = [];
+                xPoints.push(new THREE.Vector3(-axisLength, 0, 0));
+                xPoints.push(new THREE.Vector3(axisLength, 0, 0));
+                const xLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(xPoints), xMaterial);
+                scene.add(xLine);
+                
+                // Y轴（绿色）
+                const yMaterial = new THREE.LineBasicMaterial({ color: 0x44ff44 });
+                const yPoints = [];
+                yPoints.push(new THREE.Vector3(0, -axisLength, 0));
+                yPoints.push(new THREE.Vector3(0, axisLength, 0));
+                const yLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(yPoints), yMaterial);
+                scene.add(yLine);
+                
+                // Z轴（蓝色）
+                const zMaterial = new THREE.LineBasicMaterial({ color: 0x4444ff });
+                const zPoints = [];
+                zPoints.push(new THREE.Vector3(0, 0, -axisLength));
+                zPoints.push(new THREE.Vector3(0, 0, axisLength));
+                const zLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(zPoints), zMaterial);
+                scene.add(zLine);
+                
+                // 添加坐标轴标签
+                addAxisLabels();
+            }
+            
+            // 添加坐标轴标签
+            function addAxisLabels() {
+                const createLabel = function(text, position, color) {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 64;
+                    canvas.height = 32;
+                    ctx.fillStyle = color;
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(text, 32, 22);
+                    
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+                    sprite.position.copy(position);
+                    sprite.scale.set(15, 8, 1);
+                    scene.add(sprite);
+                };
+                
+                createLabel('X', new THREE.Vector3(320, 10, 0), '#ff4444');
+                createLabel('Y', new THREE.Vector3(0, 320, 10), '#44ff44');
+                createLabel('Z', new THREE.Vector3(0, 10, 320), '#4444ff');
+            }
+
+            isLoaded = true;
+            
+            // 开始动画循环
+            animate();
+
+            // 添加窗口大小变化监听
+            window.addEventListener('resize', onWindowResize);
+
+            // 添加鼠标交互
+            container.addEventListener('mousedown', onMouseDown);
+            container.addEventListener('mousemove', onMouseMove);
+            container.addEventListener('mouseup', onMouseUp);
+            container.addEventListener('mouseleave', onMouseUp);
+            container.addEventListener('wheel', onWheel);
+
+            // 添加触摸交互
+            container.addEventListener('touchstart', onTouchStart);
+            container.addEventListener('touchmove', onTouchMove);
+            container.addEventListener('touchend', onTouchEnd);
+        }
+
+        // 鼠标拖拽相关变量
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let targetRotation = { x: 0, y: 0 };
+        let currentRotation = { x: 0, y: 0 };
+
+        // 触摸相关变量
+        let touchStartDistance = 0;
+        let touchStartScale = 1;
+
+        // 窗口大小变化处理
+        function onWindowResize() {
+            const container = document.getElementById('stl-container');
+            if (!container || !camera || !renderer) return;
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        // 鼠标按下
+        function onMouseDown(event) {
+            isDragging = true;
+            isAutoRotate = false;
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        // 鼠标移动 - 旋转模型（3D编辑器风格）
+        function onMouseMove(event) {
+            if (!isDragging || !mesh) return;
+            
+            const deltaMove = {
+                x: event.clientX - previousMousePosition.x,
+                y: event.clientY - previousMousePosition.y
+            };
+            
+            // 旋转模型
+            mesh.rotation.y += deltaMove.x * 0.005;
+            mesh.rotation.x += deltaMove.y * 0.005;
+            
+            // 限制垂直旋转角度
+            mesh.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, mesh.rotation.x));
+            
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        // 鼠标释放
+        function onMouseUp() {
+            isDragging = false;
+            // 3秒后恢复自动旋转
+            setTimeout(function() {
+                if (!isDragging) {
+                    isAutoRotate = true;
+                }
+            }, 3000);
+        }
+
+        // 鼠标滚轮缩放 - 只缩放模型，网格保持不变
+        function onWheel(event) {
+            event.preventDefault();
+            if (!mesh) return;
+            
+            const zoomSpeed = 0.0015;
+            const scaleChange = 1 - event.deltaY * zoomSpeed;
+            
+            mesh.scale.x *= scaleChange;
+            mesh.scale.y *= scaleChange;
+            mesh.scale.z *= scaleChange;
+            
+            mesh.scale.x = Math.max(0.3, Math.min(3, mesh.scale.x));
+            mesh.scale.y = Math.max(0.3, Math.min(3, mesh.scale.y));
+            mesh.scale.z = Math.max(0.3, Math.min(3, mesh.scale.z));
+        }
+
+        // 触摸开始
+        function onTouchStart(event) {
+            isAutoRotate = false;
+            if (event.touches.length === 1) {
+                // 单指操作 - 旋转
+                previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            } else if (event.touches.length === 2 && mesh) {
+                // 双指操作 - 缩放
+                const touch1 = event.touches[0];
+                const touch2 = event.touches[1];
+                touchStartDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                touchStartScale = mesh.scale.x;
+            }
+        }
+
+        // 触摸移动
+        function onTouchMove(event) {
+            event.preventDefault();
+            
+            if (event.touches.length === 1 && mesh) {
+                // 单指旋转
+                const deltaMove = {
+                    x: event.touches[0].clientX - previousMousePosition.x,
+                    y: event.touches[0].clientY - previousMousePosition.y
+                };
+                
+                targetRotation.y += deltaMove.x * 0.005;
+                targetRotation.x += deltaMove.y * 0.005;
+                
+                targetRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetRotation.x));
+                
+                previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            } else if (event.touches.length === 2 && mesh) {
+                // 双指缩放 - 只缩放模型，网格保持不变
+                const touch1 = event.touches[0];
+                const touch2 = event.touches[1];
+                const currentDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                
+                const scale = currentDistance / touchStartDistance;
+                const newScale = touchStartScale * scale;
+                
+                mesh.scale.x = Math.max(0.3, Math.min(3, newScale));
+                mesh.scale.y = Math.max(0.3, Math.min(3, newScale));
+                mesh.scale.z = Math.max(0.3, Math.min(3, newScale));
+            }
+        }
+
+        // 触摸结束
+        function onTouchEnd() {
+            // 3秒后恢复自动旋转
+            setTimeout(function() {
+                isAutoRotate = true;
+            }, 3000);
+        }
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // 自动旋转
+            if (mesh && isAutoRotate && !isDragging) {
+                mesh.rotation.y += 0.003;
+            }
+            
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // 页面加载完成后初始化3D渲染器
+        document.addEventListener('DOMContentLoaded', function() {
+            init3DViewer();
+            
+            // 监听tab切换，确保切换到3D tab时渲染器已初始化
+            document.querySelectorAll('.tab-content-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    if (tabId === '3d' && !isLoaded) {
+                        init3DViewer();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

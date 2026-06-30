@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>用户注册</title>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media screen and (min-width: 1920px) {
+            html { font-size: 17px; }
+        }
+
+        @media screen and (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media screen and (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media screen and (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media screen and (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media screen and (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media screen and (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-gray: #F2F3F5;
+            --classic-gray: #86909C;
+            --white: #FFFFFF;
+            --border-gray: #E5E7EB;
+            --hover-gray: #F7F8FA;
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.5rem;
+            --line-height-base: 1.5;
+            --line-height-lg: 1.8;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.25rem;
+            --spacing-3xl: 1.875rem;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            min-height: 100vh;
+        }
+
+        .register-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-header {
+            background-color: var(--white);
+            padding: var(--spacing-xl) 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: min(75rem, 92%);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .logo-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .search-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-subtitle {
+            font-size: 2rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .logo-slogan {
+            font-size: 1.2rem;
+            color: var(--classic-gray);
+            font-weight: 500;
+            padding: 0;
+            margin: 0;
+            line-height: 2.4;
+        }
+
+        .logo-description {
+            font-size: 1rem;
+            color: #1092ee;
+            font-weight: 400;
+            padding: 0;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .header-right {
+            font-size: var(--font-size-base);
+            color: var(--classic-gray);
+        }
+
+        .header-right a {
+            color: var(--klein-blue);
+            text-decoration: none;
+            margin-left: var(--spacing-xs);
+        }
+
+        .header-right a:hover {
+            text-decoration: underline;
+        }
+
+        .register-body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-3xl) 1rem;
+        }
+
+        .register-box {
+            background-color: var(--white);
+            border-radius: 0.75rem;
+            width: 26.25rem;
+            max-width: 100%;
+            padding: var(--spacing-3xl);
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.1);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: var(--spacing-3xl);
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 0.625rem;
+            left: 50%;
+            transform: translateX(50%);
+            width: 3.75rem;
+            height: 2px;
+            background-color: var(--border-gray);
+            margin-left: 1.875rem;
+        }
+
+        .step-num {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--classic-gray);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-item.active .step-num {
+            background-color: var(--klein-blue);
+            color: var(--white);
+        }
+
+        .step-text {
+            font-size: var(--font-size-sm);
+            color: var(--classic-gray);
+        }
+
+        .step-item.active .step-text {
+            color: var(--klein-blue);
+            font-weight: 500;
+        }
+
+        .register-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--deep-gray);
+            text-align: center;
+            margin-bottom: var(--spacing-3xl);
+        }
+
+        .form-item {
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--font-size-base);
+            color: var(--deep-gray);
+            font-weight: 500;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .required-mark {
+            color: var(--hermes-orange);
+            margin-right: var(--spacing-xs);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 0.5rem;
+            font-size: var(--font-size-base);
+            transition: all 0.3s;
+            color: var(--deep-gray);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--klein-blue);
+            box-shadow: 0 0 0 0.1875rem rgba(0, 81, 217, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--classic-gray);
+        }
+
+        .input-error {
+            border-color: var(--hermes-orange) !important;
+        }
+
+        .input-error:focus {
+            box-shadow: 0 0 0 0.1875rem rgba(243, 112, 33, 0.1) !important;
+        }
+
+        .error-tip {
+            display: none;
+            color: var(--hermes-orange);
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+        }
+
+        .error-tip.show {
+            display: block;
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .password-input .form-input {
+            padding-right: 2.5rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--classic-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: color 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: var(--klein-blue);
+        }
+
+        .password-toggle svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .code-input {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .code-input .form-input {
+            flex: 1;
+        }
+
+        .code-btn {
+            padding: 0 1.25rem;
+            background-color: var(--light-gray);
+            color: var(--deep-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: all 0.3s;
+            white-space: nowrap;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .code-btn:hover:not(.counting) {
+            border-color: var(--klein-blue);
+            color: var(--klein-blue);
+            background-color: var(--white);
+        }
+
+        .code-btn.counting {
+            background-color: var(--light-gray);
+            color: var(--classic-gray);
+            cursor: not-allowed;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 1rem;
+            height: 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 3px;
+            margin-right: var(--spacing-sm);
+            position: relative;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+            background-color: var(--klein-blue);
+            border-color: var(--klein-blue);
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+            content: '';
+            position: absolute;
+            left: 0.3125rem;
+            top: 0.125rem;
+            width: 0.25rem;
+            height: 0.5rem;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-text {
+            font-size: var(--font-size-sm);
+            color: var(--classic-gray);
+        }
+
+        .protocol-link {
+            color: var(--klein-blue);
+            text-decoration: none;
+            margin: 0 var(--spacing-xs);
+            transition: color 0.3s;
+        }
+
+        .protocol-link:hover {
+            color: #0047c9;
+            text-decoration: underline;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--klein-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            transition: all 0.3s;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-button:hover:not(:disabled) {
+            background-color: #0047c9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.2);
+        }
+
+        .register-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .login-links {
+            text-align: center;
+            font-size: var(--font-size-sm);
+            color: var(--classic-gray);
+            margin-top: 1rem;
+        }
+
+        .login-links a {
+            color: var(--klein-blue);
+            text-decoration: none;
+            margin-left: var(--spacing-xs);
+        }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+
+        .register-footer {
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--classic-gray);
+            border-top: 1px solid var(--border-gray);
+            margin-top: auto;
+        }
+
+        /* 协议弹窗样式 */
+        .protocol-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(2px);
+        }
+
+        .protocol-modal-overlay.show {
+            display: flex;
+        }
+
+        .protocol-modal {
+            background-color: var(--white);
+            border-radius: 0.75rem;
+            width: 37.5rem;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.2);
+        }
+
+        .protocol-modal-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: var(--white);
+            z-index: 10;
+        }
+
+        .protocol-modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--deep-gray);
+        }
+
+        .protocol-modal-close {
+            width: 1.75rem;
+            height: 1.75rem;
+            border: none;
+            background-color: transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--classic-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .protocol-modal-close:hover {
+            background-color: var(--light-gray);
+            color: var(--deep-gray);
+        }
+
+        .protocol-modal-content {
+            padding: var(--spacing-xl);
+            max-height: calc(80vh - 60px);
+            overflow-y: auto;
+            font-size: var(--font-size-base);
+            color: var(--deep-gray);
+            line-height: var(--line-height-lg);
+        }
+
+        .protocol-modal-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.75rem;
+            color: var(--klein-blue);
+        }
+
+        .protocol-modal-content h4 {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin: 0.75rem 0 0.5rem;
+        }
+
+        .protocol-modal-content p {
+            margin-bottom: 0.5rem;
+            text-indent: 2em;
+        }
+
+        .protocol-modal-content ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .protocol-modal-content li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Toast提示样式 */
+        .toast-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 8%;
+            pointer-events: none;
+            z-index: 999999;
+        }
+
+        .toast {
+            background-color: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            min-width: 12.5rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-20px) scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast.success {
+            background-color: rgba(0, 180, 120, 0.9);
+        }
+
+        .toast.error {
+            background-color: rgba(243, 112, 33, 0.9);
+        }
+
+        /* 响应式适配 */
+        @media screen and (max-width: 768px) {
+            .register-box {
+                padding: var(--spacing-xl);
+                border-radius: 0.5rem;
+            }
+
+            .register-title {
+                font-size: 1.25rem;
+            }
+
+            .step-item:not(:last-child)::after {
+                width: 2.5rem;
+                margin-left: 1.25rem;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-lg);
+                align-items: flex-start;
+            }
+
+            .register-body {
+                padding: var(--spacing-xl) 0.75rem;
+            }
+
+            .register-box {
+                padding: var(--spacing-lg);
+            }
+
+            .protocol-modal {
+                width: 95%;
+                border-radius: 0.5rem;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .register-body {
+                padding: var(--spacing-md) 0.5rem;
+            }
+
+            .register-box {
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="header-content">
+                <div class="logo-section" onclick="window.location.href='商城首页.html'" style="cursor: pointer;">
+                    <div class="logo-row">
+                        <div class="logo-left">
+                            <span class="search-logo" style="color: #0051D9;">RaaSDao</span>
+                            <div class="logo-slogan">共创・共享</div>
+                            <div class="logo-description">人类 + 离身智能 + 具身智能，协同创造</div>
+                        </div>
+                        <span class="logo-subtitle">AI生产力创造平台</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    已有账号？<a href="创造中心未登录态.html?showLogin=true">请登录</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="register-body">
+            <div class="register-box">
+                <div class="register-title">用户注册</div>
+
+                <form id="registerForm">
+
+                    <div class="form-item">
+                        <label class="form-label">
+                            <span class="required-mark">*</span>手机号码
+                        </label>
+                        <input type="text" class="form-input" id="regPhone" placeholder="请输入手机号" maxlength="11">
+                        <span class="error-tip" id="phoneError"></span>
+                    </div>
+
+                    <div class="form-item">
+                        <label class="form-label">
+                            <span class="required-mark">*</span>短信验证码
+                        </label>
+                        <div class="code-input">
+                            <input type="text" class="form-input" id="regCode" placeholder="请输入短信验证码" maxlength="6">
+                            <button type="button" class="code-btn" id="getCodeBtn">获取验证码</button>
+                        </div>
+                        <span class="error-tip" id="codeError"></span>
+                    </div>
+ <div class="form-item">
+                        <label class="form-label">
+                            <span class="required-mark"></span>登录账号
+                        </label>
+                        <input type="text" class="form-input" id="regUsername" placeholder="请设置登录账号" maxlength="16">
+                        <span class="error-tip" id="usernameError"></span>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label">
+                            <span class="required-mark"></span>登录密码
+                        </label>
+                        <div class="password-input">
+                                <input type="password" class="form-input" id="regPassword" placeholder="请设置登录密码" maxlength="20">
+                                <span class="password-toggle" id="passwordEye">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </span>
+                            </div>
+                        <span class="error-tip" id="passwordError"></span>
+                    </div>
+
+                    <div class="form-item">
+                        <label class="form-label">
+                            <span class="required-mark"></span>确认密码
+                        </label>
+                        <div class="password-input">
+                                <input type="password" class="form-input" id="regConfirmPassword" placeholder="请再次输入登录密码" maxlength="20">
+                                <span class="password-toggle" id="confirmEye">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </span>
+                            </div>
+                        <span class="error-tip" id="confirmPasswordError"></span>
+                    </div>
+
+                    <div class="form-item checkbox-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="agreeProtocol">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">我已阅读并同意<a href="#" class="protocol-link" id="serviceAgreement">《用户服务协议》</a><a href="#" class="protocol-link" id="privacyPolicy">《隐私政策》</a></span>
+                        </label>
+                        <span class="error-tip" id="protocolError"></span>
+                    </div>
+
+                    <button type="button" class="register-button" id="registerBtn" disabled>注册</button>
+
+                    <div class="login-links">
+                        已有账号？<a href="创造中心未登录态.html?showLogin=true">去登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="register-footer">
+            © 2026 RaaS.Dao. All Rights Reserved.
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast-overlay" id="toastOverlay">
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <!-- 用户协议弹窗 -->
+    <div class="protocol-modal-overlay" id="protocolModal">
+        <div class="protocol-modal">
+            <div class="protocol-modal-header">
+                <div class="protocol-modal-title" id="protocolTitle">用户服务协议</div>
+                <button class="protocol-modal-close" id="protocolClose">×</button>
+            </div>
+            <div class="protocol-modal-content" id="protocolContent">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const regUsername = document.getElementById('regUsername');
+        const regPhone = document.getElementById('regPhone');
+        const regCode = document.getElementById('regCode');
+        const regPassword = document.getElementById('regPassword');
+        const regConfirmPassword = document.getElementById('regConfirmPassword');
+        const agreeProtocol = document.getElementById('agreeProtocol');
+        const registerBtn = document.getElementById('registerBtn');
+        const getCodeBtn = document.getElementById('getCodeBtn');
+        const passwordEye = document.getElementById('passwordEye');
+        const confirmEye = document.getElementById('confirmEye');
+
+        let countdownTimer = null;
+        let isCodeSent = false;
+        let toastTimer = null;
+
+        // 禁止输入中文的函数
+        function preventChineseInput(e) {
+            const input = e.target;
+            const value = input.value;
+            // 过滤掉中文字符
+            const filteredValue = value.replace(/[\u4e00-\u9fa5]/g, '');
+            if (filteredValue !== value) {
+                input.value = filteredValue;
+            }
+        }
+
+        // 为所有表单输入框添加禁止中文输入
+        regUsername.addEventListener('input', preventChineseInput);
+        regPhone.addEventListener('input', preventChineseInput);
+        regCode.addEventListener('input', preventChineseInput);
+        regPassword.addEventListener('input', preventChineseInput);
+        regConfirmPassword.addEventListener('input', preventChineseInput);
+
+        function showToast(message, type = 'success') {
+            const toastOverlay = document.getElementById('toastOverlay');
+            const toast = document.getElementById('toast');
+            
+            if (toastTimer) {
+                clearTimeout(toastTimer);
+            }
+            
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toastOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toastOverlay.style.display = 'none';
+                }, 300);
+            }, 2000);
+        }
+
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            if (input) input.classList.add('input-error');
+            if (error) {
+                error.textContent = message;
+                error.classList.add('show');
+            }
+        }
+
+        function clearError(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            if (input) input.classList.remove('input-error');
+            if (error) {
+                error.textContent = '';
+                error.classList.remove('show');
+            }
+        }
+
+        function validateUsername() {
+            const value = regUsername.value.trim();
+            if (!value) {
+                clearError('regUsername', 'usernameError');
+                return true;
+            }
+            if (value.length < 6 || value.length > 50) {
+                showError('regUsername', 'usernameError', '账号长度 6-50 位，支持字母、数字、符号');
+                return false;
+            }
+            if (!/^[a-zA-Z0-9@._\-!#$%^&*()+=]+$/.test(value)) {
+                showError('regUsername', 'usernameError', '账号支持字母、数字、@、.、_、- 等常用符号');
+                return false;
+            }
+            clearError('regUsername', 'usernameError');
+            return true;
+        }
+
+        function checkUsernameAvailability() {
+            const value = regUsername.value.trim();
+            if (!value) return;
+            if (!validateUsername()) return;
+            const takenUsernames = ['admin', 'test', 'user', 'admin123', 'test_user'];
+            if (takenUsernames.includes(value.toLowerCase())) {
+                showError('regUsername', 'usernameError', '该账号已被注册，请更换');
+            }
+        }
+
+        function validatePhone() {
+            const value = regPhone.value.trim();
+            if (!/^1[3-9]\d{9}$/.test(value)) {
+                showError('regPhone', 'phoneError', '请输入正确的 11 位手机号码');
+                return false;
+            }
+            clearError('regPhone', 'phoneError');
+            return true;
+        }
+
+        function validateCode() {
+            const value = regCode.value.trim();
+            if (!value) {
+                showError('regCode', 'codeError', '请输入短信验证码');
+                return false;
+            }
+            clearError('regCode', 'codeError');
+            return true;
+        }
+
+        function validatePassword() {
+            const value = regPassword.value;
+            if (!value) {
+                clearError('regPassword', 'passwordError');
+                return true;
+            }
+            if (value.length < 6 || value.length > 50) {
+                showError('regPassword', 'passwordError', '密码长度 6-50 位，支持数字、字母、符号');
+                return false;
+            }
+            clearError('regPassword', 'passwordError');
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            const value = regConfirmPassword.value;
+            if (!regPassword.value) {
+                clearError('regConfirmPassword', 'confirmPasswordError');
+                return true;
+            }
+            if (!value) {
+                showError('regConfirmPassword', 'confirmPasswordError', '请再次输入登录密码');
+                return false;
+            }
+            if (value !== regPassword.value) {
+                showError('regConfirmPassword', 'confirmPasswordError', '两次输入密码不一致，请重新输入');
+                return false;
+            }
+            clearError('regConfirmPassword', 'confirmPasswordError');
+            return true;
+        }
+
+        function validateProtocol() {
+            if (!agreeProtocol.checked) {
+                const error = document.getElementById('protocolError');
+                error.textContent = '请阅读并同意用户协议和隐私政策';
+                error.classList.add('show');
+                return false;
+            }
+            const error = document.getElementById('protocolError');
+            error.textContent = '';
+            error.classList.remove('show');
+            return true;
+        }
+
+        function checkForm() {
+            const isValid = validateUsername() && validatePhone() && validateCode() && 
+                           validatePassword() && validateConfirmPassword() && agreeProtocol.checked;
+            registerBtn.disabled = !isValid;
+        }
+
+        function startCountdown() {
+            let seconds = 60;
+            isCodeSent = true;
+            getCodeBtn.classList.add('counting');
+            getCodeBtn.textContent = `${seconds}秒后重试`;
+            countdownTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    countdownTimer = null;
+                    getCodeBtn.textContent = '获取验证码';
+                    getCodeBtn.classList.remove('counting');
+                    isCodeSent = false;
+                } else {
+                    getCodeBtn.textContent = `${seconds}秒后重试`;
+                }
+            }, 1000);
+        }
+
+        regUsername.addEventListener('blur', checkUsernameAvailability);
+        regUsername.addEventListener('input', () => {
+            clearError('regUsername', 'usernameError');
+            checkForm();
+        });
+
+        regPhone.addEventListener('blur', validatePhone);
+        regPhone.addEventListener('input', () => {
+            clearError('regPhone', 'phoneError');
+            checkForm();
+        });
+
+        regCode.addEventListener('blur', validateCode);
+        regCode.addEventListener('input', () => {
+            clearError('regCode', 'codeError');
+            checkForm();
+        });
+
+        regPassword.addEventListener('blur', validatePassword);
+        regPassword.addEventListener('input', () => {
+            clearError('regPassword', 'passwordError');
+            if (regConfirmPassword.value) validateConfirmPassword();
+            checkForm();
+        });
+
+        regConfirmPassword.addEventListener('blur', validateConfirmPassword);
+        regConfirmPassword.addEventListener('input', () => {
+            clearError('regConfirmPassword', 'confirmPasswordError');
+            checkForm();
+        });
+
+        agreeProtocol.addEventListener('change', () => {
+            if (agreeProtocol.checked) {
+                const error = document.getElementById('protocolError');
+                error.textContent = '';
+                error.classList.remove('show');
+            }
+            checkForm();
+        });
+
+        getCodeBtn.addEventListener('click', () => {
+            if (isCodeSent) return;
+            if (!validatePhone()) return;
+            startCountdown();
+        });
+
+        registerBtn.addEventListener('click', () => {
+            if (registerBtn.disabled) return;
+            if (!validateUsername() || !validatePhone() || !validateCode() || 
+                !validatePassword() || !validateConfirmPassword() || !validateProtocol()) {
+                return;
+            }
+            showToast('注册成功！');
+            setTimeout(() => {
+                window.location.href = '创造中心未登录态.html?showLogin=true';
+            }, 1500);
+        });
+
+        passwordEye.addEventListener('click', function() {
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+
+            if (regPassword.type === 'password') {
+                regPassword.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                regPassword.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+
+        confirmEye.addEventListener('click', function() {
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+
+            if (regConfirmPassword.type === 'password') {
+                regConfirmPassword.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                regConfirmPassword.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+
+        // 协议弹窗功能
+        const protocolModal = document.getElementById('protocolModal');
+        const protocolTitle = document.getElementById('protocolTitle');
+        const protocolContent = document.getElementById('protocolContent');
+        const protocolClose = document.getElementById('protocolClose');
+        const serviceAgreement = document.getElementById('serviceAgreement');
+        const privacyPolicy = document.getElementById('privacyPolicy');
+
+        const serviceAgreementContent = `
+            <h3>用户服务协议</h3>
+            <p>欢迎您使用我们的服务！本协议是您与我们之间的法律协议，请您仔细阅读。</p>
+            
+            <h4>一、服务内容</h4>
+            <p>我们提供基于互联网的服务，包括但不限于网站访问、用户注册、信息发布等功能。</p>
+            
+            <h4>二、用户注册</h4>
+            <p>用户在使用我们的服务前，需要注册账号。用户需提供真实、准确的信息。</p>
+            <ul>
+                <li>账号长度为6-16位，支持字母、数字、下划线</li>
+                <li>手机号码需为11位中国大陆手机号</li>
+                <li>密码需包含字母和数字，长度为8-20位</li>
+            </ul>
+            
+            <h4>三、用户权利与义务</h4>
+            <p>用户有权使用我们提供的服务，但需遵守相关法律法规和本协议的规定。</p>
+            <p>用户应对其账号下的所有活动和行为负责，不得利用账号从事违法活动。</p>
+            
+            <h4>四、隐私保护</h4>
+            <p>我们重视用户隐私保护，会采取合理措施保护用户信息安全。</p>
+            
+            <h4>五、协议变更</h4>
+            <p>我们有权随时修改本协议，修改后的协议将在网站上公布。</p>
+            
+            <h4>六、服务终止</h4>
+            <p>用户违反本协议规定的，我们有权终止其服务。</p>
+        `;
+
+        const privacyPolicyContent = `
+            <h3>隐私政策</h3>
+            <p>我们尊重并保护用户的隐私，本政策说明我们如何收集、使用和保护用户信息。</p>
+            
+            <h4>一、信息收集</h4>
+            <p>我们可能收集以下信息：</p>
+            <ul>
+                <li>注册信息：账号、手机号码等</li>
+                <li>使用信息：访问记录、操作日志等</li>
+                <li>设备信息：设备类型、浏览器信息等</li>
+            </ul>
+            
+            <h4>二、信息使用</h4>
+            <p>我们使用收集的信息来提供和改进服务，包括：</p>
+            <ul>
+                <li>提供个性化服务</li>
+                <li>优化用户体验</li>
+                <li>安全防护</li>
+            </ul>
+            
+            <h4>三、信息保护</h4>
+            <p>我们采取多种安全措施保护用户信息，防止信息泄露和滥用。</p>
+            
+            <h4>四、信息共享</h4>
+            <p>未经用户同意，我们不会向第三方共享用户个人信息，除非法律法规要求。</p>
+            
+            <h4>五、Cookie政策</h4>
+            <p>我们可能使用Cookie来改善用户体验，用户可以选择接受或拒绝Cookie。</p>
+        `;
+
+        function showProtocolModal(title, content) {
+            protocolTitle.textContent = title;
+            protocolContent.innerHTML = content;
+            protocolModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideProtocolModal() {
+            protocolModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        serviceAgreement.addEventListener('click', function(e) {
+            e.preventDefault();
+            showProtocolModal('用户服务协议', serviceAgreementContent);
+        });
+
+        privacyPolicy.addEventListener('click', function(e) {
+            e.preventDefault();
+            showProtocolModal('隐私政策', privacyPolicyContent);
+        });
+
+        protocolClose.addEventListener('click', hideProtocolModal);
+
+        protocolModal.addEventListener('click', function(e) {
+            if (e.target === protocolModal) {
+                hideProtocolModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && protocolModal.classList.contains('show')) {
+                hideProtocolModal();
+            }
+        });
+    </script>
+</body>
+</html>

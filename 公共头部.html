@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>公共头部</title>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        /* 基础重置与全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 登录弹窗容器样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(3px);
+        }
+
+        /* 确保iframe背景透明 */
+        .modal-iframe {
+            background-color: transparent !important;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-iframe {
+            width: 420px;
+            height: 500px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .modal-iframe {
+                width: 90%;
+                height: 500px;
+            }
+        }
+
+        /* 退出确认弹窗样式 */
+        .logout-modal-content {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 30px 36px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            text-align: center;
+            z-index: 100000;
+        }
+
+        .logout-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D2129;
+            margin-bottom: 16px;
+        }
+
+        .logout-modal-message {
+            font-size: 14px;
+            color: #86909C;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .logout-modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .logout-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .logout-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .logout-modal-btn.confirm {
+            background-color: #FF6600;
+            color: #FFFFFF;
+            border-color: #FF6600;
+        }
+
+        .logout-modal-btn.confirm:hover {
+            background-color: #E65C00;
+            border-color: #E65C00;
+        }
+
+        :root {
+            /* 主色调 */
+            --klein-blue: #0051D9;
+            --hermes-orange: #FF6600;
+            --deep-gray: #1D2129;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+
+            /* AI对话框配色 */
+            --ai-chat-bg: #FFFFFF;
+            --ai-input-bg: #FFFFFF;
+            --ai-text: #1D2129;
+            --ai-desc: #86909C;
+            --ai-border: #E5E7EB;
+            --ai-send: var(--hermes-orange);
+            --ai-tag-bg: #F2F3F5;
+            --ai-tag-hover: #E5E7EB;
+
+            /* 响应式断点 */
+            --breakpoint-md: 992px;
+            --breakpoint-sm: 768px;
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.125rem;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            color: #333;
+            line-height: var(--line-height-base);
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 2.25rem;
+        }
+
+        /* 通用容器 */
+        .container {
+            width: 90rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .welcome {
+            background: var(--white);
+            color: var(--deep-gray);
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .login {
+            background: var(--white);
+            color: var(--klein-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .login:hover {
+            background: var(--hermes-orange);
+            color: var(--white);
+        }
+
+        /* 头部区域 */
+        header {
+            /* background: var(--klein-blue); */
+            /* padding: 14px 0; */
+            color: var(--white);
+        }
+
+        /* AI智能体对话框 */
+        .ai-chat-container {
+            width: 100%;
+            max-width: 50rem;
+            margin: 0 auto 2.5rem;
+            background: var(--ai-chat-bg);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--ai-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* 搜索容器 */
+        .blank-container {
+            width: 100%;
+            max-width: 90rem;
+            padding: 3.125rem 1.875rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .search-logo {
+            font-size: 2.75rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-slogan {
+            font-size: 1rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--klein-blue), var(--hermes-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: left;
+            white-space: nowrap;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .search-main {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 80%;
+        }
+
+        .search-input-row {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 2.75rem;
+        }
+
+        /* 底部输入框 */
+        .input-container {
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-gray);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #9c9fa4;
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-box textarea::placeholder {
+            color: var(--classic-gray);
+            font-size: 1rem;
+        }
+
+        .input-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--border-gray);
+            gap: 0.75rem;
+            min-height: 2.5rem;
+        }
+
+        .input-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .input-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input-tag {
+            background: var(--light-gray);
+            color: var(--deep-gray);
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.75rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .input-tag:hover {
+            background: var(--border-gray);
+        }
+
+
+        .send-btn {
+            background: #06b6d4;
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            padding: 0;
+            line-height: 1;
+            min-width: 2.25rem;
+            min-height: 2.25rem;
+            z-index: 9999;
+        }
+
+        .send-btn:hover {
+            background: #04a4be;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .quote-btn {
+            background: var(--hermes-orange);
+            color: white;
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(243, 112, 33, 0.2);
+        }
+
+        .quote-btn:hover {
+            background: #e66a1a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(243, 112, 33, 0.3);
+        }
+
+        .cart-btn {
+            background: white;
+            color: var(--klein-blue);
+            border: 1px solid var(--klein-blue);
+            border-radius: 0.625rem;
+            padding: 0.5rem 1.125rem;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-btn:hover {
+            background: var(--klein-blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -0.375rem;
+            right: -0.5rem;
+            background: var(--hermes-orange);
+            color: white;
+            border-radius: 0.625rem;
+            min-width: 1.5rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            padding: 0 0.375rem;
+        }
+
+        .search-tags {
+            display: flex;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: white;
+            color: var(--deep-gray);
+            padding: 0.25rem 1rem;
+            border-radius: 1.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e7ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tag:hover {
+            background: var(--klein-blue);
+            color: white;
+            border-color: var(--klein-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 81, 217, 0.2);
+        }
+
+        .ai-input-box textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--ai-text);
+            font-size: 1rem;
+            resize: none;
+            height: 1.5rem;
+            max-height: 10rem;
+            line-height: 1.5rem;
+            padding: 0.25rem 0;
+            overflow: hidden !important;
+            scrollbar-width: none;
+        }
+
+        .ai-input-box textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ai-input-box textarea::placeholder {
+            color: var(--ai-desc);
+            font-size: 1rem;
+        }
+
+        .ai-tool-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.625rem;
+            border-top: 1px solid var(--ai-border);
+        }
+
+        .ai-tool-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn {
+            color: var(--ai-desc);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            color: var(--klein-blue);
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        .content-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 81, 217, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .section-tab.active {
+            border-bottom: 2px solid #0051d9;
+            color: #0051d9;
+            font-weight: 500;
+        }
+
+        .divider {
+            color: #d1d5db;
+            font-size: 1rem;
+            padding: 0 0.25rem;
+        }
+
+        .ai-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .ai-tag {
+            background: var(--ai-tag-bg);
+            color: var(--ai-text);
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.75rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .ai-tag:hover {
+            background: var(--ai-tag-hover);
+        }
+
+        /* 模型标签样式 */
+        .model-tags {
+            display: flex;
+            gap: 0.375rem;
+            align-items: center;
+        }
+
+        .model-tag {
+            background: var(--light-bg);
+            color: var(--deep-gray);
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .model-tag:hover {
+            background: var(--border);
+            color: var(--klein-blue);
+        }
+
+        .model-tag.active {
+            background: var(--klein-blue);
+            color: white;
+        }
+
+        .send-btn {
+            background: var(--ai-send);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #04a4be;
+        }
+
+        /* 标签导航容器 */
+        .tab-container {
+            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* 导航标签栏 */
+        .tab-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 3.75rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            height: 3.75rem;
+        }
+
+        .tab {
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 1.5rem;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab {
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 1.5rem;
+            font-weight: 500;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .main-tab:hover {
+            color: var(--klein-blue);
+            background-color: var(--light-bg);
+        }
+
+        .main-tab.active {
+            color: var(--klein-blue);
+            border-bottom: 3px solid var(--klein-blue);
+            font-weight: 600;
+        }
+
+        .create-center-btn {
+            padding: 0.75rem 1.875rem;
+            margin: 0 0.75rem;
+            background: linear-gradient(135deg, var(--hermes-orange), #FF8A4C);
+            color: white;
+            border: none;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: center;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);
+        }
+
+        .create-center-btn:hover {
+            background: linear-gradient(135deg, #e0631d, #FF7A3C);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.4);
+        }
+
+        .create-center-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(243, 112, 33, 0.3);
+        }
+
+        .ai-team-btn {
+            background: var(--hermes-orange);
+            color: var(--white);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.875rem 2.25rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-team-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ai-team-btn:hover::before {
+            left: 100%;
+        }
+
+        .ai-team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 112, 33, 0.4);
+        }
+
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 0.5rem;
+            height: 0.5rem;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 0.25rem;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 0.25rem;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--ai-desc);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 1350px) {
+            .container {
+                width: 100%;
+                padding: 0 2.5rem;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .search-logo {
+                font-size: 2.25rem;
+            }
+
+            .blank-container {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .case-know-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-main {
+                width: 100%;
+                max-width: none;
+            }
+
+            .cart-section {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .main-tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .tab {
+                padding: 0 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .create-center-btn {
+                padding: 0.5rem 1rem;
+                margin: 0 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .search-logo {
+                font-size: 2rem;
+            }
+
+            .logo-slogan {
+                font-size: 0.75rem;
+            }
+
+            .blank-container {
+                padding: 2rem 1rem;
+            }
+
+            .content-row {
+                flex-direction: column;
+            }
+
+            .filter {
+                width: 100%;
+                margin-bottom: 0.625rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-container .container {
+                padding: 0;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab, .main-tab {
+                padding: 0 0.625rem;
+                font-size: 0.8125rem;
+            }
+
+            .create-center-btn {
+                padding: 0.375rem 0.75rem;
+                margin: 0 0.25rem;
+                font-size: 0.75rem;
+                height: 2rem;
+            }
+
+            .ai-team-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 公共头部引用 -->
+    <iframe src="顶部导航栏.html" style="width: 100%; height: 36px; border: none; position: fixed; top: 0; left: 0; z-index: 99998;"></iframe>
+
+    <!-- 头部区域 -->
+    <header>
+        <div class="container">
+            <!-- 搜索容器 -->
+            <div class="blank-container" style="padding: 40px 30px;">
+                <div class="search-container" style="display: flex; align-items: center; gap: 28px;">
+                        <div class="logo-section" onclick="window.parent.location.reload();" style="cursor: pointer;">
+                            <div class="search-logo" style="color: #0051D9;">RaaS.Dao</div>
+                            <div class="logo-slogan" style="color: #0051D9;">共创・共享</div>
+                        </div>
+                    <div class="search-main" style="flex: 1; max-width: 900px;">
+                        <div class="chat-input-wrapper">
+                            <div class="input-container" style="border-radius: 24px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); padding: 16px 30px;border: 1px solid #ededed">
+                                <div class="input-box">
+                                    <textarea placeholder="请输入..." class="search-input" rows="1" style="font-size: 16px; height: 40px; line-height: 40px;"></textarea>
+                                </div>
+                                <div class="input-tool-row" style="padding-top: 8px; gap: 8px;">
+                                    <div class="input-tool-left" style="gap: 12px; display: flex; align-items: center;">
+                                        <div class="upload-btn" style="color: #666; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid #e0e0e0; border-radius: 4px; transition: all 0.3s; background: #f9fafb;">
+                                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                            以图找品
+                                        </div>
+                                        <span style="color: #ccc; margin: 0 4px;">|</span>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">供应链</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">训练基地</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">共享工厂</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">设备租赁</div>
+                                            <div class="quick-tag" style="color: #666; font-size: 13px; cursor: pointer; padding: 2px 8px; border: 1px solid #e0e0e0; border-radius: 12px; transition: all 0.3s; background: #f9fafb;">影视/文学</div>
+                                        </div>
+                                        <style>
+                                            .quick-tag:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                            .upload-btn:hover {
+                                                background: #06b6d4;
+                                                color: white;
+                                                border-color: #06b6d4;
+                                                transform: translateY(-1px);
+                                                box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
+                                            }
+                                        </style>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const uploadBtn = document.querySelector('.upload-btn');
+                                                const imageUpload = document.getElementById('imageUpload');
+                                                if (uploadBtn) {
+                                                    uploadBtn.addEventListener('click', function() {
+                                                        if (imageUpload) {
+                                                            imageUpload.click();
+                                                        }
+                                                    });
+                                                }
+                                                if (imageUpload) {
+                                                    imageUpload.addEventListener('change', function(e) {
+                                                        if (e.target.files && e.target.files[0]) {
+                                                            const fileName = e.target.files[0].name;
+                                                            alert('已选择文件: ' + fileName);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                    </div>
+                                    <button class="send-btn" onclick="window.location.href='商品方案列表页.html?filter=industry'" style="background: #06b6d4; width: 36px; height: 36px;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="3" x2="12" y2="21"></line>
+                                            <polyline points="3 12 12 3 21 12"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="personal-card" style="flex-shrink: 0; width: 250px; background: #fff; border: 1px solid #E5E6EB; border-radius: 6px; padding: 5px;">
+                        <div class="personal-card-header" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #F2F3F5;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #0051D9, #FF6600); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 600;">张</div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: #1D2129;">张明</div>
+                                <div style="font-size: 11px; color: #86909C;">个人账户</div>
+                            </div>
+                        </div>
+                        <div class="personal-card-menu" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <a href="#" onclick="window.open('个人中心.html?tab=myFavorites','_blank')" style="text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:4px;font-size:12px;color:#4E5969;transition:all .15s;" onmouseover="this.style.background='#F7F8FA';this.style.color='#0051D9'" onmouseout="this.style.background='';this.style.color='#4E5969'">
+                                ⭐<span>我的收藏</span>
+                            </a>
+                            <a href="#" onclick="window.open('个人中心.html?tab=followShops','_blank')" style="text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:4px;font-size:12px;color:#4E5969;transition:all .15s;" onmouseover="this.style.background='#F7F8FA';this.style.color='#0051D9'" onmouseout="this.style.background='';this.style.color='#4E5969'">
+                                🏢<span>关注企业</span>
+                            </a>
+                            <a href="#" onclick="window.open('个人中心.html?tab=guessLike','_blank')" style="text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:4px;font-size:12px;color:#4E5969;transition:all .15s;" onmouseover="this.style.background='#F7F8FA';this.style.color='#0051D9'" onmouseout="this.style.background='';this.style.color='#4E5969'">
+                                💡<span>猜你喜欢</span>
+                            </a>
+                            <a href="#" onclick="window.open('个人中心.html?tab=addressManage','_blank')" style="text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:4px;font-size:12px;color:#4E5969;transition:all .15s;" onmouseover="this.style.background='#F7F8FA';this.style.color='#0051D9'" onmouseout="this.style.background='';this.style.color='#4E5969'">
+                                📍<span>地址管理</span>
+                            </a>
+                            <a href="#" onclick="window.open('个人中心.html?tab=invoiceManage','_blank')" style="text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 8px;border-radius:4px;font-size:12px;color:#4E5969;transition:all .15s;" onmouseover="this.style.background='#F7F8FA';this.style.color='#0051D9'" onmouseout="this.style.background='';this.style.color='#4E5969'">
+                                🧾<span>发票管理</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 标签导航 -->
+    <div class="tab-container">
+        <div class="container">
+            <div class="tab-row">
+                <div class="tabs">
+                    <button class="create-center-btn" onclick="window.parent.location.href='创造中心.html'">创造中心</button>
+                    <div class="main-tab" data-tab="首页" onclick="window.location.href='商城首页.html'">首页</div>
+                    <div class="main-tab" data-tab="生产力方案共享" onclick="window.location.href='商品方案列表页.html?tab=生产力方案共享'">生产力方案共享</div>
+                    <div class="main-tab" data-tab="机器人设备共享" onclick="window.location.href='商品方案列表页.html?tab=机器人设备共享'">机器人设备共享</div>
+                    <div class="main-tab" data-tab="资源共享" onclick="window.location.href='商品方案列表页.html?tab=资源共享'">资源共享</div>
+                    <div class="main-tab" data-tab="共享消费" onclick="window.location.href='商品方案列表页.html?tab=共享消费'">共享消费</div>
+                    <div class="main-tab" data-tab="我的社群" onclick="window.location.href='商品方案列表页.html?tab=我的社群'">我的社群</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗容器 -->
+    <div class="modal-overlay" id="loginModal">
+        <iframe class="modal-iframe" src="登录弹窗.html" style="background-color: transparent;"></iframe>
+    </div>
+
+    <!-- 退出确认弹窗 -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="logout-modal-content">
+            <h3 class="logout-modal-title">退出登录</h3>
+            <p class="logout-modal-message">确定要退出登录吗？</p>
+            <div class="logout-modal-buttons">
+                <button class="logout-modal-btn cancel" onclick="hideLogoutModal()">取消</button>
+                <button class="logout-modal-btn confirm" onclick="logout()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.querySelector('.upload-btn');
+            const imageUpload = document.getElementById('imageUpload');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function() {
+                    if (imageUpload) {
+                        imageUpload.click();
+                    }
+                });
+            }
+            if (imageUpload) {
+                imageUpload.addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        const fileName = e.target.files[0].name;
+                        alert('已选择文件: ' + fileName);
+                    }
+                });
+            }
+
+            // 处理来自子页面的消息
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'SHOW_LOGIN_MODAL') {
+                    showLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'SHOW_LOGOUT_MODAL') {
+                    showLogoutModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'LOGIN_SUCCESS') {
+                    // 登录成功，隐藏登录弹窗并刷新页面
+                    handleLoginSuccess();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                } else if (event.data.type === 'CLOSE_MODAL') {
+                    // 关闭登录弹窗
+                    hideLoginModal();
+                    // 阻止消息继续向上传播
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        // 显示登录弹窗
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏登录弹窗
+        function hideLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 显示退出确认弹窗
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+
+        // 隐藏退出确认弹窗
+        function hideLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 执行退出登录
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            hideLogoutModal();
+            // 刷新页面以更新导航栏状态
+            window.location.reload();
+        }
+
+        // 处理登录成功
+        function handleLoginSuccess() {
+            // 设置登录状态到localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+            console.log('登录成功，设置isLoggedIn为true');
+            // 隐藏登录弹窗
+            hideLoginModal();
+            // 刷新页面以更新导航栏状态
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>文件管理</title>
+    <style>
+        /* 基础字体设置 - 固定16px基准，避免被父页面iframe响应式字体影响 */
+        html {
+            font-size: 16px !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --font-size-base: 0.875rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.125rem;
+            --border-color: #E5E7EB;
+            --primary-color: #4a6cf7;
+            --text-color: #1D2129;
+            --text-secondary: #666;
+            --bg-light: #F0F2F5;
+            --bg-hover: #F5F5F5;
+            --bg-selected: #E8F3FF;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        .file-item {
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .file-item:hover {
+            background-color: var(--bg-hover);
+        }
+        .file-item:hover .file-action {
+            opacity: 1;
+        }
+        .file-action {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .file-item.selected {
+            background-color: var(--bg-selected);
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: #FFFFFF;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            background-color: var(--bg-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            background-color: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+        .sidebar-item.active {
+            background-color: var(--bg-selected);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .file-action button:hover {
+            background-color: var(--border-color);
+        }
+        .context-menu {
+            position: absolute;
+            right: 3.125rem;
+            top: 1.875rem;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.25rem 0;
+            z-index: 1000;
+            min-width: 7.5rem;
+            display: none;
+        }
+        .context-menu.show {
+            display: block;
+        }
+        .context-menu.show.reverse {
+            top: auto;
+            bottom: 0;
+        }
+        .context-menu-item {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .context-menu-item:hover {
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+        }
+        .context-menu-item svg {
+            width: 0.875rem;
+            height: 0.875rem;
+            stroke: currentColor;
+        }
+        ::-webkit-scrollbar {
+            width: 0.375rem;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F0F0F0;
+            border-radius: 0.1875rem;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 0.1875rem;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d0d3d8;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #e5e7eb #F0F0F0;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 160px !important;
+            }
+
+            .file-table-header, .file-item {
+                font-size: 0.8125rem !important;
+            }
+
+            .file-name-col {
+                min-width: 100px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 140px !important;
+                padding: 1rem !important;
+            }
+
+            .sidebar h3 {
+                font-size: 0.875rem !important;
+            }
+
+            .action-bar {
+                padding: 1rem 0 0.625rem 1rem !important;
+            }
+
+            .btn {
+                padding: 0.25rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .btn-small {
+                padding: 0.1875rem 0.625rem;
+                font-size: 0.6875rem;
+            }
+
+            .breadcrumb {
+                font-size: 0.75rem !important;
+            }
+
+            .file-table-header > div,
+            .file-item > div {
+                padding: 0.75rem !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 100px !important;
+                padding: 0.75rem !important;
+            }
+
+            .sidebar h3 {
+                font-size: 0.75rem !important;
+                margin-bottom: 0.75rem !important;
+            }
+
+            .sidebar-item {
+                padding: 0.375rem 0.5rem !important;
+                font-size: 0.6875rem !important;
+            }
+
+            .action-bar {
+                padding: 0.75rem 0 0.5rem 0.75rem !important;
+                gap: 0.5rem !important;
+            }
+
+            .operation-buttons {
+                gap: 0.5rem !important;
+            }
+
+            .file-table-header, .file-item {
+                font-size: 0.6875rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; height: 100%; width: 100%;">
+        <!-- 左侧文件列表 -->
+        <div style="width: 200px; border-right: 1px solid #E5E7EB; background-color: #FFFFFF; padding: 16px 16px 0px 16px;">
+            <h3 style="font-size: 16px; font-weight: 600; color: #1D2129; margin-bottom: 16px;">我的文件</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer; font-size: 14px; color: #1D2129;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span>最近</span>
+                </div>
+                <div class="sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer; font-size: 14px; color: #1D2129;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>收藏</span>
+                </div>
+                <div class="sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer; font-size: 14px; color: #1D2129;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>我的云盘</span>
+                </div>
+                <div class="sidebar-item" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer; font-size: 14px; color: #1D2129;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>本地文件</span>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧内容区 -->
+        <div style="flex: 1; display: flex; flex-direction: column; border-left: 1px solid #E5E7EB; height: 100%;">
+            <!-- 上部分：相关操作区 -->
+            <div style="border-bottom: 1px solid #E5E7EB; background-color: #FFFFFF; padding: 16px 0 10px 16px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0;">
+                <!-- 操作按钮 -->
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                        <span>上传</span>
+                    </button>
+                    <button class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>新建文件夹</span>
+                    </button>
+                    <button class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>新建文件</span>
+                    </button>
+                </div>
+                <!-- 面包屑导航和操作按钮 -->
+                <div style="padding-right: 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <!-- 面包屑导航 -->
+                    <div class="breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #666;">
+                        <span>我的文件</span>
+                        <span>></span>
+                        <span>最近</span>
+                    </div>
+                    <!-- 操作按钮 -->
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                                <polyline points="5 9 2 12 5 15"></polyline>
+                                <polyline points="9 5 12 2 15 5"></polyline>
+                                <polyline points="15 19 12 22 9 19"></polyline>
+                                <polyline points="19 9 22 12 19 15"></polyline>
+                            </svg>
+                            <span>移动</span>
+                        </button>
+                        <button class="btn btn-small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #4a6cf7;">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                            <span>删除</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 中间部分：详情区 -->
+            <div style="flex: 1; display: flex; flex-direction: column; background-color: #FFFFFF; overflow: hidden;">
+                <!-- 表头（固定） -->
+                <div style="display: flex; border-bottom: 1px solid #E5E7EB; background-color: #F8F9FA; font-size: 14px; font-weight: 500; color: #666; flex-shrink: 0;">
+                    <div style="width: 40px; padding: 12px 16px; display: flex; align-items: center;">
+                        <input type="checkbox" style="margin: 0;">
+                    </div>
+                    <div style="flex: 1; min-width: 146px; padding: 12px 16px; display: flex; align-items: center; gap: 4px;">文件名 <span>↕</span></div>
+                    <div style="width: 80px; padding: 12px 16px;">大小</div>
+                    <div style="width: 80px; padding: 12px 16px;">类型</div>
+                    <div style="width: 146px; padding: 12px 16px;">修改时间</div>
+                    <div style="width: 60px; padding: 12px 16px;"></div>
+                </div>
+                <!-- 列表内容（可滚动） -->
+                <div style="flex: 1; overflow-y: auto;">
+                        <!-- 文件夹1 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">AI对话历史</div>
+                            <div style="width: 80px; padding: 16px;">-</div>
+                            <div style="width: 80px; padding: 16px;">文件夹</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.17 10:30</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件夹2 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">智能助手设置</div>
+                            <div style="width: 80px; padding: 16px;">-</div>
+                            <div style="width: 80px; padding: 16px;">文件夹</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.16 15:45</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件夹3 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">AI生成内容</div>
+                            <div style="width: 80px; padding: 16px;">-</div>
+                            <div style="width: 80px; padding: 16px;">文件夹</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.15 09:20</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件夹4 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">工作文档</div>
+                            <div style="width: 80px; padding: 16px;">-</div>
+                            <div style="width: 80px; padding: 16px;">文件夹</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.14 11:20</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件夹5 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">项目资料</div>
+                            <div style="width: 80px; padding: 16px;">-</div>
+                            <div style="width: 80px; padding: 16px;">文件夹</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.13 14:30</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件1 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">产品需求文档.md</div>
+                            <div style="width: 80px; padding: 16px;">2.5MB</div>
+                            <div style="width: 80px; padding: 16px;">Markdown</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.17 08:15</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件2 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">用户调研报告.pdf</div>
+                            <div style="width: 80px; padding: 16px;">4.8MB</div>
+                            <div style="width: 80px; padding: 16px;">PDF</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.16 14:30</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件3 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">会议记录.docx</div>
+                            <div style="width: 80px; padding: 16px;">1.2MB</div>
+                            <div style="width: 80px; padding: 16px;">Word</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.15 16:45</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件4 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">数据统计表.xlsx</div>
+                            <div style="width: 80px; padding: 16px;">856KB</div>
+                            <div style="width: 80px; padding: 16px;">Excel</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.14 09:00</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件5 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">产品原型图.png</div>
+                            <div style="width: 80px; padding: 16px;">12.3MB</div>
+                            <div style="width: 80px; padding: 16px;">图片</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.13 11:30</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件6 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">项目计划书.pdf</div>
+                            <div style="width: 80px; padding: 16px;">3.6MB</div>
+                            <div style="width: 80px; padding: 16px;">PDF</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.12 15:20</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件7 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">技术设计方案.docx</div>
+                            <div style="width: 80px; padding: 16px;">2.1MB</div>
+                            <div style="width: 80px; padding: 16px;">Word</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.11 10:45</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件8 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">市场分析报告.pptx</div>
+                            <div style="width: 80px; padding: 16px;">5.4MB</div>
+                            <div style="width: 80px; padding: 16px;">PPT</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.10 14:00</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件9 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">API接口文档.md</div>
+                            <div style="width: 80px; padding: 16px;">1.8MB</div>
+                            <div style="width: 80px; padding: 16px;">Markdown</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.09 16:30</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                        <!-- 文件10 -->
+                        <div class="file-item" style="display: flex; border-bottom: 1px solid #F0F0F0; font-size: 14px; color: #333; transition: background-color 0.2s ease; cursor: pointer;">
+                            <div style="width: 40px; padding: 16px; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin: 0;">
+                            </div>
+                            <div style="flex: 1; padding: 16px;">测试用例.xlsx</div>
+                            <div style="width: 80px; padding: 16px;">456KB</div>
+                            <div style="width: 80px; padding: 16px;">Excel</div>
+                            <div style="width: 146px; padding: 16px;">2026.04.08 09:15</div>
+                            <div style="width: 60px; padding: 16px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <button class="action-btn" onclick="showContextMenu(this, event)" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666; padding: 4px; border-radius: 4px;">...</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 选中文件路径显示（固定在底部） -->
+                <div id="selectedFilePath" style="border-top: 1px solid #E5E7EB; padding: 8px 16px; font-size: 12px; color: #666; background-color: #F8F9FA; flex-shrink: 0; display: none;">
+                    文件路径：<span id="filePathText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加文件项的交互效果
+            document.querySelectorAll('.file-item').forEach(item => {
+                // 鼠标悬停效果
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#F5F5F5';
+                });
+                
+                // 鼠标离开效果
+                item.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('selected')) {
+                        this.style.backgroundColor = '';
+                    }
+                });
+                
+                // 点击选中效果
+                item.addEventListener('click', function(e) {
+                    // 阻止点击复选框时的事件冒泡
+                    if (e.target.type === 'checkbox') return;
+                    if (e.target.closest('.action-btn')) return;
+                    
+                    // 检查是否已经选中
+                    if (this.classList.contains('selected')) {
+                        // 取消选中状态
+                        this.classList.remove('selected');
+                        this.style.backgroundColor = '';
+                        
+                        // 隐藏选中文件路径
+                        const selectedFilePath = document.getElementById('selectedFilePath');
+                        selectedFilePath.style.display = 'none';
+                    } else {
+                        // 移除其他项的选中状态
+                        document.querySelectorAll('.file-item').forEach(i => {
+                            i.classList.remove('selected');
+                            i.style.backgroundColor = '';
+                        });
+                        
+                        // 添加当前项的选中状态
+                        this.classList.add('selected');
+                        this.style.backgroundColor = '#E8F3FF';
+                        
+                        // 显示选中文件路径
+                        const fileName = this.querySelector('div:nth-child(2)').textContent;
+                        const breadcrumb = document.querySelector('.breadcrumb').textContent;
+                        const filePath = breadcrumb.replace(/\s+>/g, '/').trim();
+                        const fullPath = filePath + '/' + fileName;
+                        
+                        const selectedFilePath = document.getElementById('selectedFilePath');
+                        const filePathText = document.getElementById('filePathText');
+                        filePathText.textContent = fullPath;
+                        selectedFilePath.style.display = 'block';
+                    }
+                });
+            });
+        });
+
+        let currentMenu = null;
+
+        function showContextMenu(btn, event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
+
+            const menu = document.createElement('div');
+            menu.className = 'context-menu';
+            menu.innerHTML = `
+                <div class="context-menu-item" onclick="handleMenuAction('打开')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <span>打开</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('重命名')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span>重命名</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('复制')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>复制</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('复制到')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>复制到</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('移动')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+                    <span>移动</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('收藏')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <span>收藏</span>
+                </div>
+                <div class="context-menu-item" onclick="handleMenuAction('删除')" style="color: #F56C6C;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>删除</span>
+                </div>
+            `;
+
+            btn.parentElement.appendChild(menu);
+
+            requestAnimationFrame(() => {
+                menu.classList.add('show');
+
+                const menuRect = menu.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+
+                if (menuRect.bottom > viewportHeight) {
+                    menu.classList.add('reverse');
+                }
+            });
+
+            currentMenu = menu;
+
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closeMenu);
+            }, 0);
+        }
+
+        function handleMenuAction(action) {
+            const fileItem = currentMenu.closest('.file-item');
+            const fileName = fileItem.querySelector('div:nth-child(2)').textContent;
+            console.log('执行操作:', action, '- 文件:', fileName);
+            currentMenu.classList.remove('show');
+        }
+    </script>
+</body>
+</html>

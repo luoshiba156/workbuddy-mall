@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>方案详情</title>
+    <style>
+        /* 响应式基础字体设置 */
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-gray: #86909C;
+            --light-bg: #F2F3F5;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --border-radius: 0.75rem;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+            /* 字体和间距变量 */
+            --font-size-base: 0.875rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.125rem;
+        }
+
+        body {
+            background: var(--white);
+            color: #333;
+            line-height: var(--line-height-base);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            padding-top: 0;
+            overflow-x: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0.5rem;
+            height: 0.5rem;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 0.25rem;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 0.25rem;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-gray);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        @media (max-width: 690px) {
+            .truncate-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .truncate-2lines {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .solution-detail-grid {
+                flex-direction: column !important;
+            }
+
+            .solution-detail-grid > div:first-child {
+                flex: none !important;
+                width: 100% !important;
+            }
+
+            .solution-detail-info {
+                min-width: auto !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tab-nav {
+                width: 100% !important;
+            }
+
+            .tab-content-area {
+                padding: var(--spacing-md) !important;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .info-label {
+                width: auto !important;
+            }
+
+            .operation-buttons {
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tab-nav {
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+            }
+
+            .tab-nav-item {
+                padding: var(--spacing-sm) var(--spacing-md) !important;
+                font-size: 0.8125rem !important;
+                white-space: nowrap;
+            }
+
+            .btn-download {
+                padding: var(--spacing-xs) var(--spacing-sm) !important;
+                font-size: 0.75rem !important;
+            }
+
+            .bom-subtab {
+                padding: var(--spacing-xs) var(--spacing-sm) !important;
+                font-size: 0.75rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 内容区 -->
+    <div class="container" style="overflow-y: auto; overflow-x: auto; min-width: 100%;">
+        <div style="min-height: calc(100vh - 120px); background-color: var(--white); border-radius: 0; box-shadow: var(--card-shadow); min-width: 850px; max-width: 1100px; margin: 0;">
+            <div>
+                <!-- 左侧内容区 -->
+                <div>
+                    <!-- 方案详情 -->
+                    <div style="border: 1px solid var(--border); border-radius: 0; overflow: hidden;  box-shadow: var(--card-shadow);">
+                        <!-- 方案详情 -->
+                        <div style="padding: 0; background-color: var(--white); border-bottom: 1px solid var(--border);">
+                            <div style="padding: 16px 10px 16px 10px; min-height: 320px; overflow-x: auto;">
+                            <div style="display: flex; gap: 20px; flex-wrap: nowrap; min-width: 850px;">
+                                <!-- 左侧图片区 -->
+                                <div style="flex: 0 0 400px;">
+                                    <!-- 主图 -->
+                                    <div style="padding: 0; margin-bottom: 4px;">
+                                        <img id="mainImage" src="images/1.png" alt="方案封面图" style="width: 100%; height: 180px; object-fit: cover;">
+                                    </div>
+                                    <!-- 缩略图 -->
+                                    <div style="display: flex; gap: 8px; flex-wrap: nowrap; min-width: fit-content;">
+                                        <div onclick="changeImage('images/1.png')" style="border: 1px solid var(--klein-blue); padding: 3px; border-radius: 4px; background-color: var(--white); width: 80px; height: 80px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/1.png" alt="缩略图1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/2.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 80px; height: 80px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/2.png" alt="缩略图2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/3.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 80px; height: 80px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/3.png" alt="缩略图3" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/4.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 80px; height: 80px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/4.png" alt="缩略图4" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                        <div onclick="changeImage('images/5.png')" style="border: 1px solid var(--border); padding: 3px; border-radius: 4px; background-color: var(--white); width: 80px; height: 80px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">
+                                            <img src="images/5.png" alt="缩略图5" style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 右侧信息区 -->
+                                <div style="flex: 1; min-width: 400px;">
+                                    <div style="display: grid; grid-template-columns: 68px 1fr; gap: 10px 14px; align-items: start;">
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">名称</div>
+                                        <div style="font-size: 16px; color: var(--deep-gray); font-weight: 500; line-height: 1.4;" class="truncate-name">【汽车制造】机器人焊接 + 自动上下料 <span style="font-size: 14px; color: var(--light-gray); font-weight: normal;">（方案编号：SOL-2026-001）</span></div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">概述</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;" class="truncate-2lines">六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。六轴机器人+视觉定位，24小时无人化作业，高精度稳定运行。</div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">适用范围</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;" class="truncate-2lines">适用于汽车整车制造、汽车零部件焊接、工程机械制造、钢结构焊接、家电制造等行业的自动化焊接生产线，特别适合对焊接精度、效率和质量一致性要求较高的生产场景.</div>
+                                        
+                                        <div style="font-size: 14px; color: var(--light-gray); font-weight: 500; line-height: 1.4; text-align: justify; text-align-last: justify;">备注</div>
+                                        <div style="font-size: 14px; color: var(--deep-gray); line-height: 1.6;" class="truncate-2lines">本方案需要根据具体生产环境进行定制化调整本方案需要根据具体生产环境进行定制化调整本方案需要根据具体生产环境进行定制化调整</div>
+                                    </div>
+                                    
+                                    <!-- 操作按钮 -->
+                                    <div class="operation-buttons" style="margin-top: 24px; display: flex; flex-direction: column; gap: 14px; margin-left: 88px;">
+                                        <!-- 第一行按钮 -->
+                                        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+                                            <!-- 3D(STEP)下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>3D(.STEP)</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- BOM表下载按钮 -->
+                                            <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                <span>📥</span>
+                                                <span>BOM表</span>
+                                            </button>
+                                            
+                                            <!-- 技术文档下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>技术文档</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    15元宝
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 运控程序下载按钮 -->
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>运控程序</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 第二行按钮 -->
+                                        <div style="display: flex; gap: 16px; align-items: center;">
+                                            <!-- 添加到我的方案库按钮 -->
+                                            <button onmouseover="this.style.backgroundColor='#e0631d'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(243, 112, 33, 0.3)';" onmouseout="this.style.backgroundColor='#f37021'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(243, 112, 33, 0.2)';" style="background-color: #f37021; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                <span>+</span>
+                                                <span>添加到我的方案库</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分割线 -->
+                        <div style="height: 3px; background-color: #e0e6ed;"></div>
+                        
+                        <!-- Tab 区域 -->
+                        <div id="tab-area" style="display: flex; background-color: var(--white); border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; min-height: 748px; min-width: 850px;">
+                            <!-- Tab 导航 -->
+                            <div style="width: 120px; background-color: var(--light-bg); border-right: 1px solid var(--border);">
+                                <div class="tab-content-btn active" data-tab="3d" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--klein-blue); background-color: var(--white); transition: all 0.3s; border-left: 4px solid var(--klein-blue); position: relative;">3D文件</div>
+                                <div class="tab-content-btn" data-tab="bom" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">BOM清单</div>
+                                <div class="tab-content-btn" data-tab="tech" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">技术文档</div>
+                                <div class="tab-content-btn" data-tab="control" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">运控程序</div>
+                                <div class="tab-content-btn" data-tab="video" style="padding: 16px 22px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">现场视频</div>
+                                <div class="tab-content-btn" data-tab="knowledge" style="padding: 16px 22px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--light-gray); transition: all 0.3s; border-left: 4px solid transparent; position: relative;">知识库</div>
+                            </div>
+                            
+                            <!-- Tab 内容 -->
+                            <div style="flex: 1; padding: 0; background-color: var(--white);">
+                                <!-- 3D内容 -->
+                                <div id="tab-3d" class="tab-content active" style="padding: 0;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【3D文件】</h3>
+                                    </div>
+                                    <div style="padding: 0 10px 10px 10px;">
+                                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                                        <!-- 视频 -->
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 0; margin: 0;">
+                                            <video autoplay muted loop width="100%" height="100%" style="object-fit: cover;">
+                                                <source src="video/3D.mp4" type="video/mp4">
+                                                您的浏览器不支持视频播放。
+                                            </video>
+                                        </div>
+                                        
+                                        <!-- 下载按钮 -->
+                                        <div style="display: flex; justify-content: center; margin-top: 8px;">
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>下载全部3D文件</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- BOM清单内容 -->
+                                <div id="tab-bom" class="tab-content" style="display: none;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【BOM清单】</h3>
+                                    </div>
+                                    <div style="padding: 0 10px 10px 10px;">
+                                    
+                                    <!-- BOM子清单标签 -->
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                                        <div class="bom-subtab" data-subtab="robot" style="padding: 6px 12px; background-color: rgba(0, 81, 217, 0.1); color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 16px; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>机器人及工具清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="gripper" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>手爪(夹治具)清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="special" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>专机设备清单</span>
+                                        </div>
+                                        <div class="bom-subtab" data-subtab="consumable" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>📋</span>
+                                            <span>耗材及易损件清单</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 机器人及工具清单 -->
+                                    <div id="subtab-robot" class="bom-subcontent" style="display: block;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);"><img src="images/1.png" alt="六轴机器人" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">六轴机器人</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">KR 6 R900</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">烤漆</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">负载6kg，臂展900mm</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接电源</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">台</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">TPS 5000</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">500A焊接电源</td>
+                                                    </tr>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">视觉定位系统</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">VisionPro</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">含相机、镜头、光源</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 手爪(夹治具)清单 -->
+                                    <div id="subtab-gripper" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">气动手指</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">2</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">个</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">HGP-25</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">阳极氧化</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">最大夹持力250N</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 专机设备清单 -->
+                                    <div id="subtab-special" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">上下料输送线</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">1</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">套</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">定制</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">喷塑</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">长度5m，宽度0.8m</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 耗材及易损件清单 -->
+                                    <div id="subtab-consumable" class="bom-subcontent" style="display: none;">
+                                        <div style="overflow-x: auto;">
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                                <thead>
+                                                    <tr style="background-color: var(--light-bg);">
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 90px;">图片</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 140px;">设备名称</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 70px;">数量</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 60px;">单位</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 120px;">规格</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; width: 100px;">表面处理</th>
+                                                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border); font-weight: 500;">备注</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr style="transition: background-color 0.3s;">
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">焊接焊丝</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">50</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">kg</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">ER50-6</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">-</td>
+                                                        <td style="padding: 12px; border: 1px solid var(--border);">直径1.0mm</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 下载按钮 -->
+                                    <div style="display: flex; justify-content: center; margin-top: 16px;">
+                                        <div style="position: relative;">
+                                            <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                <span>📥</span>
+                                                <span>下载全部BOM清单</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 技术文档内容 -->
+                                <div id="tab-tech" class="tab-content" style="display: none;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【技术文档】</h3>
+                                    </div>
+                                    <div style="padding: 0 10px 10px 10px;">
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">组装说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 1.5MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">电器操作说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 1.2MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">测试说明</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 0.8MB</div>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 16px; background-color: var(--light-bg); border-radius: 8px; text-decoration: none; color: var(--deep-gray); transition: all 0.3s;">
+                                            <div style="font-size: 20px;">📄</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; line-height: 1.4;">方案技术方案书</div>
+                                                <div style="font-size: 14px; color: var(--light-gray); line-height: 1.4;">PDF格式 | 2.5MB</div>
+                                            </div>
+                                        </a>
+                                        
+                                        <!-- 下载按钮 -->
+                                        <div style="display: flex; justify-content: center; margin-top: 16px;">
+                                            <div style="position: relative;">
+                                                <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)'" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)'" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                    <span>📥</span>
+                                                    <span>下载全部技术文档</span>
+                                                </button>
+                                                <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    10元宝
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 运控程序内容 -->
+                                <div id="tab-control" class="tab-content" style="display: none;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【运控程序】</h3>
+                                    </div>
+                                    <div style="padding: 0 10px 10px 10px;">
+                                    <div style="display: flex; flex-direction: column; gap: 0;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 20px; margin: 0;">
+                                            <h4 style="font-size: 16px; font-weight: bold; color: var(--klein-blue); margin-bottom: 16px;">运控程序说明</h4>
+                                            <p style="font-size: 14px; color: var(--deep-gray); line-height: 1.6; margin-bottom: 24px;">运控程序是机器人控制系统的核心，负责机器人的运动控制、路径规划和与外部设备的通信。本方案提供的运控程序经过专业团队精心开发，具有以下核心功能：</p>
+                                            <ul style="font-size: 14px; color: var(--deep-gray); line-height: 1.6; margin-bottom: 24px; padding-left: 20px;">
+                                                <li style="margin-bottom: 8px;"><strong>机器人运动轨迹规划</strong>：精确计算机器人运动路径，确保焊接精度和效率</li>
+                                                <li style="margin-bottom: 8px;"><strong>焊接参数控制</strong>：实时调整焊接电流、电压等参数，保证焊接质量</li>
+                                                <li style="margin-bottom: 8px;"><strong>视觉系统集成</strong>：与视觉定位系统无缝对接，实现精准定位</li>
+                                                <li style="margin-bottom: 8px;"><strong>与PLC的通信接口</strong>：支持多种工业通信协议，方便与生产线集成</li>
+                                                <li style="margin-bottom: 8px;"><strong>故障诊断与报警</strong>：实时监测系统状态，及时发现并处理异常情况</li>
+                                            </ul>
+                                            <div style="margin-top: 30px; display: flex; justify-content: center;">
+                                                <div style="position: relative;">
+                                                    <button onmouseover="this.style.backgroundColor='var(--klein-blue)'; this.style.color='white'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0, 81, 217, 0.2)';" onmouseout="this.style.backgroundColor='#fff'; this.style.color='var(--klein-blue)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 81, 217, 0.1)';" style="background-color: #fff; color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 6px; padding: 10px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                                                        <span>📥</span>
+                                                        <span>下载运控程序</span>
+                                                    </button>
+                                                    <div style="position: absolute; top: -16px; right: -10px; background-color: #FF9500; color: #fff; border-radius: 5px; width: 60px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                        10元宝
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 现场视频内容 -->
+                                <div id="tab-video" class="tab-content" style="display: none;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【现场工作视频】</h3>
+                                    </div>
+                                    <div style="padding: 0 10px 10px 10px;">
+                                    <!-- 视频标签导航 -->
+                                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                                        <div onclick="selectVideo(this, 'video-1')" style="padding: 6px 12px; background-color: rgba(0, 81, 217, 0.1); color: var(--klein-blue); border: 1px solid var(--klein-blue); border-radius: 16px; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>机器人焊接操作演示</span>
+                                        </div>
+                                        <div onclick="selectVideo(this, 'video-2')" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>自动上下料系统演示</span>
+                                        </div>
+                                        <div onclick="selectVideo(this, 'video-3')" style="padding: 6px 12px; background-color: var(--light-bg); border: 1px solid transparent; border-radius: 16px; font-size: 13px; color: var(--deep-gray); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.3s;">
+                                            <span>🎬</span>
+                                            <span>系统维护与保养</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 视频播放区域 -->
+                                    <div id="video-1" class="video-content" style="display: block;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer1" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder1" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">机器人焊接操作演示</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：5:30 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer1', 'videoPlaceholder1')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="video-2" class="video-content" style="display: none;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer2" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder2" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">自动上下料系统演示</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：3:45 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer2', 'videoPlaceholder2')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="video-3" class="video-content" style="display: none;">
+                                        <div style="height: 400px; background-color: var(--light-bg); border-radius: 0; border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column;">
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--light-gray);">
+                                                <video id="videoPlayer3" width="100%" height="340px" controls style="display: none; margin-bottom: 12px;">
+                                                    <source src="video/XC.mp4" type="video/mp4">
+                                                    您的浏览器不支持视频播放。
+                                                </video>
+                                                <div id="videoPlaceholder3" style="text-align: center; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: 100%; padding-top: 40px;">
+                                                    <div style="font-size: 48px; margin-bottom: 12px;">🎥</div>
+                                                    <div style="font-size: 16px; margin-bottom: 12px;">系统维护与保养</div>
+                                                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 20px;">时长：4:20 | 清晰度：1080p</div>
+                                                    <button onclick="playVideo('videoPlayer3', 'videoPlaceholder3')" style="background: var(--klein-blue); color: #fff; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin-top: 10px;">播放视频</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 知识库内容 -->
+                                <div id="tab-knowledge" class="tab-content" style="display: none;">
+                                    <div style="background-color: var(--light-bg); padding: 10px 15px; border-bottom: 2px solid var(--white); margin: 0 0 10px 0;">
+                                        <h3 style="font-size: 16px; font-weight: bold; color: var(--deep-gray); margin: 0; text-align: left;">【知识库】</h3>
+                                    </div>
+                                    <div style="padding: 15px;">
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">机器人焊接技术要点</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">机器人焊接是一种高精度、高效率的焊接方式，需要注意焊接参数设置、机器人轨迹规划、焊接材料选择、保护气体使用等技术要点。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">自动化生产线维护保养</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">定期检查机器人关节和减速器，添加润滑油，检查焊接设备电缆和接头，确保连接可靠，同时要注意设备的清洁和防护。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">工业机器人选型指南</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">选择合适的工业机器人需要考虑负载能力、工作范围、重复定位精度、速度、加速度、工作环境等因素。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">机器视觉系统应用</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">机器视觉系统在工业自动化中广泛应用，可用于产品检测、定位、识别、测量等任务，提高生产效率和质量。</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" style="display: block; text-decoration: none; color: var(--deep-gray);">
+                                            <div class="knowledge-card" onclick="toggleCard(this)" style="background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; transform: translateY(0); padding: 16px; cursor: pointer;">
+                                                <h4 style="font-size: 15px; font-weight: 500; color: var(--deep-gray); margin: 0 0 8px 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.3s;">智能工厂建设方案</h4>
+                                                <p style="font-size: 13px; color: var(--light-gray); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin: 0; transition: all 0.3s;">智能工厂建设需要整合工业机器人、物联网、大数据、人工智能等技术，实现生产过程的自动化、数字化和智能化。</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeImage(imageSrc) {
+            document.getElementById('mainImage').src = imageSrc;
+            const thumbnails = document.querySelectorAll('[onclick^="changeImage"]');
+            thumbnails.forEach(thumb => {
+                if (thumb.onclick.toString().includes(imageSrc)) {
+                    thumb.style.borderColor = 'var(--klein-blue)';
+                } else {
+                    thumb.style.borderColor = 'var(--border)';
+                }
+            });
+        }
+
+        function selectFile(element) {
+            const fileItems = element.parentElement.querySelectorAll('div');
+            fileItems.forEach(item => {
+                item.style.backgroundColor = 'var(--light-bg)';
+                item.style.color = 'var(--deep-gray)';
+                item.style.border = '1px solid transparent';
+            });
+            element.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+            element.style.color = 'var(--klein-blue)';
+            element.style.border = '1px solid var(--klein-blue)';
+        }
+
+        function initTabSwitch() {
+            const btns = document.querySelectorAll('.tab-content-btn');
+            btns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+
+            document.querySelectorAll('.tab-content-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-content-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.color = 'var(--light-gray)';
+                        b.style.backgroundColor = 'var(--light-bg)';
+                        b.style.borderLeft = '4px solid transparent';
+                    });
+                    this.classList.add('active');
+                    this.style.color = 'var(--klein-blue)';
+                    this.style.backgroundColor = 'var(--white)';
+                    this.style.borderLeft = '4px solid var(--klein-blue)';
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById('tab-' + tabId).style.display = 'block';
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initTabSwitch);
+
+        function selectVideo(element, videoId) {
+            const videoTabs = element.parentElement.querySelectorAll('div');
+            videoTabs.forEach(tab => {
+                tab.style.backgroundColor = 'var(--light-bg)';
+                tab.style.color = 'var(--deep-gray)';
+                tab.style.borderColor = 'transparent';
+            });
+            element.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+            element.style.color = 'var(--klein-blue)';
+            element.style.borderColor = 'var(--klein-blue)';
+            document.querySelectorAll('.video-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(videoId).style.display = 'block';
+        }
+
+        function playVideo(playerId, placeholderId) {
+            const player = document.getElementById(playerId);
+            const placeholder = document.getElementById(placeholderId);
+            if (player && placeholder) {
+                placeholder.style.display = 'none';
+                player.style.display = 'block';
+                player.play();
+            }
+        }
+
+        document.querySelectorAll('.bom-subtab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.bom-subtab').forEach(t => {
+                    t.style.backgroundColor = 'var(--light-bg)';
+                    t.style.color = 'var(--deep-gray)';
+                    t.style.borderColor = 'transparent';
+                });
+                this.style.backgroundColor = 'rgba(0, 81, 217, 0.1)';
+                this.style.color = 'var(--klein-blue)';
+                this.style.borderColor = 'var(--klein-blue)';
+                document.querySelectorAll('.bom-subcontent').forEach(content => {
+                    content.style.display = 'none';
+                });
+                const subtabId = this.getAttribute('data-subtab');
+                document.getElementById('subtab-' + subtabId).style.display = 'block';
+            });
+        });
+
+        // 方案卡片展开/收起功能
+        function toggleCard(card) {
+            const p = card.querySelector('p');
+            if (p.style.webkitLineClamp === 'unset') {
+                // 收起卡片
+                p.style.display = '-webkit-box';
+                p.style.webkitLineClamp = '1';
+                p.style.webkitBoxOrient = 'vertical';
+                p.style.overflow = 'hidden';
+            } else {
+                // 展开卡片
+                p.style.display = 'block';
+                p.style.webkitLineClamp = 'unset';
+                p.style.webkitBoxOrient = 'unset';
+                p.style.overflow = 'visible';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AI个人中心 - RaaS.Dao</title>
+    <style>
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @media screen and (min-width: 1920px) {
+            html { font-size: 17px; }
+        }
+
+        @media screen and (max-width: 1440px) {
+            html { font-size: 15px; }
+        }
+
+        @media screen and (max-width: 1366px) {
+            html { font-size: 14px; }
+        }
+
+        @media screen and (max-width: 1280px) {
+            html { font-size: 13px; }
+        }
+
+        @media screen and (max-width: 1024px) {
+            html { font-size: 12px; }
+        }
+
+        @media screen and (max-width: 768px) {
+            html { font-size: 11px; }
+        }
+
+        @media screen and (max-width: 600px) {
+            html { font-size: 10px; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --klein-blue: #0051D9;
+            --hermes-orange: #F37021;
+            --deep-gray: #1D2129;
+            --light-gray: #F2F3F5;
+            --classic-gray: #86909C;
+            --white: #FFFFFF;
+            --border-gray: #E5E7EB;
+
+            --font-size-base: 0.875rem;
+            --font-size-sm: 0.8125rem;
+            --font-size-md: 0.9375rem;
+            --font-size-lg: 1.5rem;
+            --line-height-base: 1.5;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.375rem;
+            --spacing-md: 0.5rem;
+            --spacing-lg: 0.75rem;
+            --spacing-xl: 1rem;
+            --spacing-2xl: 1.25rem;
+            --spacing-3xl: 1.875rem;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            min-height: 100vh;
+        }
+
+        .register-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-header {
+            background-color: var(--white);
+            padding: var(--spacing-xl) 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: min(75rem, 92%);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .logo-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .search-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--klein-blue);
+            white-space: nowrap;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 81, 217, 0.1);
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-subtitle {
+            font-size: 2rem;
+            color: var(--deep-gray);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .logo-slogan {
+            font-size: 1.2rem;
+            color: var(--classic-gray);
+            font-weight: 500;
+            padding: 0;
+            margin: 0;
+            line-height: 2.4;
+        }
+
+        .logo-description {
+            font-size: 1rem;
+            color: #1092ee;
+            font-weight: 400;
+            padding: 0;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .header-right {
+            font-size: var(--font-size-base);
+            color: var(--classic-gray);
+        }
+
+        .header-right button {
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--hermes-orange);
+            border: 1px solid var(--hermes-orange);
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .header-right button:hover {
+            background: var(--hermes-orange);
+            color: var(--white);
+        }
+
+        .register-body {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            /* padding: var(--spacing-3xl) 1rem; */
+        }
+
+        .personal-container {
+            background-color: var(--white);
+            border-radius: 0.75rem;
+            width: 75rem;
+            max-width: 100%;
+            padding: var(--spacing-3xl);
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.1);
+        }
+
+        .page-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--deep-gray);
+            text-align: center;
+            margin-bottom: var(--spacing-3xl);
+            padding-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2xl);
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3xl);
+            padding: var(--spacing-2xl);
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+        }
+
+        .avatar-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(0, 81, 217, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(0, 81, 217, 0.2);
+        }
+
+        .avatar-icon {
+            font-size: 64px;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--deep-gray);
+        }
+
+        .user-level {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--hermes-orange);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .user-tag {
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .edit-btn {
+            background: transparent;
+            border: 1px solid var(--klein-blue);
+            color: var(--klein-blue);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+
+        .edit-btn:hover {
+            background: var(--klein-blue);
+            color: var(--white);
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-gray);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: var(--font-size-base);
+            color: var(--classic-gray);
+        }
+
+        .detail-item svg {
+            width: 1rem;
+            height: 1rem;
+            stroke: var(--classic-gray);
+        }
+
+        .detail-value {
+            color: var(--deep-gray);
+            font-weight: 500;
+        }
+
+        .info-section {
+            margin-top: var(--spacing-2xl);
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--deep-gray);
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-xl);
+        }
+
+        .info-card {
+            background: var(--light-gray);
+            padding: var(--spacing-xl);
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.8125rem;
+            color: var(--classic-gray);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .info-label svg {
+            width: 0.875rem;
+            height: 0.875rem;
+        }
+
+        .info-value {
+            font-size: var(--font-size-base);
+            color: var(--deep-gray);
+            font-weight: 500;
+        }
+
+        .info-link {
+            color: var(--klein-blue);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .info-link:hover {
+            text-decoration: underline;
+        }
+
+        @media screen and (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-lg);
+                align-items: flex-start;
+            }
+
+            .logo-row {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .logo-subtitle {
+                font-size: 1.5rem;
+            }
+
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-header {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .edit-btn {
+                margin-left: 0;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media screen and (max-width: 1024px) {
+            .personal-container [style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .register-body {
+                padding: var(--spacing-xl) 0.75rem;
+            }
+
+            .personal-container {
+                border-radius: 0.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-lg);
+                align-items: flex-start;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .register-body {
+                padding: var(--spacing-md) 0.5rem;
+            }
+        }
+
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 99999;
+            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .logout-modal.show {
+            display: block;
+        }
+
+        .logout-modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 30px 36px;
+            width: 400px;
+            max-width: 92%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            text-align: center;
+            z-index: 100000;
+        }
+
+        .logout-modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1D2129;
+            margin-bottom: 16px;
+        }
+
+        .logout-modal-message {
+            font-size: 0.875rem;
+            color: #86909C;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .logout-modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .logout-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .logout-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .logout-modal-btn.confirm {
+            background-color: #F37021;
+            color: #FFFFFF;
+            border-color: #F37021;
+        }
+
+        .logout-modal-btn.confirm:hover {
+            background-color: #e0631d;
+            border-color: #e0631d;
+        }
+
+        /* 修改密码弹窗样式 */
+        .password-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(2px);
+        }
+
+        .password-modal-overlay.show {
+            display: flex;
+        }
+
+        .password-modal {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            width: 450px;
+            max-width: 92%;
+            box-shadow: 0 8px 32px rgba(0, 81, 217, 0.15);
+            overflow: hidden;
+        }
+
+        .password-modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .password-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D2129;
+        }
+
+        .password-modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background-color: transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            color: #86909C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .password-modal-close:hover {
+            background-color: #F2F3F5;
+            color: #1D2129;
+        }
+
+        .password-modal-body {
+            padding: 24px;
+        }
+
+        .password-form-item {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .password-form-label {
+            display: block;
+            font-size: 14px;
+            color: #1D2129;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .password-required-mark {
+            color: #F37021;
+            margin-right: 4px;
+        }
+
+        .password-form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: #1D2129;
+            box-sizing: border-box;
+        }
+
+        .password-form-input:focus {
+            outline: none;
+            border-color: #0051D9;
+            box-shadow: 0 0 0 3px rgba(0, 81, 217, 0.1);
+        }
+
+        .password-form-input::placeholder {
+            color: #86909C;
+        }
+
+        .password-form-input:disabled {
+            background-color: #F7F8FA;
+            color: #86909C;
+            cursor: not-allowed;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .password-input-wrapper .password-form-input {
+            padding-right: 40px;
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #86909C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            transition: color 0.3s;
+        }
+
+        .password-toggle-icon:hover {
+            color: #0051D9;
+        }
+
+        .password-toggle-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .password-code-input {
+            display: flex;
+            gap: 12px;
+        }
+
+        .password-code-input .password-form-input {
+            flex: 1;
+        }
+
+        .password-code-btn {
+            padding: 0 20px;
+            background-color: #F2F3F5;
+            color: #1D2129;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-code-btn:hover:not(.counting) {
+            border-color: #0051D9;
+            color: #0051D9;
+            background-color: #FFFFFF;
+        }
+
+        .password-code-btn.counting {
+            background-color: #F2F3F5;
+            color: #86909C;
+            cursor: not-allowed;
+        }
+
+        .password-error-tip {
+            display: none;
+            color: #F37021;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .password-error-tip.show {
+            display: block;
+        }
+
+        .password-input-error {
+            border-color: #F37021 !important;
+        }
+
+        .password-input-error:focus {
+            box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.1) !important;
+        }
+
+        .password-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .password-modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .password-modal-btn.cancel {
+            background-color: #FFFFFF;
+            color: #1D2129;
+        }
+
+        .password-modal-btn.cancel:hover {
+            background-color: #F7F8FA;
+        }
+
+        .password-modal-btn.confirm {
+            background-color: #0051D9;
+            color: #FFFFFF;
+            border-color: #0051D9;
+        }
+
+        .password-modal-btn.confirm:hover {
+            background-color: #0047C9;
+            border-color: #0047C9;
+        }
+
+        .password-modal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="header-content">
+                <div class="logo-section" onclick="window.location.href='商城首页.html'" style="cursor: pointer;">
+                    <div class="logo-row">
+                        <div class="logo-left">
+                            <span class="search-logo" style="color: #0051D9;">RaaSDao</span>
+                            <div class="logo-slogan">共创・共享</div>
+                            <div class="logo-description">人类 + 离身智能 + 具身智能，协同创造</div>
+                        </div>
+                        <span class="logo-subtitle">AI生产力创造平台</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button onclick="showLogoutConfirm()">退出登录</button>
+                </div>
+            </div>
+        </div>
+        <div class="header-content" style="padding: 16px;">
+                    <a href="#" onclick="history.back(); return false;" style="color: #5b6b87; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 4px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5"/>
+                            <path d="M12 19l-7-7 7-7"/>
+                        </svg>
+                        返回
+                    </a>
+        </div>
+        <div class="register-body">
+            <div class="personal-container" style="padding: 0;">
+                <div style="padding: 24px 30px;">
+                    <div class="section-title" style="margin-bottom: 20px;">个人信息</div>
+                    <div class="profile-card" style="background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); border-radius: 12px; padding: 24px; margin-top: 16px; border: 1px solid #e5e7eb;">
+                        <div style="display: flex; gap: 24px;">
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <div style="display: flex; gap: 16px; margin-bottom: 14px;">
+                                    <div class="profile-avatar" style="width: 110px; height: 110px; border-radius: 50%; background: rgba(0, 81, 217, 0.1); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; border: 1px solid rgba(0, 81, 217, 0.2); overflow: hidden;">
+                                        <img src="images/tx-1.png" alt="头像" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div style="flex: 1; display: flex; flex-direction: column;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <h2 style="font-size: 22px; font-weight: bold; color: #1D2129; margin: 0;">HI,林工</h2>
+                                            <span style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); color: #F37021; font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500;">Lv.5</span>
+                                            <span style="background: #E6F7FF; color: #1890FF; border-radius: 4px; padding: 2px 8px; font-size: 12px; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                </svg>
+                                                组织用户
+                                            </span>
+                                            <button class="edit-btn" onclick="showEditModal()">编辑</button>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; color: #666; margin-top: 8px;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                <span>职务：工程师</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                <span>生日：1990-01-15</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <path d="M12 6v6l4 2"></path>
+                                                </svg>
+                                                <span>性别：男</span>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 14px; color: #666; margin-top: 8px;">
+                                            <div style="display: flex; align-items: flex-start; gap: 6px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" style="margin-top: 2px;">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                </svg>
+                                                <div>
+                                                    <span>简介：</span>
+                                                    <span style="color: #374151;">专业从事工艺品设计与开发，拥有10年行业经验，擅长3D建模和产品渲染。</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 0; flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0051D9" stroke-width="2">
+                                                    <path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                                                </svg>
+                                                <span style="font-size: 15px; font-weight: 600; color: #1F2937;">我的组织</span>
+                                            </div>
+                                            <a href="#" style="color: #0051D9; text-decoration: none; font-size: 13px; font-weight: 500;">进入 →</a>
+                                        </div>
+                                        <div style="font-size: 14px;">
+                                            <span>东莞市蓓佳尔工艺品有限公司（<span style="color: #F37021;">审核中</span>）</span>
+                                        </div>
+                                        <div style="font-size: 14px; margin-top: 8px;">
+                                            <span>东莞市嘉东科技科技有限公司（产品部-产品经理）</span>
+                                        </div>
+                                        <div style="font-size: 14px; margin-top: 8px;">
+                                            <div style="display: flex; align-items: center;">
+                                                <div style="width: 24px; height: 1px; background: #D1D5DB; margin-right: 4px;"></div>
+                                                <span>技术研发部（研发部-工程师）</span>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 14px; margin-top: 8px;">
+                                            <div style="display: flex; align-items: center;">
+                                                <div style="width: 24px; height: 1px; background: #D1D5DB; margin-right: 4px;"></div>
+                                                <span>市场运营部（市场部-运营专员）</span>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 14px; margin-top: 8px;">
+                                            <span>深圳市智联网络科技有限公司（技术部-架构师）</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb; flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0051D9" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                <span style="font-size: 15px; font-weight: 600; color: #1F2937;">我的能力</span>
+                                                <span style="font-size: 12px; color: #86909C; background: #F2F3F5; padding: 2px 8px; border-radius: 4px;">行业内开放</span>
+                                            </div>
+                                            <button style="padding: 4px 12px; font-size: 12px; color: #0051D9; border: 1px solid #0051D9; border-radius: 4px; background: white; cursor: pointer;">编辑</button>
+                                        </div>
+                                        <div style="font-size: 14px; color: #666;">
+                                            <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px;">
+                                                <span style="color: #9CA3AF; flex-shrink: 0;">行业：</span>
+                                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                                    <span style="background: #E6F7FF; color: #1890FF; padding: 4px 10px; border-radius: 4px; font-size: 12px;">制造业</span>
+                                                    <span style="background: #E6F7FF; color: #1890FF; padding: 4px 10px; border-radius: 4px; font-size: 12px;">互联网</span>
+                                                    <span style="background: #E6F7FF; color: #1890FF; padding: 4px 10px; border-radius: 4px; font-size: 12px;">服务业</span>
+                                                </div>
+                                            </div>
+                                            <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px;">
+                                                <span style="color: #9CA3AF; flex-shrink: 0;">技能：</span>
+                                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                                    <span style="background: #F0FFF4; color: #34A853; padding: 4px 10px; border-radius: 4px; font-size: 12px;">项目管理</span>
+                                                    <span style="background: #F0FFF4; color: #34A853; padding: 4px 10px; border-radius: 4px; font-size: 12px;">数据分析</span>
+                                                    <span style="background: #F0FFF4; color: #34A853; padding: 4px 10px; border-radius: 4px; font-size: 12px;">产品设计</span>
+                                                    <span style="background: #F0FFF4; color: #34A853; padding: 4px 10px; border-radius: 4px; font-size: 12px;">技术开发</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span style="color: #9CA3AF;">描述：</span>
+                                                <span style="color: #374151; line-height: 1.5;">具备丰富的项目管理经验，擅长数据分析和产品设计，能够独立完成技术开发工作，具备良好的团队协作能力。</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 1px; background: repeating-linear-gradient(0deg, #d9d9d9 0px, #d9d9d9 4px, transparent 4px, transparent 8px);"></div>
+                            <div style="flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                <div class="info-item" style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    <div class="info-label" style="margin-bottom: 8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                        </svg>
+                                        手机号
+                                    </div>
+                                    <div class="info-value" style="margin-bottom: 8px;">13826469793</div>
+                                    <a href="#" class="info-link">重新绑定</a>
+                                </div>
+                                <div class="info-item" style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    <div class="info-label" style="margin-bottom: 8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        账号
+                                    </div>
+                                    <div style="font-size: 13px; color: #666; margin-bottom: 8px;">账号：liulin965565</div>
+                                    <div style="font-size: 13px; color: #666;">
+                                        密码：********* <a href="#" class="info-link" onclick="showPasswordModal(); return false;">修改密码</a>
+                                    </div>
+                                </div>
+                                <div class="info-item" style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    <div class="info-label" style="margin-bottom: 8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        </svg>
+                                        第三方账号
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                                        <span style="font-size: 13px; color: #666;">微信：</span>
+                                        <img src="images/tx-2.png" alt="微信头像" style="width: 24px; height: 24px; border-radius: 4px;">
+                                        <span style="font-size: 13px; color: #1D2129;">林工</span>
+                                        <a href="#" class="info-link">重新绑定</a>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 13px; color: #666;">支付宝：</span>
+                                        <a href="#" class="info-link">支付宝绑定</a>
+                                    </div>
+                                </div>
+                                <div class="info-item" style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    <div class="info-label" style="margin-bottom: 8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                        邮箱
+                                    </div>
+                                    <div class="info-value" style="color: #999; margin-bottom: 8px;">未绑定</div>
+                                    <a href="#" class="info-link">去绑定</a>
+                                </div>
+                                <div class="info-item" style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                    <div class="info-label" style="margin-bottom: 8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M12 6v6l4 2"></path>
+                                        </svg>
+                                        我的元宝
+                                        <a href="#" class="info-link">消费记录</a>
+                                    </div>
+                                    <div class="info-value" style="color: #F37021; font-size: 20px; font-weight: bold; margin-bottom: 8px;">375</div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <a href="#" class="info-link">去充值 →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title" style="margin-top: 30px; margin-bottom: 20px;">使用统计</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div class="info-item" style="padding: 16px; background: #f8f9ff; border-radius: 8px;">
+                            <div class="info-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                </svg>
+                                对话次数
+                            </div>
+                            <div class="info-value" style="font-size: 24px; font-weight: bold; color: #0051D9;">520</div>
+                        </div>
+                        <div class="info-item" style="padding: 16px; background: #f8f9ff; border-radius: 8px;">
+                            <div class="info-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12V7a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v5a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a2 2 0 0 1 2-2h1a2 2 0 0 0 2-2z"></path>
+                                </svg>
+                                生成内容数
+                            </div>
+                            <div class="info-value" style="font-size: 24px; font-weight: bold; color: #0051D9;">186</div>
+                        </div>
+                        <div class="info-item" style="padding: 16px; background: #f8f9ff; border-radius: 8px;">
+                            <div class="info-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 8v4l3 3"></path>
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                累计使用天数
+                            </div>
+                            <div class="info-value" style="font-size: 24px; font-weight: bold; color: #0051D9;">120天</div>
+                        </div>
+                        <div class="info-item" style="padding: 16px; background: #f8f9ff; border-radius: 8px;">
+                            <div class="info-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+                                    <line x1="12" y1="22" x2="12" y2="15.5"></line>
+                                </svg>
+                                满意度评分
+                            </div>
+                            <div class="info-value" style="font-size: 24px; font-weight: bold; color: #FFD700;">4.9</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;" onclick="if(event.target===this)hideEditModal()">
+        <div style="background: white; border-radius: 12px; width: 650px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                <h3 style="font-size: 16px; font-weight: 600; margin: 0;">编辑个人信息</h3>
+                <button onclick="hideEditModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #999;">×</button>
+            </div>
+            <div style="display: flex; gap: 32px; padding: 24px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding-top: 20px;">
+                    <img id="editAvatar" src="images/tx-1.png" alt="头像" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover;border: 1px solid rgba(0, 81, 217, 0.2)">
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(this)">
+                    <button onclick="document.getElementById('avatarUpload').click()" style="padding: 8px 20px; background: transparent; color: #666; border: 1px solid #d9d9d9; border-radius: 6px; cursor: pointer; font-size: 13px;">更换头像</button>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">名称 <span style="color: #f5222d;">*</span></label>
+                        <input type="text" id="editName" value="林工" style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                        <span id="nameError" style="color: #f5222d; font-size: 12px; display: none; margin-top: 4px;">请输入名称</span>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">职务</label>
+                        <div class="custom-select-wrapper" style="position: relative;">
+                            <input type="text" id="editPosition" value="工程师" maxlength="6" placeholder="请输入职务（限6字）" style="width: 100%; padding: 10px 36px 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: white;" onfocus="showPositionDropdown()" oninput="filterPositionOptions()">
+                            <button type="button" onclick="togglePositionDropdown()" style="position: absolute; right: 0; top: 0; bottom: 0; width: 36px; background: transparent; border: none; border-radius: 0 6px 6px 0; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <svg id="positionDropdownArrow" style="width: 14px; height: 14px; color: #999; transition: transform 0.2s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"/>
+                                </svg>
+                            </button>
+                            <div id="positionDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: white; border: 1px solid #e5e7eb; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 100;">
+                                <div style="padding: 4px;">
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('工程师')">工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('高级工程师')">高级工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('资深工程师')">资深工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('首席工程师')">首席工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('设计师')">设计师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('高级设计师')">高级设计师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('UI设计师')">UI设计师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('产品设计师')">产品设计师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('项目经理')">项目经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('项目总监')">项目总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('技术总监')">技术总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('CTO')">CTO</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('产品经理')">产品经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('产品总监')">产品总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('市场经理')">市场经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('市场总监')">市场总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('销售经理')">销售经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('销售总监')">销售总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('行政主管')">行政主管</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('行政总监')">行政总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('财务主管')">财务主管</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('财务总监')">财务总监</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('总经理')">总经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('CEO')">CEO</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('运营经理')">运营经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('运维工程师')">运维工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('测试工程师')">测试工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('前端开发')">前端开发</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('后端开发')">后端开发</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('全栈开发')">全栈开发</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('架构师')">架构师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('数据分析师')">数据分析师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('算法工程师')">算法工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('安全工程师')">安全工程师</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('质量经理')">质量经理</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('人事主管')">人事主管</div>
+                                    <div class="position-option" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; color: #333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''" onclick="selectPosition('客服专员')">客服专员</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">生日</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="birthYear" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                            <select id="birthMonth" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                            <select id="birthDay" style="flex: 1; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: white;"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">性别</label>
+                        <div style="display: flex; gap: 24px;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="gender" value="男" checked>
+                                <span>男</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="gender" value="女">
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 14px; color: #666; margin-bottom: 8px;">简介</label>
+                        <div style="position: relative;">
+                            <textarea id="editIntro" rows="3" maxlength="300" oninput="updateCharCount()" style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; resize: vertical; box-sizing: border-box;">专业从事工艺品设计与开发，拥有10年行业经验，擅长3D建模和产品渲染。</textarea>
+                            <span id="charCount" style="position: absolute; right: 12px; bottom: 12px; font-size: 12px; color: #999;">52/300</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid #e5e7eb; justify-content: flex-end;">
+                <button onclick="hideEditModal()" style="padding: 10px 24px; border: 1px solid #d9d9d9; border-radius: 6px; background: white; cursor: pointer; font-size: 14px;">取消</button>
+                <button onclick="saveEditInfo()" style="padding: 10px 24px; background: #0051D9; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-modal-content">
+            <h3 class="logout-modal-title">确认退出</h3>
+            <p class="logout-modal-message">您确定要退出登录吗？退出后需要重新登录才能继续使用。</p>
+            <div class="logout-modal-buttons">
+                <button id="logoutCancelBtn" class="logout-modal-btn cancel">取消</button>
+                <button id="logoutConfirmBtn" class="logout-modal-btn confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div id="passwordModal" class="password-modal-overlay">
+        <div class="password-modal">
+            <div class="password-modal-header">
+                <div class="password-modal-title">修改密码</div>
+                <button class="password-modal-close" id="passwordModalClose">×</button>
+            </div>
+            <div class="password-modal-body">
+                <div class="password-form-item">
+                    <label class="password-form-label">
+                        <span class="password-required-mark">*</span>账号
+                    </label>
+                    <input type="text" class="password-form-input" id="pwdAccount" value="liulin965565" placeholder="请输入账号">
+                    <span class="password-error-tip" id="pwdAccountError"></span>
+                </div>
+
+                <div class="password-form-item">
+                    <label class="password-form-label">
+                        <span class="password-required-mark">*</span>手机号
+                    </label>
+                    <input type="text" class="password-form-input" id="pwdPhone" value="13826469793" disabled>
+                    <span class="password-error-tip" id="pwdPhoneError"></span>
+                </div>
+
+                <div class="password-form-item">
+                    <label class="password-form-label">
+                        <span class="password-required-mark">*</span>验证码
+                    </label>
+                    <div class="password-code-input">
+                        <input type="text" class="password-form-input" id="pwdCode" placeholder="请输入短信验证码" maxlength="6">
+                        <button type="button" class="password-code-btn" id="pwdGetCodeBtn">获取验证码</button>
+                    </div>
+                    <span class="password-error-tip" id="pwdCodeError"></span>
+                </div>
+
+                <div class="password-form-item">
+                    <label class="password-form-label">
+                        <span class="password-required-mark">*</span>新密码
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" class="password-form-input" id="pwdNewPassword" placeholder="请设置登录密码" maxlength="20">
+                        <span class="password-toggle-icon" id="pwdNewPasswordEye">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <span class="password-error-tip" id="pwdNewPasswordError"></span>
+                </div>
+
+                <div class="password-form-item">
+                    <label class="password-form-label">
+                        <span class="password-required-mark">*</span>确认密码
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" class="password-form-input" id="pwdConfirmPassword" placeholder="请再次输入登录密码" maxlength="20">
+                        <span class="password-toggle-icon" id="pwdConfirmPasswordEye">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <span class="password-error-tip" id="pwdConfirmPasswordError"></span>
+                </div>
+            </div>
+            <div class="password-modal-footer">
+                <button class="password-modal-btn cancel" id="pwdCancelBtn">取消</button>
+                <button class="password-modal-btn confirm" id="pwdConfirmBtn" disabled>确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initBirthdaySelectors() {
+            const yearSelect = document.getElementById('birthYear');
+            const monthSelect = document.getElementById('birthMonth');
+            const daySelect = document.getElementById('birthDay');
+            
+            for (let y = 2025; y >= 1960; y--) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y + '年';
+                if (y === 1990) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+            
+            for (let m = 1; m <= 12; m++) {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m + '月';
+                if (m === 1) opt.selected = true;
+                monthSelect.appendChild(opt);
+            }
+            
+            for (let d = 1; d <= 31; d++) {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d + '日';
+                if (d === 15) opt.selected = true;
+                daySelect.appendChild(opt);
+            }
+        }
+        initBirthdaySelectors();
+
+        function showEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function previewAvatar(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const editAvatar = document.getElementById('editAvatar');
+                    if (editAvatar) {
+                        editAvatar.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateCharCount() {
+            const intro = document.getElementById('editIntro');
+            const charCount = document.getElementById('charCount');
+            if (intro && charCount) {
+                charCount.textContent = intro.value.length + '/300';
+            }
+        }
+
+        function showPositionDropdown() {
+            const dropdown = document.getElementById('positionDropdown');
+            const arrow = document.getElementById('positionDropdownArrow');
+            if (dropdown) dropdown.style.display = 'block';
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+        }
+
+        function hidePositionDropdown() {
+            const dropdown = document.getElementById('positionDropdown');
+            const arrow = document.getElementById('positionDropdownArrow');
+            if (dropdown) dropdown.style.display = 'none';
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+
+        function togglePositionDropdown() {
+            const dropdown = document.getElementById('positionDropdown');
+            const arrow = document.getElementById('positionDropdownArrow');
+            if (dropdown) {
+                if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                    dropdown.style.display = 'block';
+                    if (arrow) arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    dropdown.style.display = 'none';
+                    if (arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+        }
+
+        function selectPosition(value) {
+            const input = document.getElementById('editPosition');
+            if (input) input.value = value;
+            hidePositionDropdown();
+        }
+
+        function filterPositionOptions() {
+            const input = document.getElementById('editPosition');
+            const options = document.querySelectorAll('.position-option');
+            const searchTerm = input.value.toLowerCase();
+            
+            options.forEach(option => {
+                const optionText = option.textContent.toLowerCase();
+                option.style.display = optionText.includes(searchTerm) ? 'block' : 'none';
+            });
+            
+            showPositionDropdown();
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.custom-select-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                hidePositionDropdown();
+            }
+        });
+
+        function saveEditInfo() {
+            const nameInput = document.getElementById('editName');
+            const nameError = document.getElementById('nameError');
+            const editAvatar = document.getElementById('editAvatar');
+            const profileAvatar = document.querySelector('.profile-avatar img');
+            
+            if (!nameInput.value.trim()) {
+                nameError.style.display = 'block';
+                nameInput.style.borderColor = '#f5222d';
+                return;
+            }
+            
+            nameError.style.display = 'none';
+            nameInput.style.borderColor = '#e5e7eb';
+            
+            if (editAvatar && profileAvatar) {
+                profileAvatar.src = editAvatar.src;
+            }
+            hideEditModal();
+        }
+
+        function showLogoutConfirm() {
+            const logoutModal = document.getElementById('logoutModal');
+            if (logoutModal) {
+                logoutModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideLogoutConfirm() {
+            const logoutModal = document.getElementById('logoutModal');
+            if (logoutModal) {
+                logoutModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function logout() {
+            try {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = '创造中心未登录态.html';
+            } catch (error) {
+                console.error('退出登录时出错:', error);
+                window.location.href = '创造中心未登录态.html';
+            }
+        }
+
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideLogoutConfirm();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            const logoutModal = document.getElementById('logoutModal');
+            if (e.key === 'Escape' && logoutModal && logoutModal.classList.contains('show')) {
+                hideLogoutConfirm();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutCancelBtn = document.getElementById('logoutCancelBtn');
+            const logoutConfirmBtn = document.getElementById('logoutConfirmBtn');
+            
+            if (logoutCancelBtn) {
+                logoutCancelBtn.addEventListener('click', hideLogoutConfirm);
+            }
+            
+            if (logoutConfirmBtn) {
+                logoutConfirmBtn.addEventListener('click', logout);
+            }
+
+            initPasswordModal();
+        });
+
+        // 修改密码弹窗相关
+        let pwdCountdownTimer = null;
+        let pwdIsCodeSent = false;
+
+        function initPasswordModal() {
+            const pwdAccount = document.getElementById('pwdAccount');
+            const pwdCode = document.getElementById('pwdCode');
+            const pwdNewPassword = document.getElementById('pwdNewPassword');
+            const pwdConfirmPassword = document.getElementById('pwdConfirmPassword');
+            const pwdConfirmBtn = document.getElementById('pwdConfirmBtn');
+            const pwdGetCodeBtn = document.getElementById('pwdGetCodeBtn');
+            const pwdNewPasswordEye = document.getElementById('pwdNewPasswordEye');
+            const pwdConfirmPasswordEye = document.getElementById('pwdConfirmPasswordEye');
+            const pwdCancelBtn = document.getElementById('pwdCancelBtn');
+            const pwdModalClose = document.getElementById('passwordModalClose');
+
+            // 禁止输入中文的函数
+            function preventChineseInput(e) {
+                const input = e.target;
+                const value = input.value;
+                // 过滤掉中文字符
+                const filteredValue = value.replace(/[\u4e00-\u9fa5]/g, '');
+                if (filteredValue !== value) {
+                    input.value = filteredValue;
+                }
+            }
+
+            // 为所有输入框添加禁止中文输入
+            pwdAccount.addEventListener('input', preventChineseInput);
+            pwdCode.addEventListener('input', preventChineseInput);
+            pwdNewPassword.addEventListener('input', preventChineseInput);
+            pwdConfirmPassword.addEventListener('input', preventChineseInput);
+
+            // 账号输入事件
+            pwdAccount.addEventListener('blur', validatePwdAccount);
+            pwdAccount.addEventListener('input', function() {
+                clearPwdError('pwdAccount', 'pwdAccountError');
+                checkPwdForm();
+            });
+
+            // 验证码输入事件
+            pwdCode.addEventListener('blur', validatePwdCode);
+            pwdCode.addEventListener('input', function() {
+                clearPwdError('pwdCode', 'pwdCodeError');
+                checkPwdForm();
+            });
+
+            // 新密码输入事件
+            pwdNewPassword.addEventListener('blur', validatePwdNewPassword);
+            pwdNewPassword.addEventListener('input', function() {
+                clearPwdError('pwdNewPassword', 'pwdNewPasswordError');
+                if (pwdConfirmPassword.value) validatePwdConfirmPassword();
+                checkPwdForm();
+            });
+
+            // 确认密码输入事件
+            pwdConfirmPassword.addEventListener('blur', validatePwdConfirmPassword);
+            pwdConfirmPassword.addEventListener('input', function() {
+                clearPwdError('pwdConfirmPassword', 'pwdConfirmPasswordError');
+                checkPwdForm();
+            });
+
+            // 获取验证码按钮
+            pwdGetCodeBtn.addEventListener('click', function() {
+                if (pwdIsCodeSent) return;
+                if (!validatePwdAccount()) return;
+                startPwdCountdown();
+            });
+
+            // 密码显示/隐藏切换
+            pwdNewPasswordEye.addEventListener('click', function() {
+                togglePwdVisibility(pwdNewPassword, this);
+            });
+
+            pwdConfirmPasswordEye.addEventListener('click', function() {
+                togglePwdVisibility(pwdConfirmPassword, this);
+            });
+
+            // 取消按钮
+            pwdCancelBtn.addEventListener('click', hidePasswordModal);
+
+            // 关闭按钮
+            pwdModalClose.addEventListener('click', hidePasswordModal);
+
+            // 确定按钮
+            pwdConfirmBtn.addEventListener('click', function() {
+                if (pwdConfirmBtn.disabled) return;
+                if (!validatePwdAccount() || !validatePwdCode() || 
+                    !validatePwdNewPassword() || !validatePwdConfirmPassword()) {
+                    return;
+                }
+                alert('密码修改成功！');
+                hidePasswordModal();
+            });
+
+            // 点击弹窗外部关闭
+            const passwordModal = document.getElementById('passwordModal');
+            passwordModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hidePasswordModal();
+                }
+            });
+
+            // ESC键关闭
+            document.addEventListener('keydown', function(e) {
+                const passwordModal = document.getElementById('passwordModal');
+                if (e.key === 'Escape' && passwordModal && passwordModal.classList.contains('show')) {
+                    hidePasswordModal();
+                }
+            });
+        }
+
+        function showPasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hidePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showPwdError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            if (input) input.classList.add('password-input-error');
+            if (error) {
+                error.textContent = message;
+                error.classList.add('show');
+            }
+        }
+
+        function clearPwdError(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            if (input) input.classList.remove('password-input-error');
+            if (error) {
+                error.textContent = '';
+                error.classList.remove('show');
+            }
+        }
+
+        function validatePwdAccount() {
+            const pwdAccount = document.getElementById('pwdAccount');
+            const value = pwdAccount.value.trim();
+            if (!value) {
+                showPwdError('pwdAccount', 'pwdAccountError', '请输入账号');
+                return false;
+            }
+            if (value.length < 6 || value.length > 50) {
+                showPwdError('pwdAccount', 'pwdAccountError', '账号长度 6-50 位，支持字母、数字、符号');
+                return false;
+            }
+            if (!/^[a-zA-Z0-9@._\-!#$%^&*()+=]+$/.test(value)) {
+                showPwdError('pwdAccount', 'pwdAccountError', '账号支持字母、数字、@、.、_、- 等常用符号');
+                return false;
+            }
+            clearPwdError('pwdAccount', 'pwdAccountError');
+            return true;
+        }
+
+        function validatePwdCode() {
+            const pwdCode = document.getElementById('pwdCode');
+            const value = pwdCode.value.trim();
+            if (!value) {
+                showPwdError('pwdCode', 'pwdCodeError', '请输入短信验证码');
+                return false;
+            }
+            clearPwdError('pwdCode', 'pwdCodeError');
+            return true;
+        }
+
+        function validatePwdNewPassword() {
+            const pwdNewPassword = document.getElementById('pwdNewPassword');
+            const value = pwdNewPassword.value;
+            if (!value) {
+                showPwdError('pwdNewPassword', 'pwdNewPasswordError', '请设置登录密码');
+                return false;
+            }
+            if (value.length < 6 || value.length > 50) {
+                showPwdError('pwdNewPassword', 'pwdNewPasswordError', '密码长度 6-50 位，支持数字、字母、符号');
+                return false;
+            }
+            clearPwdError('pwdNewPassword', 'pwdNewPasswordError');
+            return true;
+        }
+
+        function validatePwdConfirmPassword() {
+            const pwdNewPassword = document.getElementById('pwdNewPassword');
+            const pwdConfirmPassword = document.getElementById('pwdConfirmPassword');
+            const value = pwdConfirmPassword.value;
+            if (!value) {
+                showPwdError('pwdConfirmPassword', 'pwdConfirmPasswordError', '请再次输入登录密码');
+                return false;
+            }
+            if (value !== pwdNewPassword.value) {
+                showPwdError('pwdConfirmPassword', 'pwdConfirmPasswordError', '两次输入密码不一致，请重新输入');
+                return false;
+            }
+            clearPwdError('pwdConfirmPassword', 'pwdConfirmPasswordError');
+            return true;
+        }
+
+        function checkPwdForm() {
+            const pwdAccount = document.getElementById('pwdAccount');
+            const pwdCode = document.getElementById('pwdCode');
+            const pwdNewPassword = document.getElementById('pwdNewPassword');
+            const pwdConfirmPassword = document.getElementById('pwdConfirmPassword');
+            const pwdConfirmBtn = document.getElementById('pwdConfirmBtn');
+
+            const isValid = pwdAccount.value.trim() && 
+                           pwdCode.value.trim() && 
+                           pwdNewPassword.value && 
+                           pwdConfirmPassword.value &&
+                           pwdNewPassword.value === pwdConfirmPassword.value &&
+                           pwdNewPassword.value.length >= 6 &&
+                           pwdNewPassword.value.length <= 50 &&
+                           pwdAccount.value.trim().length >= 6 &&
+                           pwdAccount.value.trim().length <= 50;
+
+            pwdConfirmBtn.disabled = !isValid;
+        }
+
+        function startPwdCountdown() {
+            const pwdGetCodeBtn = document.getElementById('pwdGetCodeBtn');
+            let seconds = 60;
+            pwdIsCodeSent = true;
+            pwdGetCodeBtn.classList.add('counting');
+            pwdGetCodeBtn.textContent = `${seconds}秒后重试`;
+            pwdCountdownTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(pwdCountdownTimer);
+                    pwdCountdownTimer = null;
+                    pwdGetCodeBtn.textContent = '获取验证码';
+                    pwdGetCodeBtn.classList.remove('counting');
+                    pwdIsCodeSent = false;
+                } else {
+                    pwdGetCodeBtn.textContent = `${seconds}秒后重试`;
+                }
+            }, 1000);
+        }
+
+        function togglePwdVisibility(input, eyeElement) {
+            const eyeIcon = eyeElement.querySelector('.eye-icon');
+            const eyeOffIcon = eyeElement.querySelector('.eye-off-icon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

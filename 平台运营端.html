@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaaSDao · 平台运营中心</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#4F46E5;--primary-light:#6366F1;--primary-dark:#4338CA;--primary-bg:#EEF2FF;
+  --success:#10B981;--success-bg:#ECFDF5;--warning:#F59E0B;--warning-bg:#FFFBEB;
+  --danger:#EF4444;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EFF6FF;
+  --cyan:#06B6D4;--cyan-bg:#ECFEFF;--orange:#F97316;--orange-bg:#FFF7ED;
+  --slate-50:#F8FAFC;--slate-100:#F1F5F9;--slate-200:#E2E8F0;--slate-300:#CBD5E1;
+  --slate-400:#94A3B8;--slate-500:#64748B;--slate-600:#475569;--slate-700:#334155;
+  --slate-800:#1E293B;--slate-900:#0F172A;
+  --radius:10px;--radius-sm:6px;--radius-lg:16px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+  --sidebar-w:230px;--header-h:60px;
+}
+html{font-size:14px}
+body{font-family:'-apple-system','Segoe UI','Microsoft YaHei',sans-serif;background:var(--slate-50);color:var(--slate-800);line-height:1.5;overflow:hidden;height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+ul{list-style:none}
+input,select,textarea{font-family:inherit;outline:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--slate-300);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--slate-400)}
+.app{display:flex;flex-direction:column;height:100vh}
+.header{height:var(--header-h);background:#fff;border-bottom:1px solid var(--slate-200);display:flex;align-items:center;padding:0 24px;flex-shrink:0;z-index:100;box-shadow:var(--shadow-sm)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:var(--slate-900);white-space:nowrap}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.logo-sub{font-size:11px;color:var(--slate-400);font-weight:400;margin-left:2px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.role-switcher{display:flex;background:var(--slate-100);border-radius:8px;padding:3px}
+.role-btn{padding:6px 16px;font-size:13px;color:var(--slate-500);border-radius:6px;transition:all .2s;font-weight:500}
+.role-btn.active{background:#fff;color:var(--primary);box-shadow:var(--shadow-sm)}
+.role-btn:hover:not(.active){color:var(--slate-700)}
+.header-icon-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--slate-500);transition:all .2s;position:relative;background:none}
+.header-icon-btn:hover{background:var(--slate-100);color:var(--slate-700)}
+.badge-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid #fff}
+.user-area{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .2s}
+.user-area:hover{background:var(--slate-100)}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600}
+.user-name{font-size:13px;font-weight:500;color:var(--slate-700)}
+.body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--slate-200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-group{padding:8px 0}
+.sidebar-group-title{font-size:11px;color:var(--slate-400);font-weight:600;text-transform:uppercase;padding:8px 22px;letter-spacing:.5px}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 22px;font-size:13px;color:var(--slate-600);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.sidebar-item:hover{background:var(--slate-50);color:var(--slate-800)}
+.sidebar-item.active{background:var(--primary-bg);color:var(--primary);border-left-color:var(--primary);font-weight:600}
+.sidebar-item .icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.sidebar-item .count{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
+.sidebar-item.active .count{background:var(--primary)}
+.main{flex:1;overflow-y:auto;padding:24px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:20px;font-weight:700;color:var(--slate-900)}
+.page-subtitle{font-size:13px;color:var(--slate-500);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-ghost{background:transparent;color:var(--slate-600);border:1px solid var(--slate-200)}
+.btn-ghost:hover{background:var(--slate-50);border-color:var(--slate-300)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-sm{padding:5px 12px;font-size:12px}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--slate-200)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--slate-200);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.blue::before{background:var(--info)}
+.stat-card.green::before{background:var(--success)}
+.stat-card.amber::before{background:var(--warning)}
+.stat-card.red::before{background:var(--danger)}
+.stat-card.purple::before{background:var(--primary)}
+.stat-card.cyan::before{background:var(--cyan)}
+.stat-label{font-size:12px;color:var(--slate-500);margin-bottom:8px}
+.stat-value{font-size:26px;font-weight:700;color:var(--slate-900)}
+.stat-trend{font-size:12px;margin-top:6px}
+.stat-trend.up{color:var(--success)}
+.stat-trend.down{color:var(--danger)}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--slate-200);margin-bottom:20px;overflow-x:auto}
+.tab{padding:10px 18px;font-size:13px;color:var(--slate-500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;font-weight:500}
+.tab:hover{color:var(--slate-700)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.tab .tab-count{display:inline-block;background:var(--slate-100);color:var(--slate-500);font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px;font-weight:600}
+.tab.active .tab-count{background:var(--primary-bg);color:var(--primary)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:12px 16px;background:var(--slate-50);color:var(--slate-500);font-weight:600;border-bottom:1px solid var(--slate-200);white-space:nowrap}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--slate-100);color:var(--slate-700)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--slate-50)}
+tbody tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;display:inline-block}
+.badge-wait_pay{background:var(--warning-bg);color:#92400E}.badge-wait_pay::before{background:var(--warning)}
+.badge-wait_audit{background:var(--primary-bg);color:#3730A3}.badge-wait_audit::before{background:var(--primary)}
+.badge-wait_fulfill{background:var(--info-bg);color:#1E40AF}.badge-wait_fulfill::before{background:var(--info)}
+.badge-fulfilling{background:var(--cyan-bg);color:#0E7490}.badge-fulfilling::before{background:var(--cyan)}
+.badge-wait_return{background:var(--orange-bg);color:#9A3412}.badge-wait_return::before{background:var(--orange)}
+.badge-completed{background:var(--success-bg);color:#065F46}.badge-completed::before{background:var(--success)}
+.badge-after_sale{background:var(--danger-bg);color:#991B1B}.badge-after_sale::before{background:var(--danger)}
+.badge-cancelled{background:var(--slate-100);color:var(--slate-500)}.badge-cancelled::before{background:var(--slate-400)}
+.badge-closed{background:var(--slate-100);color:var(--slate-600)}.badge-closed::before{background:var(--slate-500)}
+.type-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.type-PHYSICAL{background:#DBEAFE;color:#1E40AF}
+.type-RENTAL{background:#FEF3C7;color:#92400E}
+.type-DIGITAL{background:#E0E7FF;color:#3730A3}
+.type-SERVICE{background:#D1FAE5;color:#065F46}
+.type-RESOURCE{background:#FCE7F3;color:#9D174D}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:8px 14px;flex:1;max-width:340px;transition:border-color .2s}
+.search-box:focus-within{border-color:var(--primary)}
+.search-box input{border:none;flex:1;font-size:13px;background:transparent}
+.select{padding:8px 14px;border:1px solid var(--slate-200);border-radius:var(--radius-sm);font-size:13px;background:#fff;cursor:pointer;color:var(--slate-600)}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;z-index:1000;padding:40px 20px;overflow-y:auto;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.modal-overlay.show{opacity:1;visibility:visible}
+.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:820px;box-shadow:var(--shadow-lg);transform:translateY(20px);transition:transform .25s}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--slate-200)}
+.modal-title{font-size:17px;font-weight:700;color:var(--slate-900)}
+.modal-close{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--slate-400);transition:all .2s;font-size:20px;background:none}
+.modal-close:hover{background:var(--slate-100);color:var(--slate-700)}
+.modal-body{padding:24px;max-height:65vh;overflow-y:auto}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--slate-200);display:flex;justify-content:flex-end;gap:10px}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--slate-200)}
+.timeline-item{position:relative;padding-bottom:20px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-dot{position:absolute;left:-28px;top:2px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--slate-300);z-index:1}
+.timeline-item.done .timeline-dot{border-color:var(--success);background:var(--success)}
+.timeline-item.current .timeline-dot{border-color:var(--primary);background:var(--primary);box-shadow:0 0 0 4px var(--primary-bg)}
+.timeline-time{font-size:12px;color:var(--slate-400);margin-bottom:2px}
+.timeline-title{font-size:13px;font-weight:600;color:var(--slate-700)}
+.timeline-desc{font-size:12px;color:var(--slate-500);margin-top:2px}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.info-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.info-item{padding:12px 16px;background:var(--slate-50);border-radius:var(--radius-sm)}
+.info-label{font-size:11px;color:var(--slate-400);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.info-value{font-size:14px;font-weight:500;color:var(--slate-800)}
+.section-title{font-size:14px;font-weight:700;color:var(--slate-800);margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title .bar{width:3px;height:16px;background:var(--primary);border-radius:2px}
+.section-title:first-child{margin-top:0}
+.chart-card{padding:20px}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-title{font-size:15px;font-weight:700;color:var(--slate-800)}
+.chart-container{position:relative;height:200px}
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.dash-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.progress-bar{height:8px;background:var(--slate-100);border-radius:4px;overflow:hidden;margin-top:6px}
+.progress-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--slate-100);color:var(--slate-600)}
+.checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--primary)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:20px;padding:0 16px 16px}
+.page-btn{min-width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--slate-600);cursor:pointer;transition:all .15s;border:1px solid transparent}
+.page-btn:hover{background:var(--slate-100)}
+.page-btn.active{background:var(--primary);color:#fff;font-weight:600}
+.page-btn.disabled{color:var(--slate-300);cursor:not-allowed}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--slate-800);color:#fff;padding:12px 20px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);font-size:13px;z-index:2000;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:1024px){.dash-grid{grid-template-columns:1fr}.dash-grid-3{grid-template-columns:1fr 1fr}.info-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.stats-grid{grid-template-columns:1fr 1fr}.dash-grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo"><div class="logo-icon">⚙</div><span>RaaSDao<span class="logo-sub">平台运营中心</span></span></div>
+    <div class="header-right">
+      <button class="header-icon-btn" title="消息通知">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge-dot"></span>
+      </button>
+      <div class="user-area"><div class="user-avatar">平台</div><span class="user-name">超级管理员</span></div>
+    </div>
+  </header>
+  <div class="body"><aside class="sidebar" id="sidebar"></aside><main class="main" id="mainContent"></main></div>
+</div>
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+// ==================== Data ====================
+const STATUS_MAP = {
+  WAIT_PAY:{label:'待付款',cls:'wait_pay'},
+  WAIT_AUDIT:{label:'待审核',cls:'wait_audit'},
+  WAIT_FULFILL:{label:'待履约',cls:'wait_fulfill'},
+  FULFILLING:{label:'履约中',cls:'fulfilling'},
+  WAIT_RETURN:{label:'待归还',cls:'wait_return'},
+  COMPLETED:{label:'已完成',cls:'completed'},
+  AFTER_SALE:{label:'售后中',cls:'after_sale'},
+  CANCELLED:{label:'已取消',cls:'cancelled'},
+  CLOSED:{label:'已关闭',cls:'closed'}
+};
+const TYPE_MAP = {PHYSICAL:'实物购买',RENTAL:'设备租赁',DIGITAL:'数字产品',SERVICE:'技术服务',RESOURCE:'资源共享'};
+
+const orders = [
+  {id:'RaaS202606250001',type:'PHYSICAL',status:'WAIT_PAY',buyer:'深圳精密制造有限公司',merchant:'华中数控设备厂',product:'五轴联动加工中心 VMC-850',spec:'标准版 / 含安装调试',qty:1,amount:286000,deposit:0,createTime:'2026-06-25 10:32',thumb:'🏭',items:[{name:'五轴联动加工中心 VMC-850',spec:'标准版',qty:1,price:280000},{name:'安装调试服务',spec:'上门安装',qty:1,price:6000}],address:'广东省深圳市宝安区西乡街道精密工业园A栋',logistics:'-',buyerName:'张明',buyerPhone:'138****8888'},
+  {id:'RaaS202606250002',type:'RENTAL',status:'WAIT_AUDIT',buyer:'东莞智造科技有限公司',merchant:'共享工厂·华南中心',product:'工业机器人臂 IRB-6700',spec:'日租 / 30天',qty:1,amount:45000,deposit:20000,createTime:'2026-06-25 09:15',thumb:'🤖',items:[{name:'工业机器人臂 IRB-6700 租赁',spec:'日租×30天 ¥1,500/天',qty:1,price:45000}],address:'广东省东莞市松山湖高新区智造路1号',logistics:'-',buyerName:'李伟',buyerPhone:'139****6666'},
+  {id:'RaaS202606240018',type:'PHYSICAL',status:'WAIT_FULFILL',buyer:'广州鸿图机械',merchant:'华中数控设备厂',product:'精密伺服电机 SV-7.5kW',spec:'7500W / 3000rpm',qty:8,amount:96000,deposit:0,createTime:'2026-06-24 16:20',thumb:'⚙',items:[{name:'精密伺服电机 SV-7.5kW',spec:'7500W / 3000rpm',qty:8,price:12000}],address:'广东省广州市黄埔区科学城科汇路18号',logistics:'-',buyerName:'陈工',buyerPhone:'136****5555'},
+  {id:'RaaS202606240015',type:'SERVICE',status:'FULFILLING',buyer:'佛山顺德五金厂',merchant:'智造培训学院',product:'工业机器人操作培训（高级班）',spec:'5天 / 10人',qty:1,amount:35000,deposit:0,createTime:'2026-06-22 14:00',thumb:'📚',items:[{name:'工业机器人操作培训（高级班）',spec:'5天×10人 ¥3,500/人',qty:1,price:35000}],address:'广东省佛山市顺德区北滘镇智造培训基地',logistics:'-',buyerName:'刘主任',buyerPhone:'135****4444'},
+  {id:'RaaS202606230012',type:'RENTAL',status:'WAIT_RETURN',buyer:'中山华亿电子',merchant:'共享工厂·华南中心',product:'3D打印机 IndustrialPro X',spec:'月租 / 到期6月28日',qty:1,amount:18000,deposit:15000,createTime:'2026-05-28 11:30',thumb:'🖨',items:[{name:'3D打印机 IndustrialPro X 租赁',spec:'月租 ¥18,000/月',qty:1,price:18000}],address:'广东省中山市火炬开发区华亿路3号',logistics:'SF1234567890',buyerName:'黄总',buyerPhone:'133****2222'},
+  {id:'RaaS202606220009',type:'DIGITAL',status:'COMPLETED',buyer:'杭州数创文化',merchant:'RaaSDao IP中心',product:'智能制造教学动画IP授权',spec:'年度授权 / 非独占',qty:1,amount:50000,deposit:0,createTime:'2026-06-15 09:00',thumb:'🎬',items:[{name:'智能制造教学动画IP授权',spec:'年度授权',qty:1,price:50000}],address:'浙江省杭州市余杭区文一西路969号',logistics:'-',buyerName:'赵总',buyerPhone:'137****1111'},
+  {id:'RaaS202606200007',type:'PHYSICAL',status:'AFTER_SALE',buyer:'深圳精密制造有限公司',merchant:'华中数控设备厂',product:'数控系统控制器 GSK-988TD',spec:'双通道 / 含软件',qty:2,amount:68000,deposit:0,createTime:'2026-06-10 13:45',thumb:'🎛',items:[{name:'数控系统控制器 GSK-988TD',spec:'双通道',qty:2,price:34000}],address:'广东省深圳市宝安区西乡街道精密工业园A栋',logistics:'SF9876543210',buyerName:'张明',buyerPhone:'138****8888'},
+  {id:'RaaS202606180003',type:'RESOURCE',status:'COMPLETED',buyer:'珠海联合制造',merchant:'共享工厂·华南中心',product:'共享车间 A区（含操作员）',spec:'周租 / 200㎡',qty:1,amount:24000,deposit:0,createTime:'2026-06-11 08:00',thumb:'🏗',items:[{name:'共享车间 A区（含操作员）',spec:'周租 ¥24,000/周',qty:1,price:24000}],address:'广东省珠海市香洲区南屏科技工业园',logistics:'-',buyerName:'吴经理',buyerPhone:'132****9999'},
+  {id:'RaaS202606170021',type:'PHYSICAL',status:'CANCELLED',buyer:'东莞鸿运五金',merchant:'精密配件供应商',product:'硬质合金铣刀套装',spec:'10支装 / Φ3-12mm',qty:5,amount:7500,deposit:0,createTime:'2026-06-17 15:20',thumb:'🔧',items:[{name:'硬质合金铣刀套装',spec:'10支装',qty:5,price:1500}],address:'广东省东莞市长安镇鸿运路8号',logistics:'-',buyerName:'孙总',buyerPhone:'131****3333'},
+  {id:'RaaS202606160014',type:'RENTAL',status:'COMPLETED',buyer:'广州鸿图机械',merchant:'共享工厂·华南中心',product:'激光切割机 ProCut-3000',spec:'周租 / 7天',qty:1,amount:21000,deposit:12000,createTime:'2026-06-09 10:00',thumb:'⚡',items:[{name:'激光切割机 ProCut-3000 租赁',spec:'周租 ¥21,000/周',qty:1,price:21000}],address:'广东省广州市黄埔区科学城科汇路18号',logistics:'SF5555666677',buyerName:'陈工',buyerPhone:'136****5555'},
+  {id:'RaaS202606250003',type:'PHYSICAL',status:'WAIT_AUDIT',buyer:'武汉重工件厂',merchant:'华中数控设备厂',product:'重型龙门铣床 GM-2000',spec:'定制版 / 含运输',qty:1,amount:520000,deposit:0,createTime:'2026-06-25 11:45',thumb:'🏗',items:[{name:'重型龙门铣床 GM-2000',spec:'定制版',qty:1,price:500000},{name:'运输及吊装服务',spec:'含吊装',qty:1,price:20000}],address:'湖北省武汉市蔡甸区重件工业园',logistics:'-',buyerName:'周厂长',buyerPhone:'130****0000'},
+  {id:'RaaS202606250004',type:'SERVICE',status:'WAIT_PAY',buyer:'佛山顺德五金厂',merchant:'智能维修服务中心',product:'设备上门维修服务',spec:'紧急 / 含配件',qty:1,amount:8500,deposit:0,createTime:'2026-06-25 13:20',thumb:'🛠',items:[{name:'设备上门维修服务',spec:'紧急维修',qty:1,price:8500}],address:'广东省佛山市顺德区北滘镇智造培训基地',logistics:'-',buyerName:'刘主任',buyerPhone:'135****4444'}
+];
+
+let currentMenu='',currentStatusFilter='all';
+
+// ==================== Render ====================
+function renderSidebar(menus){
+  let html='';
+  menus.forEach(g=>{
+    html+=`<div class="sidebar-group"><div class="sidebar-group-title">${g.group}</div>`;
+    g.items.forEach(item=>{
+      const active=item.id===currentMenu?'active':'';
+      const count=item.count?`<span class="count">${item.count}</span>`:'';
+      html+=`<div class="sidebar-item ${active}" onclick="switchMenu('${item.id}')"><span class="icon">${item.icon}</span><span>${item.label}</span>${count}</div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('sidebar').innerHTML=html;
+}
+function switchMenu(id){currentMenu=id;currentStatusFilter='all';renderSidebar(MENUS);renderMain();}
+function renderMain(){
+  const fn=VIEWS[currentMenu];
+  document.getElementById('mainContent').innerHTML=fn?fn():'<div style="text-align:center;padding:60px;color:var(--slate-400)"><div style="font-size:48px;margin-bottom:12px">🏗️</div>模块开发中...</div>';
+}
+function filterStatus(s){currentStatusFilter=s;renderMain();}
+
+// ==================== Helpers ====================
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function fmt(n){return '¥'+n.toLocaleString();}
+function orderActions(status,role,orderId){
+  let a=[`<button class="btn btn-ghost btn-sm" onclick="showOrderDetail('${orderId}')">详情</button>`];
+  if(role==='merchant'){
+    if(status==='WAIT_AUDIT')a.push(`<button class="btn btn-primary btn-sm" onclick="showToast('已审核通过')">审核</button>`);
+    if(status==='WAIT_FULFILL')a.push(`<button class="btn btn-primary btn-sm" onclick="showToast('已标记发货')">发货</button>`);
+    if(status==='AFTER_SALE')a.push(`<button class="btn btn-danger btn-sm" onclick="showToast('已跳转售后处理')">处理</button>`);
+    if(status==='WAIT_RETURN')a.push(`<button class="btn btn-success btn-sm" onclick="showToast('已确认归还')">归还</button>`);
+  }
+  if(role==='buyer'){
+    if(status==='WAIT_PAY')a.push(`<button class="btn btn-primary btn-sm" onclick="showToast('跳转支付页面')">付款</button>`);
+    if(status==='FULFILLING')a.push(`<button class="btn btn-success btn-sm" onclick="showToast('已确认收货')">收货</button>`);
+    if(status==='WAIT_RETURN')a.push(`<button class="btn btn-primary btn-sm" onclick="showToast('已发起归还')">归还</button>`);
+    if(status==='COMPLETED')a.push(`<button class="btn btn-ghost btn-sm" onclick="showToast('已提交评价')">评价</button>`);
+  }
+  if(role==='platform'){
+    if(status==='AFTER_SALE')a.push(`<button class="btn btn-danger btn-sm" onclick="showToast('已平台介入')">平台介入</button>`);
+  }
+  return a.join('');
+}
+function pagination(total){
+  return `<div class="pagination"><button class="page-btn disabled">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button><span style="font-size:12px;color:var(--slate-400);margin-left:8px">共 ${total} 条</span></div>`;
+}
+// ==================== Order Detail Modal ====================
+function showOrderDetail(orderId){
+  const o=orders.find(x=>x.id===orderId)||orders[0];
+  const timeline=[
+    {time:'2026-06-25 10:32',title:'买家下单',desc:`订单创建，商品：${o.product}`,state:'done'},
+    {time:o.status==='WAIT_PAY'?'待支付':'2026-06-25 10:35',title:'支付订单',desc:o.status==='WAIT_PAY'?'等待买家支付':'支付成功，金额'+fmt(o.amount)+(o.deposit?'（含押金'+fmt(o.deposit)+'）':''),state:o.status==='WAIT_PAY'?'pending':'done'},
+    {time:'2026-06-25 11:00',title:'商家审核',desc:o.status==='WAIT_AUDIT'?'等待商家审核':'审核通过',state:['WAIT_AUDIT','WAIT_PAY'].includes(o.status)?'pending':'done'},
+    {time:'2026-06-25 14:00',title:'商家发货',desc:['WAIT_FULFILL','WAIT_AUDIT','WAIT_PAY'].includes(o.status)?'待发货':(o.logistics!=='-'?'物流单号：'+o.logistics:'服务已开始'),state:['WAIT_FULFILL','WAIT_AUDIT','WAIT_PAY'].includes(o.status)?'pending':'done'},
+    {time:'2026-06-26 10:00',title:'买家确认',desc:['COMPLETED','CLOSED'].includes(o.status)?'已确认收货':'待确认',state:['COMPLETED','CLOSED'].includes(o.status)?'done':'pending'}
+  ];
+  if(o.status==='CANCELLED'){timeline[1]={time:'2026-06-25 12:00',title:'订单已取消',desc:'买家主动取消订单',state:'done'};timeline.splice(2);}
+  if(o.status==='AFTER_SALE'){timeline.push({time:'2026-06-24 09:00',title:'发起售后',desc:'买家发起售后申请，等待处理',state:'current'});}
+
+  const html=`
+    <div class="modal-header">
+      <div><div class="modal-title">订单详情</div><div style="font-size:12px;color:var(--slate-400);margin-top:2px">订单号：${o.id}</div></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-title"><span class="bar"></span>商品明细</div>
+      <div class="card" style="padding:0 16px;margin-bottom:20px">
+        ${o.items.map(i=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--slate-100)">
+          <span style="font-size:28px">${o.thumb}</span>
+          <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px"><div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${i.name}</div><span class="type-badge type-${o.type}" style="flex-shrink:0;font-size:11px;padding:1px 7px">${TYPE_MAP[o.type]}</span></div><div style="font-size:12px;color:var(--slate-400)">${i.spec}</div></div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-weight:600">${fmt(i.price)}</div><div style="font-size:12px;color:var(--slate-400)">×${i.qty}</div></div>
+        </div>`).join('')}
+        <div style="padding:12px 0;display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--slate-500)">商品总额</span><span style="font-weight:700;font-size:16px;color:var(--slate-900)">${fmt(o.amount)}</span>
+        </div>
+        ${o.deposit?`<div style="padding:0 0 12px;display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--slate-500)">押金</span><span style="font-weight:600;color:var(--warning)">${fmt(o.deposit)}</span></div>`:''}
+      </div>
+
+      <div class="section-title" style="display:flex;align-items:center;gap:8px"><span class="bar"></span>订单信息<span class="badge badge-${STATUS_MAP[o.status].cls}" style="margin-left:auto;font-size:11px">${STATUS_MAP[o.status].label}</span></div>
+      <div class="info-grid" style="margin-bottom:20px">
+        <div class="info-item"><div class="info-label">买家</div><div class="info-value">${o.buyer}</div></div>
+        <div class="info-item"><div class="info-label">商家</div><div class="info-value">${o.merchant}</div></div>
+        <div class="info-item"><div class="info-label">收货人</div><div class="info-value">${o.buyerName} · ${o.buyerPhone}</div></div>
+        <div class="info-item"><div class="info-label">收货地址</div><div class="info-value" style="font-size:13px">${o.address}</div></div>
+        <div class="info-item"><div class="info-label">下单时间</div><div class="info-value">${o.createTime}</div></div>
+        <div class="info-item"><div class="info-label">物流单号</div><div class="info-value">${o.logistics!=='-'?o.logistics:'暂无'}</div></div>
+      </div>
+
+      <div class="section-title"><span class="bar"></span>状态时间线</div>
+      <div class="timeline">
+        ${timeline.map(t=>`<div class="timeline-item ${t.state==='done'?'done':''} ${t.state==='current'?'current':''}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">${t.time}</div>
+          <div class="timeline-title">${t.title}</div>
+          <div class="timeline-desc">${t.desc}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">关闭</button>
+      <button class="btn btn-primary" onclick="closeModal();showToast('已打印订单')">打印订单</button>
+    </div>`;
+  document.getElementById('modal').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+// ==================== Chart Renderers ====================
+function lineChart(){
+  const data=[180,220,195,280,310,260,386],days=['6/19','6/20','6/21','6/22','6/23','6/24','6/25'],max=400,w=480,h=180,pad=30;
+  const stepX=(w-pad*2)/(data.length-1);
+  const pts=data.map((v,i)=>({x:pad+i*stepX,y:h-pad-(v/max)*(h-pad*2)}));
+  const path=pts.map((p,i)=>(i===0?'M':'L')+p.x+' '+p.y).join(' ');
+  const area=path+` L ${pts[pts.length-1].x} ${h-pad} L ${pad} ${h-pad} Z`;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%">
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4F46E5" stop-opacity="0.2"/><stop offset="100%" stop-color="#4F46E5" stop-opacity="0"/></linearGradient></defs>
+    ${[0,.25,.5,.75,1].map(t=>`<line x1="${pad}" y1="${pad+t*(h-pad*2)}" x2="${w-pad}" y2="${pad+t*(h-pad*2)}" stroke="#E2E8F0" stroke-dasharray="4 4"/>`).join('')}
+    <path d="${area}" fill="url(#ag)"/><path d="${path}" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff" stroke="#4F46E5" stroke-width="2"/><text x="${p.x}" y="${h-pad+14}" text-anchor="middle" font-size="10" fill="#94A3B8">${days[i]}</text><text x="${p.x}" y="${p.y-8}" text-anchor="middle" font-size="10" fill="#4F46E5" font-weight="600">${data[i]}K</text>`).join('')}
+  </svg>`;
+}
+function donutChart(){
+  const data=[{label:'实物购买',value:45,color:'#3B82F6'},{label:'设备租赁',value:25,color:'#F59E0B'},{label:'技术服务',value:15,color:'#10B981'},{label:'数字产品',value:10,color:'#6366F1'},{label:'资源共享',value:5,color:'#EC4899'}];
+  const total=data.reduce((s,d)=>s+d.value,0),r=60,cx=90,cy=90,sw=24,circ=2*Math.PI*r;
+  let off=0;
+  return `<div style="display:flex;align-items:center;gap:20px;height:100%">
+    <svg viewBox="0 0 180 180" style="width:180px;height:180px;flex-shrink:0">
+      ${data.map(d=>{const pct=d.value/total,dash=pct*circ,seg=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="${sw}" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"/>`;off+=dash;return seg;}).join('')}
+      <text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="20" font-weight="700" fill="#1E293B">100%</text><text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10" fill="#94A3B8">总占比</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:8px">${data.map(d=>`<div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="width:10px;height:10px;border-radius:3px;background:${d.color}"></span><span style="color:var(--slate-600)">${d.label}</span><span style="font-weight:600;color:var(--slate-800);margin-left:auto">${d.value}%</span></div>`).join('')}</div>
+  </div>`;
+}
+function barChart(){
+  const data=[856,1020,780,1150,980,1258],months=['1月','2月','3月','4月','5月','6月'],max=1400,w=480,h=180,pad=30;
+  const barW=(w-pad*2)/data.length*0.6,gap=(w-pad*2)/data.length;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%">
+    <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#4F46E5"/></linearGradient></defs>
+    ${[0,.25,.5,.75,1].map(t=>`<line x1="${pad}" y1="${pad+t*(h-pad*2)}" x2="${w-pad}" y2="${pad+t*(h-pad*2)}" stroke="#E2E8F0" stroke-dasharray="4 4"/>`).join('')}
+    ${data.map((v,i)=>{const bh=(v/max)*(h-pad*2),x=pad+i*gap+(gap-barW)/2,y=h-pad-bh;return `<rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="4" fill="url(#bg)"/><text x="${x+barW/2}" y="${y-6}" text-anchor="middle" font-size="10" fill="#475569" font-weight="600">${v}K</text><text x="${x+barW/2}" y="${h-pad+14}" text-anchor="middle" font-size="10" fill="#94A3B8">${months[i]}</text>`;}).join('')}
+  </svg>`;
+}
+function rankItem(name,amount,pct){
+  return `<div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--slate-700);font-weight:500">${name}</span><span style="color:var(--slate-800);font-weight:600">${amount}</span></div><div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--primary),var(--primary-light))"></div></div></div>`;
+}
+function todoItem(title,desc,color,btn,target){
+  return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--slate-50);border-radius:8px;border-left:3px solid var(--${color})"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--slate-800)">${title}</div><div style="font-size:12px;color:var(--slate-500);margin-top:2px">${desc}</div></div><button class="btn btn-ghost btn-sm" onclick="switchMenu('${target}')">${btn}</button></div>`;
+}
+function alertItem(title,desc,color){
+  return `<div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--slate-50);border-radius:8px;border-left:3px solid var(--${color})"><span style="font-size:16px">${color==='danger'?'🚨':'⚠️'}</span><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--slate-800)">${title}</div><div style="font-size:12px;color:var(--slate-500);margin-top:2px">${desc}</div></div><button class="btn btn-ghost btn-sm" onclick="showToast('已标记为已处理')">处理</button></div>`;
+}
+
+// ==================== Views ====================
+const VIEWS={};
+
+function orderListView(role){
+  const titles={merchant:'订单列表',buyer:'我的订单',platform:'平台订单'};
+  const subs={merchant:'管理本店铺所有订单',buyer:'查看和管理您的全部订单',platform:'查看全平台所有商家和用户的订单'};
+  let filtered=currentStatusFilter==='all'?orders:orders.filter(o=>o.status===currentStatusFilter);
+  const tabs=[{k:'all',l:'全部'},{k:'WAIT_PAY',l:'待付款'},{k:'WAIT_AUDIT',l:'待审核'},{k:'WAIT_FULFILL',l:'待履约'},{k:'FULFILLING',l:'履约中'},{k:'WAIT_RETURN',l:'待归还'},{k:'COMPLETED',l:'已完成'},{k:'AFTER_SALE',l:'售后中'},{k:'CANCELLED',l:'已取消'}];
+  const tabsHtml=tabs.map(t=>{const c=t.k==='all'?orders.length:orders.filter(o=>o.status===t.k).length;return `<div class="tab ${currentStatusFilter===t.k?'active':''}" onclick="filterStatus('${t.k}')">${t.l}<span class="tab-count">${c}</span></div>`;}).join('');
+  return `<div class="page-header"><div><div class="page-title">${titles[role]}</div><div class="page-subtitle">${subs[role]}</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="showToast('订单数据已导出为Excel')">📥 导出</button>${role==='merchant'?'<button class="btn btn-ghost btn-sm" onclick="switchMenu(\'shipping\')">🚚 批量发货</button>':''}</div></div>
+  <div class="toolbar">
+    <div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--slate-400)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="搜索订单号、商品名称、买家..." oninput="showToast('搜索功能演示')"></div>
+    <select class="select"><option value="">全部类型</option><option>实物购买</option><option>设备租赁</option><option>数字产品</option><option>技术服务</option><option>资源共享</option></select>
+    <select class="select"><option value="">全部时间</option><option>近7天</option><option>近30天</option><option>近3个月</option><option>自定义</option></select>
+    <select class="select"><option>排序：最新</option><option>金额从高到低</option><option>金额从低到高</option></select>
+  </div>
+  <div class="tabs">${tabsHtml}</div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr>${role==='merchant'?'<th style="width:32px"><input type="checkbox" class="checkbox"></th>':''}<th>订单号</th><th>商品信息</th>${role!=='buyer'?'<th>买家</th>':''}${role==='platform'?'<th>商家</th>':''}<th>类型</th><th>金额</th><th>状态</th><th>下单时间</th><th>操作</th></tr></thead>
+    <tbody>${filtered.map(o=>`<tr>${role==='merchant'?'<td><input type="checkbox" class="checkbox"></td>':''}<td style="font-size:12px;color:var(--slate-500);font-family:monospace">${o.id}</td><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">${o.thumb}</span><div><div style="font-weight:600;font-size:13px">${o.product}</div><div style="font-size:12px;color:var(--slate-400)">${o.spec} × ${o.qty}</div></div></div></td>${role!=='buyer'?`<td style="font-size:12px">${o.buyer}</td>`:''}${role==='platform'?`<td style="font-size:12px">${o.merchant}</td>`:''}<td><span class="type-badge type-${o.type}">${TYPE_MAP[o.type]}</span></td><td><span style="font-weight:700;color:var(--slate-900)">${fmt(o.amount)}</span>${o.deposit?`<div style="font-size:11px;color:var(--slate-400)">含押金${fmt(o.deposit)}</div>`:''}</td><td><span class="badge badge-${STATUS_MAP[o.status].cls}">${STATUS_MAP[o.status].label}</span></td><td style="font-size:12px;color:var(--slate-500)">${o.createTime}</td><td><div style="display:flex;gap:4px">${orderActions(o.status,role,o.id)}</div></td></tr>`).join('')}</tbody>
+  </table></div>${pagination(filtered.length)}</div>`;
+}
+
+const MENUS=[
+  {group:'全局监控',items:[{id:'platDashboard',label:'实时大屏',icon:'🌐'},{id:'allOrders',label:'平台订单',icon:'🗂'},{id:'anomaly',label:'异常监控',icon:'⚠️',count:4},{id:'riskControl',label:'风控预警',icon:'🚨'}]},
+  {group:'纠纷与财务',items:[{id:'dispute',label:'纠纷仲裁',icon:'⚖️',count:2},{id:'settlement',label:'财务结算',icon:'💵'},{id:'finance',label:'资金流水',icon:'🏦'}]},
+  {group:'配置与BI',items:[{id:'rules',label:'规则配置',icon:'⚙'},{id:'bi',label:'BI数据分析',icon:'📊'}]}
+];
+
+VIEWS.allOrders=function(){return orderListView('platform');};
+
+VIEWS.platDashboard=function(){
+  return `<div class="page-header"><div><div class="page-title">平台实时大屏</div><div class="page-subtitle">全平台实时交易数据 · 更新时间 2026-06-25 14:37</div></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;animation:pulse 2s infinite"></span><span style="font-size:12px;color:var(--slate-500)">实时</span></div></div>
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="stat-label">💰 今日GMV</div><div class="stat-value">¥3,856,200</div><div class="stat-trend up">↑ 18.6% 较昨日</div></div>
+    <div class="stat-card blue"><div class="stat-label">📋 今日订单量</div><div class="stat-value">126</div><div class="stat-trend up">↑ 12.3%</div></div>
+    <div class="stat-card purple"><div class="stat-label">🏪 活跃商家数</div><div class="stat-value">48</div><div class="stat-trend up">↑ 3家</div></div>
+    <div class="stat-card amber"><div class="stat-label">👥 今日活跃买家</div><div class="stat-value">215</div><div class="stat-trend up">↑ 8.7%</div></div>
+    <div class="stat-card red"><div class="stat-label">⚠️ 待处理工单</div><div class="stat-value">6</div><div class="stat-trend down">↓ 2</div></div>
+    <div class="stat-card cyan"><div class="stat-label">🔄 租赁设备在线</div><div class="stat-value">23</div><div class="stat-trend">— 持平</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="card chart-card"><div class="chart-header"><div class="chart-title">📈 平台GMV趋势（近7天）</div><select class="select" style="font-size:12px"><option>日</option><option>周</option><option>月</option></select></div><div class="chart-container">${lineChart()}</div></div>
+    <div class="card chart-card"><div class="chart-header"><div class="chart-title">🥧 业态分布</div></div><div class="chart-container">${donutChart()}</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="card" style="padding:20px"><div class="chart-header"><div class="chart-title">⚠️ 实时异常预警</div><span class="badge badge-after_sale">4条</span></div><div style="display:flex;flex-direction:column;gap:10px">
+      ${alertItem('大额异常','订单 RaaS202606250003 金额52万，超阈值','danger')}
+      ${alertItem('超时未发货','订单 RaaS202606240018 已超48小时未发货','warning')}
+      ${alertItem('高频退款','买家"东莞鸿运五金"30天内退款3次','warning')}
+      ${alertItem('风控触发','同IP地址短时间下单5次，疑似刷单','danger')}
+    </div></div>
+    <div class="card" style="padding:20px"><div class="chart-header"><div class="chart-title">🏆 商家GMV排行</div></div><div style="display:flex;flex-direction:column;gap:12px">
+      ${rankItem('华中数控设备厂','¥856,000',100)}
+      ${rankItem('共享工厂·华南中心','¥520,000',61)}
+      ${rankItem('智造培训学院','¥350,000',41)}
+      ${rankItem('RaaSDao IP中心','¥180,000',21)}
+      ${rankItem('精密配件供应商','¥95,000',11)}
+    </div></div>
+  </div>`;
+};
+
+VIEWS.anomaly=function(){
+  return `<div class="page-header"><div><div class="page-title">异常订单监控</div><div class="page-subtitle">系统自动标记的异常订单</div></div></div>
+  <div class="stats-grid">
+    <div class="stat-card red"><div class="stat-label">🚨 大额异常</div><div class="stat-value">1</div></div>
+    <div class="stat-card amber"><div class="stat-label">⏰ 超时未发货</div><div class="stat-value">1</div></div>
+    <div class="stat-card orange"><div class="stat-label">🔄 高频退款</div><div class="stat-value">1</div></div>
+    <div class="stat-card purple"><div class="stat-label">🔒 风控触发</div><div class="stat-value">1</div></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>订单号</th><th>异常类型</th><th>详情</th><th>风险等级</th><th>时间</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td style="font-size:12px;font-family:monospace">RaaS202606250003</td><td><span class="badge badge-after_sale">大额异常</span></td><td style="font-size:12px">金额52万，超过5万阈值，需人工审核</td><td><span style="color:var(--danger);font-weight:600">高</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 11:45</td><td><button class="btn btn-primary btn-sm" onclick="showToast('已介入处理')">处理</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">RaaS202606240018</td><td><span class="badge badge-wait_pay">超时未发货</span></td><td style="font-size:12px">已超过48小时未发货</td><td><span style="color:var(--warning);font-weight:600">中</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 00:00</td><td><button class="btn btn-primary btn-sm" onclick="showToast('已通知商家发货')">催发</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">RaaS202606170021</td><td><span class="badge badge-wait_return">高频退款</span></td><td style="font-size:12px">买家"东莞鸿运五金"30天内退款3次</td><td><span style="color:var(--warning);font-weight:600">中</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-24 10:00</td><td><button class="btn btn-primary btn-sm" onclick="showToast('已标记观察')">观察</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">RaaS202606250004</td><td><span class="badge badge-wait_audit">风控触发</span></td><td style="font-size:12px">同IP短时间下单5次，疑似刷单</td><td><span style="color:var(--danger);font-weight:600">高</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 13:20</td><td><button class="btn btn-danger btn-sm" onclick="showToast('已冻结订单')">冻结</button></td></tr>
+    </tbody>
+  </table></div></div>`;
+};
+
+VIEWS.riskControl=function(){
+  return `<div class="page-header"><div><div class="page-title">风控预警看板</div><div class="page-subtitle">集中展示所有风控预警事件</div></div></div>
+  <div class="card" style="padding:20px;margin-bottom:16px"><div class="section-title"><span class="bar"></span>风控规则配置</div><div class="info-grid cols-3">
+    <div class="info-item"><div class="info-label">大额订单阈值</div><div class="info-value">≥ ¥50,000 自动审核</div></div>
+    <div class="info-item"><div class="info-label">同IP下单频次</div><div class="info-value">≥ 5次/小时 预警</div></div>
+    <div class="info-item"><div class="info-label">退款率阈值</div><div class="info-value">≥ 30% 预警</div></div>
+    <div class="info-item"><div class="info-label">新商家强制审核</div><div class="info-value">前10笔订单</div></div>
+    <div class="info-item"><div class="info-label">待付款超时</div><div class="info-value">30分钟自动取消</div></div>
+    <div class="info-item"><div class="info-label">自动确认收货</div><div class="info-value">7天/15天</div></div>
+  </div></div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>预警ID</th><th>类型</th><th>描述</th><th>等级</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td style="font-size:12px;font-family:monospace">RC20260625001</td><td>大额订单</td><td style="font-size:12px">订单金额52万超阈值</td><td><span style="color:var(--danger);font-weight:600">高</span></td><td><span class="badge badge-wait_audit">待处理</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 11:45</td><td><button class="btn btn-primary btn-sm" onclick="showToast('已处理')">处理</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">RC20260625002</td><td>刷单嫌疑</td><td style="font-size:12px">同IP频繁下单</td><td><span style="color:var(--danger);font-weight:600">高</span></td><td><span class="badge badge-wait_audit">待处理</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 13:20</td><td><button class="btn btn-danger btn-sm" onclick="showToast('已冻结')">冻结</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">RC20260624003</td><td>高频退款</td><td style="font-size:12px">买家退款率40%</td><td><span style="color:var(--warning);font-weight:600">中</span></td><td><span class="badge badge-completed">已处理</span></td><td style="font-size:12px;color:var(--slate-500)">2026-06-24 10:00</td><td><button class="btn btn-ghost btn-sm" onclick="showToast('查看详情')">详情</button></td></tr>
+    </tbody>
+  </table></div></div>`;
+};
+
+VIEWS.dispute=function(){
+  return `<div class="page-header"><div><div class="page-title">纠纷仲裁</div><div class="page-subtitle">处理商家与买家协商未果的纠纷工单</div></div></div>
+  <div class="stats-grid">
+    <div class="stat-card amber"><div class="stat-label">⏳ 待仲裁</div><div class="stat-value">2</div></div>
+    <div class="stat-card blue"><div class="stat-label">🔄 仲裁中</div><div class="stat-value">1</div></div>
+    <div class="stat-card green"><div class="stat-label">✅ 已结案</div><div class="stat-value">8</div></div>
+    <div class="stat-card red"><div class="stat-label">⚠️ 紧急</div><div class="stat-value">1</div></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>工单号</th><th>关联订单</th><th>买家</th><th>商家</th><th>纠纷类型</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td style="font-size:12px;font-family:monospace">DSP20260625001</td><td style="font-size:12px;color:var(--slate-500)">RaaS202606200007</td><td>深圳精密制造有限公司</td><td>华中数控设备厂</td><td><span class="badge badge-after_sale">设备质量纠纷</span></td><td>¥68,000</td><td><span class="badge badge-wait_audit">待仲裁</span></td><td><button class="btn btn-primary btn-sm" onclick="showToast('已进入仲裁流程')">仲裁</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">DSP20260624002</td><td style="font-size:12px;color:var(--slate-500)">RaaS202606240015</td><td>佛山顺德五金厂</td><td>智造培训学院</td><td><span class="badge badge-wait_return">退款纠纷</span></td><td>¥3,500</td><td><span class="badge badge-fulfilling">仲裁中</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('查看仲裁进度')">进度</button></td></tr>
+    </tbody>
+  </table></div></div>`;
+};
+
+VIEWS.settlement=function(){
+  return `<div class="page-header"><div><div class="page-title">财务结算</div><div class="page-subtitle">商家结算单管理与打款执行</div></div><button class="btn btn-primary btn-sm" onclick="showToast('已生成本月结算单')">生成结算单</button></div>
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="stat-label">💰 本月结算总额</div><div class="stat-value">¥3,856,200</div></div>
+    <div class="stat-card blue"><div class="stat-label">🏪 待结算商家</div><div class="stat-value">12</div></div>
+    <div class="stat-card purple"><div class="stat-label">💸 平台佣金收入</div><div class="stat-value">¥115,686</div></div>
+    <div class="stat-card amber"><div class="stat-label">⏳ 待打款</div><div class="stat-value">8</div></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>结算单号</th><th>商家</th><th>账期</th><th>订单总额</th><th>平台佣金</th><th>实结金额</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td style="font-size:12px;font-family:monospace">ST2026060001</td><td>华中数控设备厂</td><td>2026年6月</td><td>¥1,258,500</td><td>¥37,755</td><td><span style="font-weight:700;color:var(--success)">¥1,220,745</span></td><td><span class="badge badge-wait_fulfill">待确认</span></td><td><button class="btn btn-primary btn-sm" onclick="showToast('已确认并发起打款')">确认打款</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">ST2026060002</td><td>共享工厂·华南中心</td><td>2026年6月</td><td>¥856,000</td><td>¥25,680</td><td><span style="font-weight:700;color:var(--success)">¥830,320</span></td><td><span class="badge badge-wait_fulfill">待确认</span></td><td><button class="btn btn-primary btn-sm" onclick="showToast('已确认并发起打款')">确认打款</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">ST2026060003</td><td>智造培训学院</td><td>2026年6月</td><td>¥350,000</td><td>¥10,500</td><td><span style="font-weight:700;color:var(--success)">¥339,500</span></td><td><span class="badge badge-fulfilling">打款中</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('查看打款记录')">记录</button></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">ST2026050008</td><td>华中数控设备厂</td><td>2026年5月</td><td>¥1,020,000</td><td>¥30,600</td><td>¥989,400</td><td><span class="badge badge-completed">已结算</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('查看结算详情')">详情</button></td></tr>
+    </tbody>
+  </table></div></div>`;
+};
+
+VIEWS.finance=function(){
+  return `<div class="page-header"><div><div class="page-title">资金流水总览</div><div class="page-subtitle">平台所有资金流水，支持按日汇总</div></div><button class="btn btn-ghost btn-sm" onclick="showToast('流水报表已导出')">📥 导出</button></div>
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="stat-label">💰 今日收入</div><div class="stat-value">¥3,856,200</div></div>
+    <div class="stat-card red"><div class="stat-label">💸 今日退款</div><div class="stat-value">¥71,500</div></div>
+    <div class="stat-card purple"><div class="stat-label">🏦 平台佣金</div><div class="stat-value">¥115,686</div></div>
+    <div class="stat-card blue"><div class="stat-label">🔒 商家保证金</div><div class="stat-value">¥520,000</div></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>流水号</th><th>类型</th><th>方向</th><th>金额</th><th>关联方</th><th>时间</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260625001</td><td>买家支付</td><td><span style="color:var(--success);font-weight:600">收入</span></td><td style="color:var(--success);font-weight:700">+¥286,000</td><td>深圳精密制造有限公司</td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 10:35</td><td><span class="badge badge-completed">成功</span></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260625002</td><td>买家支付</td><td><span style="color:var(--success);font-weight:600">收入</span></td><td style="color:var(--success);font-weight:700">+¥45,000</td><td>东莞智造科技有限公司</td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 09:20</td><td><span class="badge badge-completed">成功</span></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260625003</td><td>押金收取</td><td><span style="color:var(--success);font-weight:600">收入</span></td><td style="color:var(--success);font-weight:700">+¥20,000</td><td>东莞智造科技有限公司</td><td style="font-size:12px;color:var(--slate-500)">2026-06-25 09:20</td><td><span class="badge badge-completed">成功</span></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260624004</td><td>退款</td><td><span style="color:var(--danger);font-weight:600">支出</span></td><td style="color:var(--danger);font-weight:700">-¥68,000</td><td>深圳精密制造有限公司</td><td style="font-size:12px;color:var(--slate-500)">2026-06-24 15:00</td><td><span class="badge badge-completed">成功</span></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260624005</td><td>商家结算</td><td><span style="color:var(--danger);font-weight:600">支出</span></td><td style="color:var(--danger);font-weight:700">-¥339,500</td><td>智造培训学院</td><td style="font-size:12px;color:var(--slate-500)">2026-06-24 14:00</td><td><span class="badge badge-fulfilling">处理中</span></td></tr>
+      <tr><td style="font-size:12px;font-family:monospace">TF20260624006</td><td>平台佣金</td><td><span style="color:var(--success);font-weight:600">收入</span></td><td style="color:var(--success);font-weight:700">+¥10,500</td><td>智造培训学院</td><td style="font-size:12px;color:var(--slate-500)">2026-06-24 14:00</td><td><span class="badge badge-completed">成功</span></td></tr>
+    </tbody>
+  </table></div></div>`;
+};
+
+VIEWS.rules=function(){
+  return `<div class="page-header"><div><div class="page-title">规则配置</div><div class="page-subtitle">平台级参数与业务规则管理</div></div><button class="btn btn-primary btn-sm" onclick="showToast('配置已保存')">💾 保存配置</button></div>
+  <div class="dash-grid">
+    <div class="card" style="padding:20px"><div class="section-title"><span class="bar"></span>订单流程配置</div><div style="display:flex;flex-direction:column;gap:16px">
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">待付款超时自动取消（分钟）</label><input type="number" value="30" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">自动确认收货时间（天）</label><input type="number" value="7" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">售后申请时限（天）</label><input type="number" value="7" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+    </div></div>
+    <div class="card" style="padding:20px"><div class="section-title"><span class="bar"></span>租赁规则配置</div><div style="display:flex;flex-direction:column;gap:16px">
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">押金比例（%）</label><input type="number" value="30" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">最短租期（天）</label><input type="number" value="1" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:13px;color:var(--slate-600);display:block;margin-bottom:6px">续租提前天数</label><input type="number" value="3" style="width:100%;padding:8px 12px;border:1px solid var(--slate-200);border-radius:6px;font-size:13px"></div>
+    </div></div>
+  </div>
+  <div class="card" style="padding:20px;margin-top:16px"><div class="section-title"><span class="bar"></span>风控规则</div><div class="info-grid cols-3">
+    <div class="info-item"><div class="info-label">大额订单阈值</div><div class="info-value">¥50,000</div></div>
+    <div class="info-item"><div class="info-label">同IP下单频次</div><div class="info-value">5次/小时</div></div>
+    <div class="info-item"><div class="info-label">退款率预警</div><div class="info-value">30%</div></div>
+    <div class="info-item"><div class="info-label">新商家审核</div><div class="info-value">前10笔</div></div>
+    <div class="info-item"><div class="info-label">佣金比例</div><div class="info-value">3%（默认）</div></div>
+    <div class="info-item"><div class="info-label">运费模板</div><div class="info-value">按重量计费</div></div>
+  </div></div>`;
+};
+
+VIEWS.bi=function(){
+  return `<div class="page-header"><div><div class="page-title">BI 数据分析</div><div class="page-subtitle">平台运营数据分析与可视化</div></div><button class="btn btn-ghost btn-sm" onclick="showToast('已跳转自定义看板编辑器')">🎨 自定义看板</button></div>
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="stat-label">💰 平台总GMV</div><div class="stat-value">¥12,580,000</div><div class="stat-trend up">↑ 25.3% 同比</div></div>
+    <div class="stat-card blue"><div class="stat-label">📋 总订单量</div><div class="stat-value">486</div><div class="stat-trend up">↑ 18.7%</div></div>
+    <div class="stat-card purple"><div class="stat-label">🔄 复购率</div><div class="stat-value">42.5%</div><div class="stat-trend up">↑ 3.2%</div></div>
+    <div class="stat-card cyan"><div class="stat-label">📊 客单价</div><div class="stat-value">¥25,886</div><div class="stat-trend up">↑ 5.6%</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="card chart-card"><div class="chart-header"><div class="chart-title">📈 平台GMV趋势</div><select class="select" style="font-size:12px"><option>按月</option><option>按周</option><option>按日</option></select></div><div class="chart-container">${lineChart()}</div></div>
+    <div class="card chart-card"><div class="chart-header"><div class="chart-title">🥧 品类销售占比</div></div><div class="chart-container">${donutChart()}</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="card" style="padding:20px"><div class="chart-header"><div class="chart-title">🏆 商家绩效TOP5</div></div><div style="display:flex;flex-direction:column;gap:12px">
+      ${rankItem('华中数控设备厂','订单128 / 退款率2.3%',100)}
+      ${rankItem('共享工厂·华南中心','订单95 / 退款率1.8%',78)}
+      ${rankItem('智造培训学院','订单42 / 退款率0%',52)}
+      ${rankItem('RaaSDao IP中心','订单18 / 退款率0%',35)}
+      ${rankItem('精密配件供应商','订单65 / 退款率5.2%',28)}
+    </div></div>
+    <div class="card" style="padding:20px"><div class="chart-header"><div class="chart-title">📊 租赁业务分析</div></div><div class="info-grid" style="margin-top:8px">
+      <div class="info-item"><div class="info-label">设备利用率</div><div class="info-value" style="color:var(--success)">78.5%</div></div>
+      <div class="info-item"><div class="info-label">平均租期</div><div class="info-value">18天</div></div>
+      <div class="info-item"><div class="info-label">热门设备</div><div class="info-value" style="font-size:12px">工业机器人臂</div></div>
+      <div class="info-item"><div class="info-label">租赁收入</div><div class="info-value">¥356,000</div></div>
+    </div></div>
+  </div>`;
+};
+
+currentMenu='platDashboard';
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')closeModal();});
+renderSidebar(MENUS);renderMain();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单支付 - RaaSDao</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #F7F8FA;
+            color: #1D2129;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .pay-container {
+            width: 440px;
+            max-width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+            overflow: hidden;
+        }
+        .pay-header {
+            text-align: center;
+            padding: 32px 28px 24px;
+            border-bottom: 1px solid #E5E6EB;
+        }
+        .pay-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1D2129;
+            margin-bottom: 16px;
+        }
+        .pay-amount {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 2px;
+        }
+        .pay-amount .symbol {
+            font-size: 24px;
+            font-weight: 600;
+            color: #FF6600;
+        }
+        .pay-amount .value {
+            font-size: 42px;
+            font-weight: 800;
+            color: #FF6600;
+            line-height: 1;
+        }
+        .pay-order-info {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #86909C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .pay-body {
+            padding: 36px 28px 32px;
+            text-align: center;
+        }
+        .qr-wrap {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 20px;
+            padding: 12px;
+            border: 2px solid #E5E6EB;
+            border-radius: 12px;
+            position: relative;
+            background: #fff;
+        }
+        #qrcode {
+            width: 196px;
+            height: 196px;
+        }
+        .qr-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            border-radius: 12px;
+            z-index: 5;
+        }
+        .qr-overlay.show { display: flex; animation: fadeIn .3s ease; }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+        /* 模拟二维码 - 使用CSS绘制 */
+        .mock-qrcode {
+            width: 196px;
+            height: 196px;
+            background: #fff;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            grid-template-rows: repeat(25, 1fr);
+            gap: 0;
+        }
+        .mock-qrcode-cell {
+            background: #fff;
+        }
+        .mock-qrcode-cell.black {
+            background: #1D2129;
+        }
+
+        .pay-tip {
+            font-size: 15px;
+            color: #1D2129;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .pay-method-name {
+            font-size: 13px;
+            color: #86909C;
+            margin-bottom: 26px;
+        }
+        .pay-countdown {
+            font-size: 13px;
+            color: #FF6600;
+            margin-top: 18px;
+            font-weight: 500;
+        }
+        .btn-done {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 260px;
+            height: 48px;
+            background: linear-gradient(135deg, #0051D9, #0041B8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .25s;
+            letter-spacing: 2px;
+        }
+        .btn-done:hover {
+            background: linear-gradient(135deg, #0041B8, #00339A);
+            box-shadow: 0 4px 16px rgba(0,81,217,0.35);
+            transform: translateY(-1px);
+        }
+        .btn-done:active {
+            transform: translateY(0);
+        }
+        .pay-success-area {
+            display: none;
+            padding: 30px 28px;
+            text-align: center;
+            animation: slideUp .4s ease;
+        }
+        .pay-success-area.show { display: block; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        .success-icon {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #00A870, #00C78A);
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .success-icon svg { width:38px;height:38px;stroke:#fff;fill:none;stroke-width:2.5; }
+        .success-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1D2129;
+            margin-bottom: 8px;
+        }
+        .success-sub {
+            font-size: 14px;
+            color: #86909C;
+            margin-bottom: 24px;
+        }
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 28px;
+            background: #F7F8FA;
+            color: #86909C;
+            border: 1px solid #E5E6EB;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .btn-back:hover { border-color:#86909C;color:#1D2129; }
+        .method-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .method-wechat { background: #E8FFF0; color: #07C160; }
+        .method-alipay { background: #EBF4FF; color: #1677FF; }
+        .method-unionpay { background: #EEECFF; color: #5433FF; }
+        .method-quickpass { background: #FFF0F5; color: #E02020; }
+    </style>
+</head>
+<body>
+    <div class="pay-container" id="payContainer">
+        <!-- 支付页面（默认显示） -->
+        <div id="payPage">
+            <!-- 头部 -->
+            <div class="pay-header">
+                <h1>扫码支付</h1>
+                <div class="pay-amount">
+                    <span class="symbol">¥</span>
+                    <span class="value" id="displayAmount">200,500.00</span>
+                </div>
+                <div class="pay-order-info">
+                    <span>订单号：<b id="displayOrderNo">RaaS-</b></span>
+                    <span id="displayMethodBadge"></span>
+                </div>
+            </div>
+
+            <!-- 二维码区域 -->
+            <div class="pay-body">
+                <div class="qr-wrap">
+                    <div class="mock-qrcode" id="qrCodeEl"></div>
+                    <div class="qr-overlay" id="qrOverlay">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00A870" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span style="font-size:14px;font-weight:600;color:#00A870;">已确认支付</span>
+                        <span style="font-size:12px;color:#86909C;">请点击下方按钮</span>
+                    </div>
+                </div>
+                <div class="pay-tip">请使用<span id="payMethodText">微信</span>扫描二维码完成支付</div>
+                <div class="pay-method-name">支付方式：<span id="methodNameDisplay" style="color:#1D2129;font-weight:500;">微信支付</span></div>
+                <button class="btn-done" onclick="onPayDone()">✓ 支付完成</button>
+                <div class="pay-countdown" id="countdown">⏱ 剩余支付时间：14分59秒</div>
+            </div>
+        </div>
+
+        <!-- 支付成功页面（隐藏，点击支付完成后显示） -->
+        <div class="pay-success-area" id="successPage">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="success-text">支付成功！</div>
+            <div class="success-sub" id="successAmount">您已成功支付 ¥200,500.00</div>
+            <div class="success-sub" style="margin-bottom:28px;" id="successOrderNo">订单号：RaaS-</div>
+            <button class="btn-back" onclick="window.location.href='商品方案列表页.html?tab=机器人设备共享&industry=全部'">← 返回商城继续选购</button>
+        </div>
+    </div>
+
+    <script>
+        // 解析URL参数
+        const params = new URLSearchParams(window.location.search);
+        const orderNo   = params.get('order') || ('RaaS' + Date.now());
+        const amountStr = params.get('amount') || '¥200,500';
+        const method    = params.get('method') || 'wechat';
+
+        // 方法名映射
+        const methodMap = {
+            wechat:   { name: '微信支付', text: '微信', cssClass: 'method-wechat' },
+            alipay:   { name: '支付宝',   text: '支付宝', cssClass: 'method-alipay' },
+            unionpay: { name: '银联支付', text: '银联', cssClass: 'method-unionpay' },
+            quickpass:{ name: '云闪付',   text: '云闪付', cssClass: 'method-quickpass' }
+        };
+        const mi = methodMap[method] || methodMap.wechat;
+
+        // 显示数据
+        document.getElementById('displayAmount').textContent = amountStr.replace(/[¥\s]/g,'');
+        document.getElementById('displayOrderNo').textContent = orderNo;
+
+        // 方法标签
+        const badge = document.getElementById('displayMethodBadge');
+        badge.textContent = mi.name;
+        badge.className = 'method-badge ' + mi.cssClass;
+
+        document.getElementById('payMethodText').textContent = mi.text;
+        document.getElementById('methodNameDisplay').textContent = mi.name;
+
+        // ===== 生成模拟二维码图案 =====
+        function generateMockQR() {
+            const el = document.getElementById('qrCodeEl');
+            // 用简单的伪随机模式生成类似二维码的黑白格子
+            let html = '';
+            const seed = orderNo.charCodeAt(0) * 31 + method.length * 7;
+            for (let r = 0; r < 25; r++) {
+                for (let c = 0; c < 25; c++) {
+                    let isBlack = false;
+                    // 定位图案（左上、右上、左下角）
+                    if ((r < 7 && c < 7) || (r < 7 && c >= 18) || (r >= 18 && c < 7)) {
+                        // 7x7定位框
+                        if ((r === 0 || r === 6 || c === 0 || c === 6) ||
+                            (r >= 2 && r <= 4 && c >= 2 && c <= 4)) isBlack = true;
+                    } else {
+                        // 数据区伪随机
+                        const v = Math.abs(Math.sin((r * 25 + c + seed) * 9973));
+                        isBlack = v > 0.52;
+                    }
+                    html += '<div class="mock-qrcode-cell' + (isBlack ? ' black' : '') + '"></div>';
+                }
+            }
+            el.innerHTML = html;
+        }
+        generateMockQR();
+
+        // ===== 倒计时 =====
+        let secondsLeft = 900; // 15分钟
+        function updateCountdown() {
+            if (secondsLeft <= 0) return;
+            const m = Math.floor(secondsLeft / 60);
+            const s = secondsLeft % 60;
+            document.getElementById('countdown').textContent =
+                '⏱ 剩余支付时间：' + m + '分' + String(s).padStart(2,'0') + '秒';
+            secondsLeft--;
+            if (secondsLeft >= 0) setTimeout(updateCountdown, 1000);
+        }
+        updateCountdown();
+
+        // ===== 支付完成按钮 =====
+        function onPayDone() {
+            document.getElementById('qrOverlay').classList.add('show');
+            setTimeout(function() {
+                document.getElementById('payPage').style.display = 'none';
+                const sp = document.getElementById('successPage');
+                sp.classList.add('show');
+                document.getElementById('successAmount').textContent = '您已成功支付 ' + (amountStr.startsWith('¥')?amountStr:'¥'+amountStr);
+                document.getElementById('successOrderNo').textContent = '订单号：' + orderNo;
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
